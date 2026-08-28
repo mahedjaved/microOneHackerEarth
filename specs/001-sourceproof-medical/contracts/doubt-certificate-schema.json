@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DoubtCertificate",
+  "description": "Structured abstention record returned when evidence is insufficient or ambiguous.",
+  "type": "object",
+  "required": ["status", "message", "support_probability", "probability_semantics", "conformal_set", "coverage_target", "uncertainty_causes", "actions_taken", "evidence_needed", "corpus_id", "calibration_id", "human_review_recommended"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["insufficient_evidence", "clarification_required"],
+      "description": "The abstention status."
+    },
+    "message": {
+      "type": "string",
+      "const": "I do not know from the approved evidence.",
+      "description": "Fixed user-facing message."
+    },
+    "support_probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Calibrated probability of SUPPORTED from the verifier."
+    },
+    "probability_semantics": {
+      "type": "string",
+      "const": "P(claim fully supported by active retrieved evidence)",
+      "description": "Explicit definition of what the probability means."
+    },
+    "conformal_set": {
+      "type": "array",
+      "items": {"type": "string", "enum": ["SUPPORTED", "REFUTED", "INSUFFICIENT"]},
+      "minItems": 1,
+      "description": "The conformal prediction set that triggered abstention."
+    },
+    "coverage_target": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "The coverage target used for conformal prediction."
+    },
+    "uncertainty_causes": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/UncertaintyCause"},
+      "description": "Reasons why the system could not produce a supported answer."
+    },
+    "actions_taken": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/EAVAction"},
+      "description": "Any EAV actions taken before abstaining."
+    },
+    "evidence_needed": {
+      "type": "string",
+      "description": "Description of what evidence would resolve the doubt."
+    },
+    "corpus_id": {
+      "type": "string",
+      "description": "The corpus that was queried."
+    },
+    "calibration_id": {
+      "type": "string",
+      "description": "Reference to the CalibrationArtifact used."
+    },
+    "human_review_recommended": {
+      "type": "boolean",
+      "description": "Whether a qualified human reviewer should examine this case."
+    }
+  },
+  "definitions": {
+    "UncertaintyCause": {
+      "type": "object",
+      "required": ["type", "detail"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["missing_evidence", "cross_source_conflict", "retrieval_instability", "query_ambiguity", "verifier_uncertainty", "system_drift", "budget_exhausted"]
+        },
+        "detail": {
+          "type": "string",
+          "description": "Human-readable explanation of the cause."
+        }
+      }
+    },
+    "EAVAction": {
+      "type": "object",
+      "required": ["action_id", "action_type", "description", "pre_conformal_set", "productive"],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "action_type": {
+          "type": "string",
+          "enum": ["clarify", "retrieve"]
+        },
+        "description": {
+          "type": "string",
+          "description": "What the action did."
+        },
+        "pre_conformal_set": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["SUPPORTED", "REFUTED", "INSUFFICIENT"]}
+        },
+        "post_conformal_set": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["SUPPORTED", "REFUTED", "INSUFFICIENT"]},
+          "description": "Null if action did not resolve ambiguity."
+        },
+        "productive": {
+          "type": "boolean",
+          "description": "Whether the action collapsed to correct singleton or abstention."
+        }
+      }
+    }
+  }
+}

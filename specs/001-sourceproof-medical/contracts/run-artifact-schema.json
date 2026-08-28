@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RunArtifact",
+  "description": "Immutable record of a single execution, redacted for safe sharing.",
+  "type": "object",
+  "required": ["run_id", "timestamp", "question", "corpus_id", "corpus_hash", "model_version", "verifier_version", "calibration_id", "evidence_packet", "claims", "evidence_features", "verifier_outputs", "conformal_sets", "final_decision", "latency_ms"],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this run."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of execution start."
+    },
+    "question": {
+      "$ref": "#/definitions/RedactedQuestion",
+      "description": "The user question with PII redacted."
+    },
+    "corpus_id": {
+      "type": "string",
+      "description": "Corpus used for this run."
+    },
+    "corpus_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the corpus at retrieval time."
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Version of the LLM used."
+    },
+    "verifier_version": {
+      "type": "string",
+      "description": "Version of the verifier model."
+    },
+    "calibration_id": {
+      "type": "string",
+      "description": "Reference to the CalibrationArtifact."
+    },
+    "evidence_packet": {
+      "$ref": "#/definitions/EvidencePacket"
+    },
+    "claims": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/Claim"}
+    },
+    "evidence_features": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/EvidenceFeatureVector"}
+    },
+    "verifier_outputs": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/VerifierResult"}
+    },
+    "conformal_sets": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/ConformalDecisionSet"}
+    },
+    "eav_actions": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/EAVAction"}
+    },
+    "final_decision": {
+      "type": "string",
+      "enum": ["answer", "doubt_certificate", "clarification", "safety_response"]
+    },
+    "latency_ms": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "definitions": {
+    "RedactedQuestion": {
+      "type": "object",
+      "required": ["run_id", "redacted_text", "scope"],
+      "properties": {
+        "run_id": {"type": "string", "format": "uuid"},
+        "redacted_text": {"type": "string", "description": "PII-redacted question text."},
+        "scope": {"type": "string", "enum": ["allowed", "emergency", "prohibited"]},
+        "ambiguity_flags": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "EvidenceFeatureVector": {
+      "type": "object",
+      "required": ["claim_id", "local_entailment", "claim_coverage", "retrieval_quality", "conflict", "provenance", "query_ambiguity", "system_state"],
+      "properties": {
+        "claim_id": {"type": "string", "format": "uuid"},
+        "local_entailment": {
+          "type": "object",
+          "required": ["max_support", "mean_support", "max_contradiction", "mean_neutral"],
+          "properties": {
+            "max_support": {"type": "number", "minimum": 0, "maximum": 1},
+            "mean_support": {"type": "number", "minimum": 0, "maximum": 1},
+            "max_contradiction": {"type": "number", "minimum": 0, "maximum": 1},
+            "mean_neutral": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        },
+        "claim_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+        "retrieval_quality": {
+          "type": "object",
+          "required": ["top_score", "score_margin"],
+          "properties": {
+            "top_score": {"type": "number", "minimum": 0, "maximum": 1},
+            "score_margin": {"type": "number", "minimum": 0},
+            "rank_dispersion": {"type": "number", "minimum": 0},
+            "dense_lexical_agreement": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        },
+        "conflict": {
+          "type": "object",
+          "required": ["max_contradiction_score", "support_refute_coexist"],
+          "properties": {
+            "max_contradiction_score": {"type": "number", "minimum": 0, "maximum": 1},
+            "support_refute_coexist": {"type": "boolean"}
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["document_version_valid", "page_resolvable", "citation_text_match_score"],
+          "properties": {
+            "document_version_valid": {"type": "boolean"},
+            "page_resolvable": {"type": "boolean"},
+            "citation_text_match_score": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        },
+        "query_ambiguity": {
+          "type": "object",
+          "required": ["missing_entities", "unresolved_pronouns", "underspecified_scope"],
+          "properties": {
+            "missing_entities": {"type": "boolean"},
+            "unresolved_pronouns": {"type": "boolean"},
+            "underspecified_scope": {"type": "boolean"}
+          }
+        },
+        "system_state": {
+          "type": "object",
+          "required": ["corpus_id", "model_version", "verifier_version", "calibration_age_days", "drift_detected"],
+          "properties": {
+            "corpus_id": {"type": "string"},
+            "model_version": {"type": "string"},
+            "verifier_version": {"type": "string"},
+            "calibration_age_days": {"type": "integer", "minimum": 0},
+            "drift_detected": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "ConformalDecisionSet": {
+      "type": "object",
+      "required": ["claim_id", "set", "coverage_target", "is_singleton"],
+      "properties": {
+        "claim_id": {"type": "string", "format": "uuid"},
+        "set": {"type": "array", "items": {"type": "string", "enum": ["SUPPORTED", "REFUTED", "INSUFFICIENT"]}, "minItems": 1},
+        "coverage_target": {"type": "number", "minimum": 0, "maximum": 1},
+        "is_singleton": {"type": "boolean"}
+      }
+    },
+    "EAVAction": {
+      "type": "object",
+      "required": ["action_id", "action_type", "description", "pre_conformal_set", "productive"],
+      "properties": {
+        "action_id": {"type": "string", "format": "uuid"},
+        "action_type": {"type": "string", "enum": ["clarify", "retrieve"]},
+        "description": {"type": "string"},
+        "pre_conformal_set": {"type": "array", "items": {"type": "string", "enum": ["SUPPORTED", "REFUTED", "INSUFFICIENT"]}},
+        "post_conformal_set": {"type": "array", "items": {"type": "string", "enum": ["SUPPORTED", "REFUTED", "INSUFFICIENT"]}},
+        "productive": {"type": "boolean"}
+      }
+    }
+  }
+}

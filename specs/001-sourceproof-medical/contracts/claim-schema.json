@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Claim",
+  "description": "An atomic medically material statement with citation references and verifier output.",
+  "type": "object",
+  "required": ["claim_id", "text", "citation_ids", "verifier_output"],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this claim."
+    },
+    "text": {
+      "type": "string",
+      "description": "The claim text."
+    },
+    "citation_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "description": "References to chunk_ids in the EvidencePacket."
+    },
+    "verifier_output": {
+      "$ref": "#/definitions/VerifierResult",
+      "description": "Result of the three-way claim-evidence verifier."
+    }
+  },
+  "definitions": {
+    "VerifierResult": {
+      "type": "object",
+      "required": ["claim_id", "predicted_label", "probabilities", "calibrated", "conformal_set", "coverage_target", "calibration_id"],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "predicted_label": {
+          "type": "string",
+          "enum": ["SUPPORTED", "REFUTED", "INSUFFICIENT"],
+          "description": "The predicted verdict."
+        },
+        "probabilities": {
+          "type": "object",
+          "description": "Calibrated probabilities for each verdict.",
+          "required": ["SUPPORTED", "REFUTED", "INSUFFICIENT"],
+          "properties": {
+            "SUPPORTED": {"type": "number", "minimum": 0, "maximum": 1},
+            "REFUTED": {"type": "number", "minimum": 0, "maximum": 1},
+            "INSUFFICIENT": {"type": "number", "minimum": 0, "maximum": 1}
+          },
+          "additionalProperties": false
+        },
+        "calibrated": {
+          "type": "boolean",
+          "description": "Whether probabilities have been calibrated."
+        },
+        "conformal_set": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["SUPPORTED", "REFUTED", "INSUFFICIENT"]},
+          "minItems": 1,
+          "description": "The conformal prediction set."
+        },
+        "coverage_target": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Target coverage level (e.g., 0.90 for 90%)."
+        },
+        "calibration_id": {
+          "type": "string",
+          "description": "Reference to the CalibrationArtifact."
+        }
+      }
+    }
+  }
+}
