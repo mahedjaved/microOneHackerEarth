@@ -1,0 +1,3 @@
+# spec-driven development toolkit — https://github.com/github/spec-kit
+# Requires Python 3.11+. Create venv with: uv venv --python 3.11 .venv
+specify-cli @ git+https://github.com/github/spec-kit.git@241eaca090655b9fb4349696b1d619e78bd16db9
