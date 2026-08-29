@@ -6,6 +6,7 @@ For C0: uses 3-dim features (cosine_sim, l2_dist, word_overlap).
 For A0: upgrade to fine-tuned biomedical NLI model if data permits.
 """
 
+import uuid
 import numpy as np
 from typing import Optional, List, Dict
 from sklearn.ensemble import RandomForestClassifier
@@ -49,13 +50,14 @@ class ThreeWayVerifier:
         self.embedding_model = embedding_model
         if model_path:
             self.pipeline = load(model_path)
+            self.is_trained = True
         else:
             rf = RandomForestClassifier(n_estimators=200, max_depth=None, random_state=42, n_jobs=-1)
             self.pipeline = Pipeline([
                 ("scaler", StandardScaler()),
                 ("classifier", CalibratedClassifierCV(rf, method="isotonic", cv=3)),
             ])
-        self.is_trained = False
+            self.is_trained = False
 
     def train(self, X: np.ndarray, y: np.ndarray):
         """Train the verifier on labeled claim-evidence pairs."""
@@ -69,7 +71,7 @@ class ThreeWayVerifier:
         if self.embedding_model is None:
             raise RuntimeError("Embedding model must be provided for predict_text")
 
-        claim_id_placeholder = None
+        claim_id_placeholder = uuid.uuid4()
         X = _compute_embedding_features(claim_text, evidence_text, self.embedding_model).reshape(1, -1)
         probabilities = self.pipeline.predict_proba(X)[0]
 

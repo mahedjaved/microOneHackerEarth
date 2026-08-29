@@ -36,8 +36,8 @@ _EMERGENCY_PATTERNS = [
 ]
 
 _DIAGNOSIS_PATTERNS = [
-    r"\bdo I have\b",
-    r"\bam I having\b",
+    r"\bdo i have\b",
+    r"\bam i having\b",
     r"\bis this\b.*\bcancer\b",
     r"\bdiagnose\b",
     r"\bdiagnosis\b",
@@ -47,7 +47,7 @@ _PRESCRIPTION_PATTERNS = [
     r"\bprescribe\b",
     r"\bprescription\b",
     r"\bdosage for me\b",
-    r"\bhow much should I take\b",
+    r"\bhow much should i take\b",
 ]
 
 _PATIENT_RISK_PATTERNS = [

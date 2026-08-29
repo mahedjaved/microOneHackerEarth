@@ -5,6 +5,7 @@ Deterministic policy that decides whether one bounded action
 (clarify or retrieve) is likely to collapse an ambiguous conformal set.
 """
 
+import uuid
 from typing import Literal
 from server.schemas import Verdict, EAVAction, EAVActionType, EvidenceFeatureVector
 
@@ -58,6 +59,7 @@ class EAVController:
             productive = len(post_set) == 1 or post_set == [Verdict.INSUFFICIENT]
 
         return EAVAction(
+            action_id=uuid.uuid4(),
             action_type=action_type,
             description=f"EAV action: {action_type.value}",
             pre_conformal_set=pre_set,
