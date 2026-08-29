@@ -30,7 +30,7 @@
 **Purpose**: Project initialization and basic structure
 
 - [X] T001 Create frontend requirements.txt with Streamlit and requests dependencies in frontend/requirements.txt
-- [ ] T002 Verify backend API endpoints are accessible (health, upload_pdfs, ask) per contracts/api-contracts.md
+- [X] T002 Verify backend API endpoints are accessible (health, upload_pdfs, ask) per contracts/api-contracts.md
 - [X] T003 [P] Create frontend/.env.example with API_URL placeholder
 
 **Checkpoint**: Frontend dependencies installed and backend API reachable
@@ -140,8 +140,8 @@
 - [X] T024 [P] Update frontend/requirements.txt with exact versions in frontend/requirements.txt
 - [X] T025 [P] Add loading states and spinners for backend processing in frontend/components/chatUI.py
 - [X] T026 [P] Add retry logic for transient backend errors in frontend/utils.py
-- [ ] T027 Verify quickstart.md validation scenarios pass in quickstart.md
-- [ ] T028 Run full UAT and fix any failures in frontend/uat_test.py
+- [X] T027 Verify quickstart.md validation scenarios pass in quickstart.md
+- [X] T028 Run full UAT and fix any failures in frontend/uat_test.py
 
 ---
 

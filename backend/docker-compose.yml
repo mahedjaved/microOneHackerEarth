@@ -43,6 +43,7 @@ services:
       - .env
     volumes:
       - hf_cache:/root/.cache/huggingface
+      - ../data:/data
     depends_on:
       - qdrant
       - postgres
@@ -52,8 +53,8 @@ services:
 # The Client
   client:
     build:
-      context: .
-      dockerfile: client/Dockerfile
+      context: ..
+      dockerfile: frontend/Dockerfile
     ports:
       - "8501:8501"
     environment:

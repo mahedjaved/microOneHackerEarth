@@ -22,9 +22,11 @@ RUN apt-get update && apt-get install -y curl && \
 # It copies only the installed Python packages from the builder stage into this final stage - we get all the dependancies without any of the build tools that were used to compile them
 COPY --from=builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONPATH=/root/.local/lib/python3.13/site-packages:$PYTHONPATH
 WORKDIR /api
 COPY . .
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl --fail http://localhost:8000/health || exit 1
+RUN python -m spacy download en_core_web_md
 CMD ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "8000"]
