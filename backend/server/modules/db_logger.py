@@ -1,5 +1,5 @@
 import asyncpg
-from ..config import settings
+from server.config import settings
 
 connection_pool = None
 
@@ -79,3 +79,4 @@ def estimate_tokens_and_cost(query: str, answer: str) -> tuple:
     estimated_output_tokens = len(answer) / 4
     estimated_cost = (estimated_input_tokens / 1_000_000 * 0.59) + (estimated_output_tokens / 1_000_000 * 0.79) 
     return estimated_input_tokens, estimated_output_tokens, estimated_cost  
+

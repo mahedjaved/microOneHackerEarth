@@ -8,43 +8,47 @@ import re
 import hashlib
 
 from fastapi import HTTPException
-from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
-from presidio_analyzer import RecognizerResult
-from presidio_anonymizer import AnonymizerEngine
-from presidio_anonymizer.entities import OperatorConfig
-from .pii_recognizers import (
-    PatientIdRecognizer,
-    InsuranceIdRecognizer,
-    PharmacyIdRecognizer,
-    CustomMedicalLicenseRecognizer,
-)
-from ..config import settings
-from ..logger import logger
-from ..modules.db_logger import log_pii_redaction
-import spacy
+from server.config import settings
+from server.logger import logger
+from server.modules.db_logger import log_pii_redaction
 
-# load the spACy model for English language
-nlp = spacy.load("en_core_web_md")
+try:
+    from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
+    from presidio_analyzer import RecognizerResult
+    from presidio_anonymizer import AnonymizerEngine
+    from presidio_anonymizer.entities import OperatorConfig
+    from .pii_recognizers import (
+        PatientIdRecognizer,
+        InsuranceIdRecognizer,
+        PharmacyIdRecognizer,
+        CustomMedicalLicenseRecognizer,
+    )
+    import spacy
 
-# set registry
-registry = RecognizerRegistry(
-    global_regex_flags=(re.DOTALL | re.MULTILINE | re.IGNORECASE)
-)
+    _PII_AVAILABLE = True
+except ImportError:
+    _PII_AVAILABLE = False
+    AnalyzerEngine = None
+    RecognizerRegistry = None
+    AnonymizerEngine = None
 
-# load the predefined recognizers and add custom recognizers to the registry
-registry.load_predefined_recognizers()
-registry.add_recognizer(PatientIdRecognizer())
-registry.add_recognizer(InsuranceIdRecognizer())
-registry.add_recognizer(PharmacyIdRecognizer())
-registry.add_recognizer(CustomMedicalLicenseRecognizer())
+if _PII_AVAILABLE:
+    nlp = spacy.load("en_core_web_md")
 
-# instantiate analyzer engine and pass the registry
-analyzer = AnalyzerEngine(registry=registry)
+    registry = RecognizerRegistry(
+        global_regex_flags=(re.DOTALL | re.MULTILINE | re.IGNORECASE)
+    )
 
-# instantiate anonymizer engine
-anonymizer = AnonymizerEngine()
+    registry.load_predefined_recognizers()
+    registry.add_recognizer(PatientIdRecognizer())
+    registry.add_recognizer(InsuranceIdRecognizer())
+    registry.add_recognizer(PharmacyIdRecognizer())
+    registry.add_recognizer(CustomMedicalLicenseRecognizer())
 
-CUSTOM_ENTITIES = ["PATIENT_ID", "INSURANCE_ID", "PHARMACY_ID", "MEDICAL_LICENSE"]
+    analyzer = AnalyzerEngine(registry=registry)
+    anonymizer = AnonymizerEngine()
+
+    CUSTOM_ENTITIES = ["PATIENT_ID", "INSURANCE_ID", "PHARMACY_ID", "MEDICAL_LICENSE"]
 
 
 # function to detect and redact PII in the input text
@@ -58,6 +62,10 @@ async def detect_and_redact(text: str) -> str:
     Returns:
         str: The redacted text with PII replaced according to settings.
     """
+    if not _PII_AVAILABLE:
+        logger.info("PII detection unavailable (presidio not installed). Returning original text.")
+        return text
+
     # guard for enabled detection and redaction settings
     if not settings.pii_detection_enabled:
         logger.info("PII detection is disabled. Returning original text.")
@@ -123,3 +131,4 @@ async def detect_and_redact(text: str) -> str:
                 logger.exception(f"Failed to log PII redaction: {e}")
 
     return redacted_text.text
+

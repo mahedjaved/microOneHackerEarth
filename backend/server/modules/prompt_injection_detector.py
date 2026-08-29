@@ -4,8 +4,8 @@ from typing import Optional
 
 from fastapi import HTTPException
 
-from ..config import settings
-from ..logger import logger
+from server.config import settings
+from server.logger import logger
 
 
 # Patterns are checked case-insensitively against the user query.
@@ -65,3 +65,4 @@ def validate_query(query: str) -> None:
             status_code=422,
             detail="Your query was flagged as potentially unsafe. Please rephrase your query.",
         )
+

@@ -1,0 +1,7 @@
+{
+  "quantile": 0.0,
+  "alpha": 0.1,
+  "method": "LAC",
+  "calib_size": 300,
+  "train_size": 1200
+}

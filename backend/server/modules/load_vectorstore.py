@@ -5,8 +5,8 @@ from pinecone import Pinecone, ServerlessSpec
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-from ..logger import logger
-from ..config import settings
+from server.logger import logger
+from server.config import settings
 
 
 PINECONE_API_KEY = settings.pinecone_api_key
@@ -15,36 +15,37 @@ PINECONE_INDEX_NAME = settings.pinecone_index_name
 RELAXATION_TIME = settings.relaxation_time
 
 UPLOAD_DIR = settings.uploaded_docs_dir
-# os.makedirs(UPLOAD_DIR, exist_ok=True)
 Path(UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
 
-# Initialise pinceone instance (we can only make unique indexes)
-pinecone = Pinecone(api_key=PINECONE_API_KEY)
-serverless_spec = ServerlessSpec(
-    cloud="aws",
-    region=PINECONE_ENV,
-)
+pinecone = None
+index = None
+embedding_model = None
 
-# Check if the index already exists, if not create it
-existing_indexes = pinecone.list_indexes().names()
-if PINECONE_INDEX_NAME not in existing_indexes:
-    print(f"Creating Pinecone index: {PINECONE_INDEX_NAME}")
-    pinecone.create_index(
-        name=PINECONE_INDEX_NAME,
-        dimension=768,
-        metric="dotproduct",
-        spec=serverless_spec,
+try:
+    pinecone = Pinecone(api_key=PINECONE_API_KEY)
+    serverless_spec = ServerlessSpec(
+        cloud="aws",
+        region=PINECONE_ENV,
     )
 
-    # Relaxation time while index is being created
-    while not pinecone.describe_index(PINECONE_INDEX_NAME).status["ready"]:
-        print("Waiting for Pinecone index to be ready...")
-        time.sleep(RELAXATION_TIME)
+    existing_indexes = pinecone.list_indexes().names()
+    if PINECONE_INDEX_NAME not in existing_indexes:
+        print(f"Creating Pinecone index: {PINECONE_INDEX_NAME}")
+        pinecone.create_index(
+            name=PINECONE_INDEX_NAME,
+            dimension=768,
+            metric="dotproduct",
+            spec=serverless_spec,
+        )
 
-# Provide index
-index = pinecone.Index(name=PINECONE_INDEX_NAME)
+        while not pinecone.describe_index(PINECONE_INDEX_NAME).status["ready"]:
+            print("Waiting for Pinecone index to be ready...")
+            time.sleep(RELAXATION_TIME)
 
-embedding_model = HuggingFaceEmbeddings(model_name="all-mpnet-base-v2")
+    index = pinecone.Index(name=PINECONE_INDEX_NAME)
+    embedding_model = HuggingFaceEmbeddings(model_name="all-mpnet-base-v2")
+except Exception as e:
+    logger.warning(f"Pinecone not available: {e}. Vector store features disabled.")
 
 
 # Load, split, embed and upsert pdf document content
@@ -90,3 +91,4 @@ def load_vectorstore(uploaded_files):
         logger.info(
             f"Finished upserting {len(embeddings)} chunks for file: {file_path}"
         )
+
