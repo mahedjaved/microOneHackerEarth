@@ -145,6 +145,19 @@
 
 ---
 
+## Phase 9: Convergence
+
+**Purpose**: Remaining work identified by assessing the codebase against spec.md, plan.md, and tasks.md.
+
+- [X] T029 Add PII redaction to downloaded artifacts per FR-008 (missing)
+- [X] T030 Track emergency state and remind on subsequent questions per US3/AC3 (missing)
+- [X] T031 Add timestamp and unique run artifact ID to downloads per US4/AC3 (partial)
+- [X] T032 Add file size validation (50MB limit) before upload per FR-012 (partial)
+- [X] T033 Add empty question validation per Edge Cases (missing)
+- [X] T034 Render uncertainty causes and actions separately per FR-009 (partial)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
