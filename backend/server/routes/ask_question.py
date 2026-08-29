@@ -50,7 +50,7 @@ async def ask_question(request: Request, question: str = Form(...)):
         raise HTTPException(status_code=422, detail=str(e))
 
     if settings.prompt_injection_detection_enabled:
-        from modules.prompt_injection_detector import validate_query
+        from ..modules.prompt_injection_detector import validate_query
         validate_query(validated.question)
 
     # redact PII if enabled
