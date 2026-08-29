@@ -2,14 +2,13 @@ import time
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Form, HTTPException, Request
 
-from ..schemas import QuestionRequest, QuestionResponse
+from ..schemas import QuestionRequest, QuestionResponse, ExtendedQuestionResponse
 
 from ..modules.rate_limiter import limiter
 
 from ..modules.llm import get_llm_chain
 from ..modules.db_logger import log_query, estimate_tokens_and_cost
 
-# from modules.load_vectorstore import load_vectorstore, PINECONE_INDEX_NAME
 from ..modules.load_vectorstore import (
     load_vectorstore,
     embedding_model,
@@ -27,7 +26,6 @@ from ..modules.metrics import (
     active_requests,
 )
 
-# redaction modules
 from ..modules.pii_detector import detect_and_redact
 
 from langchain_core.documents import Document
@@ -35,14 +33,15 @@ from langchain_core.retrievers import BaseRetriever
 
 from pinecone import Pinecone
 from pydantic import Field
-
 from typing import List, Optional
+
 from ..logger import logger
 from ..config import settings
 
 router = APIRouter()
 
-@router.post("/ask/", response_model=QuestionResponse)
+
+@router.post("/ask/", response_model=ExtendedQuestionResponse)
 @limiter.limit("10/minute")
 async def ask_question(request: Request, question: str = Form(...)):
     try:
@@ -68,7 +67,8 @@ async def ask_question(request: Request, question: str = Form(...)):
 
     try:
         logger.info(f"Received question: {validated.question}")
-        # index the vectorstore
+
+        # RETRIEVAL: existing Pinecone pipeline
         pc = Pinecone(
             api_key=settings.pinecone_api_key,
         )
@@ -76,10 +76,9 @@ async def ask_question(request: Request, question: str = Form(...)):
         embedding_query = embedding_model.embed_query(validated.question)
         response = index.query(
             vector=embedding_query,
-            top_k=3,  # top 3 relevant chunks
+            top_k=3,
             include_metadata=True,
         )
-        # Retrieve the docs
         docs = [
             Document(
                 page_content=match["metadata"].get("text", ""),
@@ -105,84 +104,110 @@ async def ask_question(request: Request, question: str = Form(...)):
                 return self._docs
 
         retriever = SimpleRetriever(docs)
-        llm_chain = get_llm_chain(retriever)
-        tracer = None  # Initialize tracer variable
-        request_error = None
 
-        try:
-            # setup langsmith tracing
-            tracer = configure_langsmith_tracing(
-                "med-rag-assistant",
-                inputs={"question": validated.question},
-                tags=["RAG", "medrag-assistant"],
+        # BUILD EVIDENCE PACKET from retrieval results
+        from ..modules.corpus.loader import build_evidence_packet
+        from ..schemas import Passage
+
+        passages = [
+            Passage(
+                chunk_id=match["metadata"].get("chunk_id", match["id"]),
+                document_id=match["metadata"].get("source", "unknown"),
+                document_version=match["metadata"].get("version", "v1"),
+                page_location=match["metadata"].get("page", ""),
+                text=match["metadata"].get("text", ""),
+                provenance_hash="",
             )
-
-        except Exception as e:
-            request_error = e
-            errors.labels(method="POST", endpoint="/ask/", status_code=500).inc()
-            logger.exception(f"Error setting up langsmith tracing: {e}")
-
-        query_start = time.time()
-
-        try:
-            result = llm_chain.invoke({"query": validated.question})
-            query_latency.labels(method="POST", endpoint="/ask/").observe(
-                time.time() - query_start
-            )
-        except Exception as e:
-            request_error = e
-            raise
-
-        finally:
-            if tracer is not None:
-                end_langsmith_run(
-                    tracer,
-                    outputs={"result": result["result"]} if "result" in locals() and result is not None else {},
-                    error=request_error,
-                )
-
-        # update Prometheus metrics
-        request_count.labels(method="POST", endpoint="/ask/", status_code=200).inc()
-        token_usage.labels(method="POST", endpoint="/ask/").inc(
-            len(result["result"].split())
-        )
-        chunk_count.labels(method="POST", endpoint="/ask/").inc(len(docs))
-        request_latency.labels(method="POST", endpoint="/ask/").observe(
-            time.time() - req_start_time
-        )
-
-        logger.info(f"Generated answer: {result['result'][0:100]}")
-
-        # estimate tokens and cost
-        estimated_input_tokens, estimated_output_tokens, estimated_cost = (
-            estimate_tokens_and_cost(validated.question, result["result"])
-        )
-
-        # log the query, answer, sources and token costs to the database
-        await log_query(
-            query=validated.question,
-            answer=result["result"],
-            sources=[doc.metadata.get("source", "Unknown") for doc in docs],
-            estimated_input_tokens=estimated_input_tokens,
-            estimated_output_tokens=estimated_output_tokens,
-            estimated_cost=estimated_cost,
-        )
-
-        sources = [
-            doc.metadata.get("source", "Unknown")
-            for doc in docs
+            for match in response["matches"]
         ]
 
-        return QuestionResponse(
-            response=result["result"],
-            sources=sources,
-            pii_redacted=pii_redacted,
+        evidence_packet = build_evidence_packet(
+            corpus_id="medical-corpus-v1",
+            corpus_hash="",
+            retrieval_query=validated.question,
+            passages=passages,
+            retriever_version="pinecone-v1",
+            latency_ms=0,
         )
 
-        # return QuestionResponse(
-        #     response=result["result"],
-        #     sources=[doc.metadata.get("source", "Unknown") for doc in docs],
-        # ).model_dump()
+        # UQ PIPELINE: inserted after retrieval, before RAG chain (Q6)
+        try:
+            from ..modules.query_handlers import run_uq_pipeline
+            uq_response, run_artifact = run_uq_pipeline(
+                question=validated.question,
+                evidence_packet=evidence_packet,
+            )
+
+            # Record run artifact to database
+            await log_query(
+                query=validated.question,
+                answer=uq_response.response or "",
+                sources=uq_response.sources,
+                estimated_input_tokens=0,
+                estimated_output_tokens=0,
+                estimated_cost=0.0,
+            )
+
+            return ExtendedQuestionResponse(
+                response=uq_response.response,
+                sources=uq_response.sources,
+                disclaimer=uq_response.disclaimer,
+                injection_detected=False,
+                pii_redacted=pii_redacted,
+                doubt_certificate=uq_response.doubt_certificate,
+                run_artifact_id=uq_response.run_artifact_id,
+            )
+
+        except Exception as uq_error:
+            logger.warning(f"UQ pipeline failed, falling back to baseline RAG: {uq_error}")
+            # Fallback to existing RAG chain if UQ pipeline fails
+            llm_chain = get_llm_chain(retriever)
+
+            tracer = None
+            request_error = None
+
+            try:
+                tracer = configure_langsmith_tracing(
+                    "med-rag-assistant",
+                    inputs={"question": validated.question},
+                    tags=["RAG", "medrag-assistant"],
+                )
+            except Exception as e:
+                request_error = e
+                errors.labels(method="POST", endpoint="/ask/", status_code=500).inc()
+                logger.exception(f"Error setting up langsmith tracing: {e}")
+
+            query_start = time.time()
+
+            try:
+                result = llm_chain.invoke({"query": validated.question})
+                query_latency.labels(method="POST", endpoint="/ask/").observe(
+                    time.time() - query_start
+                )
+            except Exception as e:
+                request_error = e
+                raise
+            finally:
+                if tracer is not None:
+                    end_langsmith_run(
+                        tracer,
+                        outputs={"result": result["result"]} if "result" in locals() and result is not None else {},
+                        error=request_error,
+                    )
+
+            sources = [
+                doc.metadata.get("source", "Unknown") for doc in docs
+            ]
+
+            return ExtendedQuestionResponse(
+                response=result["result"],
+                sources=sources,
+                disclaimer=settings.medical_disclaimer,
+                injection_detected=False,
+                pii_redacted=pii_redacted,
+                doubt_certificate=None,
+                run_artifact_id=None,
+            )
 
     except Exception as e:
         logger.exception(f"Error processing question: {e}")

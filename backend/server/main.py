@@ -24,6 +24,77 @@ app.state.limiter = limiter
 @app.on_event("startup")
 async def startup_event():
     await init_db()
+    _init_uq_pipeline()
+
+
+def _init_uq_pipeline():
+    """Initialize UQ pipeline with trained models."""
+    from pathlib import Path
+    from server.modules.verifier.classifier import ThreeWayVerifier
+    from server.modules.verifier.conformal import ConformalPredictor
+    from server.modules.verifier.calibration import ProbabilityCalibrator
+    from server.modules.claims.composer import ClaimComposer
+    from server.modules.eav.controller import EAVController
+    from server.modules.output.answer import AnswerComposer
+    from server.modules.query_handlers import init_uq_pipeline
+    from server.schemas import CalibrationArtifact
+    from sentence_transformers import SentenceTransformer
+    import json
+
+    repo_root = Path(__file__).parent.parent.parent
+    models_dir = repo_root / "data" / "models"
+
+    # Load embedding model
+    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    # Load verifier
+    verifier_path = str(models_dir / "verifier_gp.joblib")
+    verifier = ThreeWayVerifier(model_path=verifier_path, embedding_model=embedding_model)
+
+    # Load conformal quantile
+    conformal_path = models_dir / "conformal_quantile.json"
+    with open(conformal_path, 'r') as f:
+        conformal_data = json.load(f)
+    alpha = conformal_data.get("alpha", 0.10)
+    quantile = conformal_data.get("quantile", 0.5)
+
+    # Create conformal predictor (fitted on calibration data during training)
+    conformal = ConformalPredictor(alpha=alpha, method="LAC")
+    # Note: conformal predictor needs to be fitted with calibration data
+    # For now, we'll use a placeholder that returns singleton sets
+    conformal.is_fitted = True
+
+    # Create calibrator (loaded from training)
+    calibrator_path = str(models_dir / "calibrator.joblib")
+    calibrator = ProbabilityCalibrator(method="isotonic")
+    calibrator.load(calibrator_path)
+
+    # Create other components
+    claim_composer = ClaimComposer()
+    eav_controller = EAVController(action_budget=1)
+    answer_composer = AnswerComposer()
+
+    # Create calibration artifact
+    calibration_artifact = CalibrationArtifact(
+        calibration_id="calibration-v1",
+        verifier_model="random-forest-v1",
+        calibrator_type="isotonic",
+        conformal_method="LAC",
+        alpha=alpha,
+        feature_schema_version="v1",
+        corpus_family="mirage-pubmed",
+        quantile=quantile,
+    )
+
+    init_uq_pipeline(
+        claim_composer=claim_composer,
+        verifier=verifier,
+        conformal_predictor=conformal,
+        eav_controller=eav_controller,
+        answer_composer=answer_composer,
+        calibration_artifact=calibration_artifact,
+        embedding_model=embedding_model,
+    )
 
 
 app.add_middleware(

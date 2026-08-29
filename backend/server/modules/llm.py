@@ -1,4 +1,4 @@
-from ..config import settings
+from server.config import settings
 from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQA
 
@@ -16,3 +16,4 @@ def get_llm_chain(retriever):
         return_source_documents=True,
     )
     return chain
+

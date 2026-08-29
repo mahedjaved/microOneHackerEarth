@@ -1,0 +1,24 @@
+{
+  "model_path": "D:\\PROJECTS\\CLAUDE_CLI_AGENTS\\HACKER_EARTH\\HACKATHONS\\microOneHackerEarth\\data\\models\\verifier_gp.joblib",
+  "calibrator_path": "D:\\PROJECTS\\CLAUDE_CLI_AGENTS\\HACKER_EARTH\\HACKATHONS\\microOneHackerEarth\\data\\models\\calibrator.joblib",
+  "conformal_path": "D:\\PROJECTS\\CLAUDE_CLI_AGENTS\\HACKER_EARTH\\HACKATHONS\\microOneHackerEarth\\data\\models\\conformal_quantile.json",
+  "train_size": 1200,
+  "calib_size": 300,
+  "val_size": 300,
+  "test_size": 200,
+  "test_accuracy": 1.0,
+  "label_distribution": {
+    "SUPPORTED": 1000,
+    "INSUFFICIENT": 1000
+  },
+  "embedding_model": "all-MiniLM-L6-v2",
+  "feature_dim": 3,
+  "feature_type": "cosine_l2_overlap_3",
+  "description": "3-dim features: cosine_sim, l2_dist, word_overlap",
+  "classifier": "RandomForest",
+  "classification_type": "binary",
+  "classes": [
+    "SUPPORTED",
+    "INSUFFICIENT"
+  ]
+}
