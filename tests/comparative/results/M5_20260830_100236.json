@@ -1,0 +1,110 @@
+{
+  "test_case": {
+    "id": "M5",
+    "question": "How should aspirin dosage be calculated for elderly patients?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "lower",
+      "caution",
+      "kidney",
+      "dose"
+    ],
+    "expected_behavior": "answer_with_citation",
+    "should_have_citation": true
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": "I\u2019m sorry, but I don\u2019t have information on how aspirin dosage should be calculated specifically for elderly patients.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf"
+        ],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": null,
+        "run_artifact_id": null
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "The information you provided gives the standard adult dosing of aspirin (325\u202f\u2013\u202f650\u202fmg every 4\u202fhours as needed, not exceeding 4\u202fg in 24\u202fhours) but does not include any specific guidance for dosing in elderly patients.  \n\nBecause older adults often have a higher risk of aspirin\u2011related side effects (especially gastrointestinal bleeding) and may have age\u2011related changes in kidney or liver function, clinicians typically adjust the dose on an individual basis\u2014often using the lowest effective dose and monitoring closely.\n\n**In short:** The context does not contain enough detail to specify how aspirin dosage should be calculated for elderly patients. For an appropriate regimen, a healthcare provider should assess the individual\u2019s age, weight, comorbidities, concomitant medications, and organ function before determining the dose.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "emergency": false,
+        "retrieval_scores": [
+          0.692326546,
+          0.536328375,
+          0.473189354,
+          0.216891289,
+          0.211811081
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "**General guidance on aspirin dosing in older adults**\n\n> **Important:** The information below is for educational purposes only. It is **not** a substitute for personalized medical advice. Always discuss any medication changes with a qualified health\u2011care professional who knows the patient\u2019s full medical history, current medications, and laboratory results.\n\n---\n\n## 1. Why dosing is different in the elderly\n\n| Factor | How it influences aspirin use |\n|--------|------------------------------|\n| **Increased bleeding risk** (especially gastrointestinal) | Lower doses are usually preferred to minimize the chance of serious bleeding. |\n| **Changes in kidney and liver function** | May affect drug clearance; dose reductions may be needed. |\n| **Polypharmacy** (common in older adults) | Higher chance of drug\u2011drug interactions (e.g., with anticoagulants, NSAIDs, SSRIs). |\n| **Body weight & frailty** | Smaller body mass can make standard adult doses relatively higher on a per\u2011kg basis. |\n| **Comorbidities** (e.g., peptic ulcer disease, heart failure, diabetes) | Influence both the indication for aspirin and the safe dose. |\n\n---\n\n## 2. Typical aspirin doses used in older adults\n\n| Indication | Common dose range* | Typical dosing schedule |\n|------------|-------------------|--------------------------|\n| **Primary or secondary cardiovascular prevention** (e.g., after myocardial infarction, stroke, or for high\u2011risk atherosclerosis) | **Low\u2011dose (often called \u201cbaby\u2011aspirin\u201d)**: 75\u202fmg \u2013 100\u202fmg daily (most U.S. clinicians use 81\u202fmg). | Once daily, preferably with food to reduce GI irritation. |\n| **Pain, fever, or inflammation** (e.g., osteoarthritis, headache) | **Standard adult dose**: 325\u202fmg \u2013 650\u202fmg every 4\u20136\u202fhours as needed, **not exceeding 3\u202fg\u20134\u202fg per day**. | In the elderly, many clinicians start at the **lower end** (325\u202fmg) and may limit total daily dose to \u22642\u202fg, especially if the patient has GI risk factors. |\n| **Acute coronary syndrome (ACS) or after percutaneous coronary intervention (PCI)** | **Loading dose**: 162\u202fmg\u2013325\u202fmg chewed or swallowed whole, followed by 81\u202fmg\u2013162\u202fmg daily. | Loading dose is given under medical supervision; maintenance dose is low\u2011dose. |\n| **Antiplatelet therapy after certain surgeries (e.g., carotid endarterectomy)** | Usually **75\u202fmg\u2013100\u202fmg** daily, sometimes higher for a short period under specialist guidance. | As directed by the surgeon or cardiologist. |\n\n\\*These are **general ranges**; the exact dose should be individualized.\n\n---\n\n## 3. Practical steps for calculating a safe dose\n\n1. **Identify the indication**  \n   - *Prevention* \u2192 low\u2011dose (75\u2013100\u202fmg).  \n   - *Analgesia/anti\u2011inflammatory* \u2192 standard dose, but start low.\n\n2. **Check for contraindications or cautions**  \n   - Active peptic ulcer, recent GI bleed, uncontrolled hypertension, severe liver disease, or concurrent anticoagulant therapy often **preclude aspirin** or demand a very low dose.\n\n3. **Assess renal and hepatic function** (creatinine clearance, AST/ALT). If markedly reduced, the clinician may prefer the lowest effective dose.\n\n4. **Consider body weight** (especially <50\u202fkg). Some clinicians use a weight\u2011based approach for analgesic dosing (\u22485\u202fmg/kg per dose, not to exceed 2\u202fg/day).\n\n5. **Review other medications** for interactions (e.g., clopidogrel, warfarin, DOACs, NSAIDs, SSRIs, corticosteroids). If a high\u2011risk interaction exists, the prescriber may:\n   - Choose an alternative antiplatelet,\n   - Use gastro\u2011protective agents (PPIs),\n   - Reduce aspirin dose further.\n\n6. **Add gastro\u2011protection if needed**  \n   - For most elderly patients on daily aspirin, a proton\u2011pump inhibitor (e.g., omeprazole 20\u202fmg daily) is often recommended to lower the risk of ulcer bleeding.\n\n7. **Re\u2011evaluate regularly** (every 6\u201312\u202fmonths or sooner if symptoms change) to see if the dose is still appropriate.\n\n---\n\n## 4. Example calculations\n\n| Scenario | Patient details | Recommended aspirin dose (example) |\n|----------|----------------|------------------------------------|\n| **Primary prevention** | 78\u202fy, 68\u202fkg, hypertension, no prior GI bleed | 81\u202fmg once daily (low\u2011dose) with a PPI. |\n| **Pain control** | 82\u202fy, 55\u202fkg, osteoarthritis, mild chronic kidney disease (eGFR\u202f\u2248\u202f55\u202fmL/min) | 325\u202fmg every 6\u202fh as needed, **max 1.3\u202fg per day** (\u2248 6\u202fmg/kg per dose). |\n| **Post\u2011MI secondary prevention** | 71\u202fy, 80\u202fkg, on clopidogrel | 81\u202fmg daily (dual antiplatelet therapy) plus PPI; avoid higher aspirin doses because of bleeding risk. |\n| **Acute coronary syndrome** (in\u2011hospital) | 76\u202fy, 72\u202fkg, presenting with STEMI | 162\u202fmg chewable loading dose, then 81\u202fmg daily thereafter (under cardiology supervision). |\n\n---\n\n## 5. Red flags that require immediate medical attention\n\n- New or worsening gastrointestinal bleeding (black/tarry stools, vomiting blood).  \n- Unexplained bruising or prolonged bleeding from cuts.  \n- Sudden severe headache or neurological changes (possible intracranial bleed).  \n- Severe allergic reaction (rash, swelling, difficulty breathing).\n\nIf any of these occur, stop aspirin and seek urgent medical care.\n\n---\n\n## 6. Bottom line checklist for clinicians (and caregivers)\n\n- \u2610 Confirm **indication** for aspirin.  \n- \u2610 Review **contraindications** (active bleed, severe ulcer disease, allergy).  \n- \u2610 Check **renal/hepatic labs** and **body weight**.  \n- \u2610 Choose the **lowest effective dose** (usually 75\u2013100\u202fmg daily for prevention).  \n- \u2610 If using for pain, start at **325\u202fmg** and limit total daily dose (often \u22642\u202fg).  \n- \u2610 Assess **drug interactions** and add a **PPI** if GI risk is moderate\u2011to\u2011high.  \n- \u2610 Provide **patient education** on signs of bleeding.  \n- \u2610 Schedule **follow\u2011up** to reassess need and dose.\n\n---\n\n### References (for further reading)\n\n1. **American College of Cardiology/American Heart Association (ACC/AHA) Guideline on the Primary Prevention of Cardiovascular Disease** \u2013 2022 update.  \n2. **American Geriatrics Society (AGS) Beers Criteria** \u2013 recommendations on NSAID and aspirin use in older adults.  \n3. **European Society of Cardiology (ESC) Guidelines on Antithrombotic Therapy** \u2013 2023.  \n4. **Mayo Clinic \u2013 Aspirin dosage** (patient\u2011focused overview).  \n\n*These sources provide evidence\u2011based dosing ranges and safety considerations, but the final decision must be individualized.*\n\n--- \n\n**If you or someone you care for is considering starting, stopping, or changing an aspirin regimen, please discuss it with a physician or pharmacist who can evaluate the full clinical picture.**",
+        "system": "no_rag"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found",
+        "Has citation"
+      ],
+      "scoring_timestamp": "2026-08-30T10:02:30.347141"
+    },
+    "medrag_baseline": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.5,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['kidney', 'dose']",
+        "Has citation"
+      ],
+      "scoring_timestamp": "2026-08-30T10:02:32.724328"
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 1.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['lower', 'caution', 'kidney', 'dose']",
+        "Missing citation"
+      ],
+      "scoring_timestamp": "2026-08-30T10:02:36.812088"
+    }
+  },
+  "timestamp": "20260830_100236"
+}
