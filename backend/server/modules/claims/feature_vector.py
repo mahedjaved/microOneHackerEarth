@@ -12,6 +12,7 @@ Computes 8-block evidence feature vector for each claim-passage pair:
 8. Optional: grey-box log-probabilities, white-box Feature-Gap directions
 """
 
+import re
 import uuid
 from typing import Optional
 from server.schemas import (

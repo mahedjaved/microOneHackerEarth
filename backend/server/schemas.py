@@ -227,6 +227,13 @@ class UploadResponse(BaseModel):
 class QuestionRequest(BaseModel):
     question: str = Field(min_length=1, max_length=MAX_QUESTION_LENGTH)
 
+    @field_validator("question")
+    @classmethod
+    def question_not_whitespace(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Question cannot be empty or whitespace-only")
+        return v.strip()
+
 
 class QuestionResponse(BaseModel):
     response: str

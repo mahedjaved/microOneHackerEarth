@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     api_port: int = 8000
     log_level: str = "INFO"
     uploaded_docs_dir: str = "./uploaded_docs"
+    medical_disclaimer: str = "This is not medical advice. Consult a healthcare professional."
 
 
      # ── Cache ─────────────────────────────────────────────────────
