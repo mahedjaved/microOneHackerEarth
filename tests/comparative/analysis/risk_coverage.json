@@ -1,0 +1,69 @@
+{
+  "quantile": 0.5,
+  "n_samples": 1000,
+  "curve": [
+    {
+      "alpha": 0.01,
+      "threshold": 0.99,
+      "coverage": 0.017,
+      "risk": 0.983,
+      "avg_set_size": 0.017
+    },
+    {
+      "alpha": 0.05,
+      "threshold": 0.95,
+      "coverage": 0.089,
+      "risk": 0.911,
+      "avg_set_size": 0.089
+    },
+    {
+      "alpha": 0.1,
+      "threshold": 0.9,
+      "coverage": 0.171,
+      "risk": 0.829,
+      "avg_set_size": 0.171
+    },
+    {
+      "alpha": 0.15,
+      "threshold": 0.85,
+      "coverage": 0.224,
+      "risk": 0.776,
+      "avg_set_size": 0.224
+    },
+    {
+      "alpha": 0.2,
+      "threshold": 0.8,
+      "coverage": 0.28,
+      "risk": 0.72,
+      "avg_set_size": 0.28
+    },
+    {
+      "alpha": 0.25,
+      "threshold": 0.75,
+      "coverage": 0.326,
+      "risk": 0.6739999999999999,
+      "avg_set_size": 0.326
+    },
+    {
+      "alpha": 0.3,
+      "threshold": 0.7,
+      "coverage": 0.388,
+      "risk": 0.612,
+      "avg_set_size": 0.388
+    },
+    {
+      "alpha": 0.4,
+      "threshold": 0.6,
+      "coverage": 0.499,
+      "risk": 0.501,
+      "avg_set_size": 0.499
+    },
+    {
+      "alpha": 0.5,
+      "threshold": 0.5,
+      "coverage": 0.609,
+      "risk": 0.391,
+      "avg_set_size": 0.609
+    }
+  ]
+}
