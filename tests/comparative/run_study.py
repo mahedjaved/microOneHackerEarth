@@ -63,8 +63,14 @@ def ask_system(endpoint: str, question: str, timeout: int = 90):
 
             if response.status_code >= 500:
                 wait_time = RETRY_BACKOFF * (2 ** attempt)
+                # Capture error detail for debugging
+                try:
+                    error_detail = response.text[:200]
+                except:
+                    error_detail = "Could not read response body"
                 print(f"    Server error ({response.status_code}), retrying in {wait_time}s...")
-                time.sleep(wait.time()
+                print(f"    Error detail: {error_detail}")
+                time.sleep(wait_time)
                 continue
 
             return response

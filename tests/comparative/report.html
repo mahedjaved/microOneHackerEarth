@@ -90,7 +90,18 @@
 <body>
     <div class="container">
         <h1>UQ-RAG Comparative Study Analysis</h1>
-        <p class="subtitle">Generated: 2026-08-30 22:14:17</p>
+        <p class="subtitle">Generated: 2026-08-30 23:21:36</p>
+
+        
+        <div class="section-title">⚠️ Data Quality Warnings</div>
+        <div class="chart-container" style="border-left: 4px solid #ffc107;">
+            <ul>
+                <li>Uq Rag: 18.8% error rate - some results excluded from averages</li><li>Medrag Baseline: 18.8% error rate - some results excluded from averages</li>
+            </ul>
+            <p><em>High error rates or low sample counts mean the metrics above may not reflect actual system behavior.
+            Fix infrastructure issues and re-run for valid results.</em></p>
+        </div>
+        
 
         <div class="section-title">Calibration Analysis</div>
         <div class="grid">
@@ -136,37 +147,34 @@
                 
                 <tr>
                     <td><strong>Uq Rag</strong></td>
-                    <td>0.033</td>
-                    <td>0.180</td>
-                    <td class="metric-good">0.0%</td>
+                    <td>0.042</td>
+                    <td>0.194</td>
+                    <td class="metric-bad">18.8%</td>
+                    <td>25.0%</td>
                     <td>0.0%</td>
-                    <td>0.0%</td>
-                    <td>0.0%</td>
-                    <td>0.0%</td>
+                    <td><span style='color:#999'>N/A</span></td>
+                    <td><span style='color:#999'>N/A</span></td>
                 </tr>
-                
                 <tr>
                     <td><strong>Medrag Baseline</strong></td>
-                    <td>0.000</td>
-                    <td>0.000</td>
-                    <td class="metric-good">0.0%</td>
-                    <td>0.0%</td>
-                    <td>0.0%</td>
-                    <td>0.0%</td>
-                    <td>0.0%</td>
+                    <td>0.193</td>
+                    <td>0.386</td>
+                    <td class="metric-bad">18.8%</td>
+                    <td>75.0%</td>
+                    <td>87.5%</td>
+                    <td><span style='color:#999'>N/A</span></td>
+                    <td><span style='color:#999'>N/A</span></td>
                 </tr>
-                
                 <tr>
                     <td><strong>No Rag</strong></td>
-                    <td>0.054</td>
-                    <td>0.210</td>
+                    <td>0.208</td>
+                    <td>0.383</td>
                     <td class="metric-good">0.0%</td>
-                    <td>100.0%</td>
-                    <td>0.0%</td>
-                    <td>0.0%</td>
-                    <td>0.0%</td>
+                    <td>77.8%</td>
+                    <td>18.2%</td>
+                    <td><span style='color:#999'>N/A</span></td>
+                    <td><span style='color:#999'>N/A</span></td>
                 </tr>
-                
             </tbody>
         </table>
 
@@ -199,13 +207,13 @@
         new Chart(document.getElementById('rocChart'), {"type": "line", "data": {"labels": ["1.00", "0.97", "0.88", "0.76", "0.64", "0.49", "0.41", "0.30", "0.20", "0.16", "0.11", "0.07", "0.04", "0.02", "0.02", "0.01", "0.00", "0.00", "0.00", "0.00"], "datasets": [{"label": "ROC (AUC=0.966)", "data": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.988, 0.972, 0.96, 0.944, 0.9, 0.872, 0.828, 0.736, 0.632, 0.528, 0.364, 0.236, 0.1, 0.02], "borderColor": "rgb(75, 192, 192)", "tension": 0.1, "fill": false}, {"label": "Random", "data": [1.0, 0.968, 0.884, 0.764, 0.64, 0.488, 0.408, 0.3, 0.204, 0.156, 0.112, 0.068, 0.04, 0.02, 0.016, 0.008, 0.004, 0.0, 0.0, 0.0], "borderColor": "rgb(200, 200, 200)", "borderDash": [5, 5], "tension": 0.1, "fill": false}]}, "options": {"responsive": true, "plugins": {"title": {"display": true, "text": "ROC Curve for Retrieval Threshold"}}, "scales": {"x": {"title": {"display": true, "text": "False Positive Rate"}}, "y": {"title": {"display": true, "text": "True Positive Rate"}}}}});
 
         // System Comparison Radar Chart
-        new Chart(document.getElementById('systemComparisonChart'), {"type": "radar", "data": {"labels": ["Safety Detection", "Doubt Expression", "Citation Rate", "Hallucination Avoidance"], "datasets": [{"label": "uq_rag", "data": [0, 0, 0, 0], "backgroundColor": "rgba(75, 192, 192, 0.7)", "borderColor": "rgba(75, 192, 192, 1)"}, {"label": "medrag_baseline", "data": [0, 0, 0, 0], "backgroundColor": "rgba(255, 99, 132, 0.7)", "borderColor": "rgba(255, 99, 132, 1)"}, {"label": "no_rag", "data": [1.0, 0.0, 0, 0], "backgroundColor": "rgba(54, 162, 235, 0.7)", "borderColor": "rgba(54, 162, 235, 1)"}]}, "options": {"responsive": true, "plugins": {"title": {"display": true, "text": "System Comparison by Metric"}}, "scales": {"r": {"min": 0, "max": 1}}}});
+        new Chart(document.getElementById('systemComparisonChart'), {"type": "radar", "data": {"labels": ["Safety Detection", "Doubt Expression", "Citation Rate", "Hallucination Avoidance"], "datasets": [{"label": "uq_rag", "data": [0.25, 0, 0, 0], "backgroundColor": "rgba(75, 192, 192, 0.7)", "borderColor": "rgba(75, 192, 192, 1)"}, {"label": "medrag_baseline", "data": [0.75, 0.875, 0, 0], "backgroundColor": "rgba(255, 99, 132, 0.7)", "borderColor": "rgba(255, 99, 132, 1)"}, {"label": "no_rag", "data": [0.7777777777777778, 0.18181818181818182, 0, 0], "backgroundColor": "rgba(54, 162, 235, 0.7)", "borderColor": "rgba(54, 162, 235, 1)"}]}, "options": {"responsive": true, "plugins": {"title": {"display": true, "text": "System Comparison by Metric"}}, "scales": {"r": {"min": 0, "max": 1}}}});
 
         // Score Comparison Chart
-        new Chart(document.getElementById('scoreComparisonChart'), {"type": "bar", "data": {"labels": ["Uq Rag", "Medrag Baseline", "No Rag"], "datasets": [{"label": "Mean Score", "data": [0.03333333333333333, 0.0, 0.05416666666666667], "backgroundColor": ["rgba(75, 192, 192, 0.7)", "rgba(255, 99, 132, 0.7)", "rgba(54, 162, 235, 0.7)"]}, {"label": "Error Rate", "data": [0.0, 0.0, 0.0], "backgroundColor": "rgba(200, 200, 200, 0.5)"}]}, "options": {"responsive": true, "plugins": {"title": {"display": true, "text": "Mean Score and Error Rate by System"}}, "scales": {"y": {"min": 0, "max": 1}}}});
+        new Chart(document.getElementById('scoreComparisonChart'), {"type": "bar", "data": {"labels": ["Uq Rag", "Medrag Baseline", "No Rag"], "datasets": [{"label": "Mean Score", "data": [0.041666666666666664, 0.19294871794871796, 0.20798611111111112], "backgroundColor": ["rgba(75, 192, 192, 0.7)", "rgba(255, 99, 132, 0.7)", "rgba(54, 162, 235, 0.7)"]}, {"label": "Error Rate", "data": [0.1875, 0.1875, 0.0], "backgroundColor": "rgba(200, 200, 200, 0.5)"}]}, "options": {"responsive": true, "plugins": {"title": {"display": true, "text": "Mean Score and Error Rate by System"}}, "scales": {"y": {"min": 0, "max": 1}}}});
 
         // Dimension Breakdown Chart
-        new Chart(document.getElementById('dimensionChart'), {"type": "bar", "data": {"labels": ["Accuracy", "Safety", "Calibration", "Hallucination"], "datasets": [{"label": "Uq Rag", "data": [1.0, 0, 0, 0], "backgroundColor": "rgba(75, 192, 192, 0.7)"}, {"label": "Medrag Baseline", "data": [0, 0, 0, 0], "backgroundColor": "rgba(255, 99, 132, 0.7)"}, {"label": "No Rag", "data": [0.5625, 1.0, 0.0, 0.0], "backgroundColor": "rgba(54, 162, 235, 0.7)"}]}, "options": {"responsive": true, "plugins": {"title": {"display": true, "text": "Score by Dimension"}}, "scales": {"y": {"min": 0, "max": 1}}}});
+        new Chart(document.getElementById('dimensionChart'), {"type": "bar", "data": {"labels": ["Accuracy", "Safety", "Calibration", "Hallucination"], "datasets": [{"label": "Uq Rag", "data": [0.28125, 0.25, 0, 0], "backgroundColor": "rgba(75, 192, 192, 0.7)"}, {"label": "Medrag Baseline", "data": [0.8416666666666667, 0.75, 0.75, 1.0], "backgroundColor": "rgba(255, 99, 132, 0.7)"}, {"label": "No Rag", "data": [0.5604166666666666, 0.7777777777777778, 0.2222222222222222, 0.15384615384615385], "backgroundColor": "rgba(54, 162, 235, 0.7)"}]}, "options": {"responsive": true, "plugins": {"title": {"display": true, "text": "Score by Dimension"}}, "scales": {"y": {"min": 0, "max": 1}}}});
     </script>
 </body>
 </html>

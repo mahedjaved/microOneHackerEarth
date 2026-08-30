@@ -6,11 +6,16 @@ connection_pool = None
 
 async def init_db():
     global connection_pool
-    connection_pool = await asyncpg.create_pool(
-        dsn=settings.database_url,
-    )
-    await create_query_table()
-    await create_pii_redaction_table()
+    try:
+        connection_pool = await asyncpg.create_pool(
+            dsn=settings.database_url,
+        )
+        await create_query_table()
+        await create_pii_redaction_table()
+    except Exception as e:
+        import logging
+        logging.warning(f"Database not available: {e}. Continuing without DB logging.")
+        connection_pool = None
 
 
 async def create_query_table():
@@ -50,35 +55,47 @@ async def create_pii_redaction_table():
 
 
 async def log_query(query: str, answer: str, sources: list, estimated_input_tokens: int = None, estimated_output_tokens: int = None, estimated_cost: float = None):
-    async with connection_pool.acquire() as connection:
-        async with connection.transaction():
-            await connection.execute(
-                """
-                INSERT INTO query_log (query, answer, sources, estimated_input_tokens, estimated_output_tokens, estimated_cost)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                """,
-                query,
-                answer,
-                sources,
-                estimated_input_tokens,
-                estimated_output_tokens,
-                estimated_cost,
-            )
+    if connection_pool is None:
+        return  # DB not available, skip logging
+    try:
+        async with connection_pool.acquire() as connection:
+            async with connection.transaction():
+                await connection.execute(
+                    """
+                    INSERT INTO query_log (query, answer, sources, estimated_input_tokens, estimated_output_tokens, estimated_cost)
+                    VALUES ($1, $2, $3, $4, $5, $6)
+                    """,
+                    query,
+                    answer,
+                    sources,
+                    estimated_input_tokens,
+                    estimated_output_tokens,
+                    estimated_cost,
+                )
+    except Exception as e:
+        import logging
+        logging.warning(f"Failed to log query: {e}")
 
 
 async def log_pii_redaction(query_hash: str, entity_type: str, original_snippet: str, redacted_snippet: str):
-    async with connection_pool.acquire() as connection:
-        async with connection.transaction():
-            await connection.execute(
-                """
-                INSERT INTO pii_redaction_log (query_hash, entity_type, original_snippet, redacted_snippet)
-                VALUES ($1, $2, $3, $4)
-                """,
-                query_hash,
-                entity_type,
-                original_snippet,
-                redacted_snippet,
-            )
+    if connection_pool is None:
+        return  # DB not available, skip logging
+    try:
+        async with connection_pool.acquire() as connection:
+            async with connection.transaction():
+                await connection.execute(
+                    """
+                    INSERT INTO pii_redaction_log (query_hash, entity_type, original_snippet, redacted_snippet)
+                    VALUES ($1, $2, $3, $4)
+                    """,
+                    query_hash,
+                    entity_type,
+                    original_snippet,
+                    redacted_snippet,
+                )
+    except Exception as e:
+        import logging
+        logging.warning(f"Failed to log PII redaction: {e}")
 
 
 def estimate_tokens_and_cost(query: str, answer: str) -> tuple:
