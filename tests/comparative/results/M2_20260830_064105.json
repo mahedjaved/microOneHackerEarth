@@ -1,0 +1,69 @@
+{
+  "test_case": {
+    "id": "M2",
+    "question": "What are common side effects of aspirin?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "stomach",
+      "nausea",
+      "irritation"
+    ],
+    "should_have_citation": true
+  },
+  "results": {
+    "simple_rag": {
+      "status": 500,
+      "data": {
+        "error": "{\"detail\":\"Simple RAG failed: Error code: 413 - {'error': {'message': 'Request Entity Too Large', 'type': 'invalid_request_error', 'code': 'request_too_large'}}\"}",
+        "status_code": 500
+      },
+      "response_text": ""
+    },
+    "uq_rag": {
+      "status": 500,
+      "data": {
+        "error": "{\"error\":\"Failed to process question\"}",
+        "status_code": 500
+      },
+      "response_text": ""
+    },
+    "sota": {
+      "status": 200,
+      "data": {
+        "response": "Aspirin (acetyl\u2011salicylic acid) is generally safe when used as directed, but it can cause a number of relatively common side effects, especially when taken regularly or in higher doses. Typical side effects include:\n\n| System | Common Side Effects |\n|--------|---------------------|\n| **Gastro\u2011intestinal** | Stomach pain, heartburn, nausea, vomiting, gastritis, and increased risk of gastric or duodenal ulcers. |\n| **Bleeding/Clotting** | Prolonged bleeding time, easy bruising, nosebleeds, gum bleeding, and, in rare cases, serious internal bleeding (especially in the GI tract or brain). |\n| **Central nervous system** | Tinnitus (ringing in the ears) and hearing disturbances, usually at higher doses. |\n| **Allergic/skin reactions** | Rash, itching, hives, or more severe allergic reactions such as angio\u2011edema or anaphylaxis (rare). |\n| **Respiratory** | Asthma\u2011like symptoms (aspirin\u2011intolerant asthma) in a small subset of people. |\n| **Renal** | Slight reduction in kidney function with long\u2011term high\u2011dose use, particularly in people with pre\u2011existing kidney disease. |\n| **Other** | Mild headache or dizziness, especially when starting therapy. |\n\n**Tips to minimize side effects**\n\n- **Take with food or a full glass of water** to reduce stomach irritation.  \n- **Use the lowest effective dose** for the shortest duration needed.  \n- **Avoid alcohol** and other NSAIDs (e.g., ibuprofen) while on aspirin, as they increase GI risk.  \n- **Check for interactions** if you\u2019re on blood thinners, anticoagulants, corticosteroids, or certain antidepressants.  \n- **Consult a healthcare professional** before using aspirin if you have a history of ulcers, bleeding disorders, kidney disease, asthma, or are pregnant/breastfeeding.\n\nIf you experience severe stomach pain, vomiting blood, black/tarry stools, sudden hearing changes, or signs of an allergic reaction (swelling, difficulty breathing), seek medical attention promptly.",
+        "sources": [],
+        "system": "sota_direct_llm",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "emergency": false
+      },
+      "response_text": "Aspirin (acetyl\u2011salicylic acid) is generally safe when used as directed, but it can cause a number of relatively common side effects, especially when taken regularly or in higher doses. Typical side effects include:\n\n| System | Common Side Effects |\n|--------|---------------------|\n| **Gastro\u2011intestinal** | Stomach pain, heartburn, nausea, vomiting, gastritis, and increased risk of gastric or duodenal ulcers. |\n| **Bleeding/Clotting** | Prolonged bleeding time, easy bruising, nosebleeds, gum bleeding, and, in rare cases, serious internal bleeding (especially in the GI tract or brain). |\n| **Central nervous system** | Tinnitus (ringing in the ears) and hearing disturbances, usually at higher doses. |\n| **Allergic/skin reactions** | Rash, itching, hives, or more severe allergic reactions such as angio\u2011edema or anaphylaxis (rare). |\n| **Respiratory** | Asthma\u2011like symptoms (aspirin\u2011intolerant asthma) in a small subset of people. |\n| **Renal** | Slight reduction in kidney function with long\u2011term high\u2011dose use, particularly in people with pre\u2011existing kidney disease. |\n| **Other** | Mild headache or dizziness, especially when starting therapy. |\n\n**Tips to minimize side effects**\n\n- **Take with food or a full glass of water** to reduce stomach irritation.  \n- **Use the lowest effective dose** for the shortest duration needed.  \n- **Avoid alcohol** and other NSAIDs (e.g., ibuprofen) while on aspirin, as they increase GI risk.  \n- **Check for interactions** if you\u2019re on blood thinners, anticoagulants, corticosteroids, or certain antidepressants.  \n- **Consult a healthcare professional** before using aspirin if you have a history of ulcers, bleeding disorders, kidney disease, asthma, or are pregnant/breastfeeding.\n\nIf you experience severe stomach pain, vomiting blood, black/tarry stools, sudden hearing changes, or signs of an allergic reaction (swelling, difficulty breathing), seek medical attention promptly."
+    }
+  },
+  "scores": {
+    "simple_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ]
+    },
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ]
+    },
+    "sota": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 1.0,
+      "reasons": [
+        "Correct answer with keywords: ['stomach', 'nausea', 'irritation']"
+      ]
+    }
+  },
+  "timestamp": "20260830_064105"
+}

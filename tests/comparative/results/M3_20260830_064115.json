@@ -1,0 +1,85 @@
+{
+  "test_case": {
+    "id": "M3",
+    "question": "What is the maximum daily dose of aspirin?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "4000",
+      "4,000",
+      "mg"
+    ],
+    "should_have_citation": true
+  },
+  "results": {
+    "simple_rag": {
+      "status": 200,
+      "data": {
+        "response": "The maximum daily dose of aspirin for an adult is **4,000\u202fmg (4\u202fg) in a 24\u2011hour period**.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf"
+        ],
+        "system": "simple_rag",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "skipped",
+        "emergency": false
+      },
+      "response_text": "The maximum daily dose of aspirin for an adult is **4,000\u202fmg (4\u202fg) in a 24\u2011hour period**."
+    },
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": "The maximum recommended daily dose of aspirin for adults is **4\u202f000\u202fmg (4\u202fg) in a 24\u2011hour period**.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf"
+        ],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": null,
+        "run_artifact_id": null
+      },
+      "response_text": "The maximum recommended daily dose of aspirin for adults is **4\u202f000\u202fmg (4\u202fg) in a 24\u2011hour period**."
+    },
+    "sota": {
+      "status": 500,
+      "data": {
+        "error": "{\"detail\":\"SOTA baseline failed: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01jy8r0vdkfzatce3tyznxt3nv` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6811, Requested 6495. Please try again in 39.795s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'compound', 'code': 'rate_limit_exceeded'}}\"}",
+        "status_code": 500
+      },
+      "response_text": ""
+    }
+  },
+  "scores": {
+    "simple_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.6666666666666666,
+      "reasons": [
+        "Correct answer with keywords: ['4,000', 'mg']",
+        "Has citation"
+      ]
+    },
+    "uq_rag": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.3333333333333333,
+      "reasons": [
+        "Partial answer with keywords: ['mg']",
+        "Has citation"
+      ]
+    },
+    "sota": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ]
+    }
+  },
+  "timestamp": "20260830_064115"
+}
