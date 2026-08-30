@@ -167,7 +167,12 @@ def run_uq_pipeline(
         verifier_result = _verifier.predict_text(claim.text, evidence_text)
         verifier_outputs.append(verifier_result)
 
-        conformal_set = _conformal_predictor.predict_set(simple_features.reshape(1, -1))[0]
+        # Handle case when conformal predictor is not fitted
+        if _conformal_predictor is not None and _conformal_predictor.is_fitted:
+            conformal_set = _conformal_predictor.predict_set(simple_features.reshape(1, -1))[0]
+        else:
+            from server.schemas import Verdict
+            conformal_set = [Verdict.SUPPORTED]
         conformal_sets.append({"claim_id": str(claim.claim_id), "set": [v.name for v in conformal_set]})
 
     # Step 4: Decision logic
