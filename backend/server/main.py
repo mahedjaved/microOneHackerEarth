@@ -4,6 +4,8 @@ from .routes.upload_pdfs import router as upload_router
 from .routes.ask_question import router as ask_router
 from .routes.simple_ask import router as simple_ask_router
 from .routes.sota_ask import router as sota_ask_router
+from .routes.medrag_baseline import router as medrag_baseline_router
+from .routes.no_rag import router as no_rag_router
 from .routes.health import router as health_router
 from .routes.langsmith_health import router as langsmith_router
 from .routes.metrics import router as metrics_router
@@ -110,11 +112,13 @@ app.add_middleware(
 # add middleware exception handlers
 app.middleware("http")(catch_exception_from_middleware)
 
-# add routers - 1) upload PDF documents 2) asking query 3) simple RAG baseline 4) SOTA baseline
+# add routers - 1) upload PDF documents 2) asking query 3) simple RAG baseline 4) SOTA baseline 5) MedRAG baseline 6) No-RAG baseline
 app.include_router(upload_router)
 app.include_router(ask_router)
 app.include_router(simple_ask_router)
 app.include_router(sota_ask_router)
+app.include_router(medrag_baseline_router)
+app.include_router(no_rag_router)
 app.include_router(health_router)
 app.include_router(langsmith_router)
 app.include_router(metrics_router)

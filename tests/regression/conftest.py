@@ -85,3 +85,17 @@ def large_file(tmp_path):
     large_path = tmp_path / "large_file.pdf"
     large_path.write_bytes(b"x" * (51 * 1024 * 1024))
     return str(large_path)
+
+
+@pytest.fixture(scope="session")
+def frontend_health():
+    """Verify frontend is healthy before running tests."""
+    for _ in range(30):
+        try:
+            r = requests.get(f"{FRONTEND_URL}", timeout=5)
+            if r.status_code == 200:
+                return True
+        except requests.exceptions.ConnectionError:
+            pass
+        time.sleep(1)
+    pytest.fail("Frontend not available")
