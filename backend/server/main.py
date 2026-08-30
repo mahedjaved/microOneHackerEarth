@@ -55,18 +55,15 @@ def _init_uq_pipeline():
     verifier_path = str(models_dir / "verifier_gp.joblib")
     verifier = ThreeWayVerifier(model_path=verifier_path, embedding_model=embedding_model)
 
-    # Load conformal quantile
+    # Load conformal quantile and create predictor
     conformal_path = models_dir / "conformal_quantile.json"
     with open(conformal_path, 'r') as f:
         conformal_data = json.load(f)
     alpha = conformal_data.get("alpha", 0.10)
     quantile = conformal_data.get("quantile", 0.5)
 
-    # Create conformal predictor (fitted on calibration data during training)
-    conformal = ConformalPredictor(alpha=alpha, method="LAC")
-    # Note: conformal predictor needs to be fitted with calibration data
-    # For now, we'll use a placeholder that returns singleton sets
-    conformal.is_fitted = True
+    # Create conformal predictor from saved quantile (no calibration data needed at inference)
+    conformal = ConformalPredictor.from_quantile(quantile=quantile, alpha=alpha, method="LAC")
 
     # Create calibrator (loaded from training)
     calibrator_path = str(models_dir / "calibrator.joblib")
