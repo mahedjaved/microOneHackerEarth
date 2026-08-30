@@ -96,7 +96,10 @@ tmp/
 data/
 *.csv
 *.json
-output/
 results/
 nul
+
+# Exclude generated evaluation reports and cache (not source code)
+backend/eval_reports/
+__pycache__/
 
