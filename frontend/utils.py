@@ -16,6 +16,8 @@ def _handle_response_error(response, context=""):
 def _request_with_retry(method, url, retries=2, timeout=30, **kwargs):
     for attempt in range(1, retries + 1):
         try:
+            if "files" in kwargs:
+                timeout = max(timeout, 120)
             response = requests.request(method, url, timeout=timeout, **kwargs)
             if response.status_code >= 500:
                 if attempt < retries:
@@ -45,7 +47,7 @@ def is_backend_available():
 
 def upload_pdfs_api(files):
     files_payload = [("files", (f.name, f.read(), "application/pdf")) for f in files]
-    response = _request_with_retry("POST", f"{API_URL}/upload_pdfs/", files=files_payload)
+    response = _request_with_retry("POST", f"{API_URL}/upload_pdfs/", files=files_payload, retries=3)
     if response.status_code != 200:
         _handle_response_error(response, context="Upload")
     return response

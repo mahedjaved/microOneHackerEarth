@@ -114,7 +114,7 @@ async def ask_question(request: Request, question: str = Form(...)):
                 chunk_id=match["metadata"].get("chunk_id", match["id"]),
                 document_id=match["metadata"].get("source", "unknown"),
                 document_version=match["metadata"].get("version", "v1"),
-                page_location=match["metadata"].get("page", ""),
+                page_location=str(match["metadata"].get("page", "")),
                 text=match["metadata"].get("text", ""),
                 provenance_hash="",
             )
@@ -131,11 +131,17 @@ async def ask_question(request: Request, question: str = Form(...)):
         )
 
         # UQ PIPELINE: inserted after retrieval, before RAG chain (Q6)
+        # First call RAG chain to generate answer, then pass to UQ pipeline for verification
+        llm_chain = get_llm_chain(retriever)
+        rag_result = llm_chain.invoke({"query": validated.question})
+        llm_answer = rag_result.get("result", "")
+
         try:
             from ..modules.query_handlers import run_uq_pipeline
             uq_response, run_artifact = run_uq_pipeline(
                 question=validated.question,
                 evidence_packet=evidence_packet,
+                llm_answer=llm_answer,
             )
 
             # Record run artifact to database
@@ -160,47 +166,13 @@ async def ask_question(request: Request, question: str = Form(...)):
 
         except Exception as uq_error:
             logger.warning(f"UQ pipeline failed, falling back to baseline RAG: {uq_error}")
-            # Fallback to existing RAG chain if UQ pipeline fails
-            llm_chain = get_llm_chain(retriever)
-
-            tracer = None
-            request_error = None
-
-            try:
-                tracer = configure_langsmith_tracing(
-                    "med-rag-assistant",
-                    inputs={"question": validated.question},
-                    tags=["RAG", "medrag-assistant"],
-                )
-            except Exception as e:
-                request_error = e
-                errors.labels(method="POST", endpoint="/ask/", status_code=500).inc()
-                logger.exception(f"Error setting up langsmith tracing: {e}")
-
-            query_start = time.time()
-
-            try:
-                result = llm_chain.invoke({"query": validated.question})
-                query_latency.labels(method="POST", endpoint="/ask/").observe(
-                    time.time() - query_start
-                )
-            except Exception as e:
-                request_error = e
-                raise
-            finally:
-                if tracer is not None:
-                    end_langsmith_run(
-                        tracer,
-                        outputs={"result": result["result"]} if "result" in locals() and result is not None else {},
-                        error=request_error,
-                    )
-
+            # Fallback: return the RAG result directly since we already called the chain
             sources = [
                 doc.metadata.get("source", "Unknown") for doc in docs
             ]
 
             return ExtendedQuestionResponse(
-                response=result["result"],
+                response=llm_answer,
                 sources=sources,
                 disclaimer=settings.medical_disclaimer,
                 injection_detected=False,

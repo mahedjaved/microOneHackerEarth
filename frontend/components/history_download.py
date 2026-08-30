@@ -1,3 +1,4 @@
+import re
 import streamlit as st
 from datetime import datetime
 
@@ -11,7 +12,6 @@ PII_PATTERNS = [
 
 
 def _redact_pii(text: str) -> str:
-    import re
     redacted = text
     for pattern, replacement in PII_PATTERNS:
         redacted = re.sub(pattern, replacement, redacted)

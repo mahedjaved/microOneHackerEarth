@@ -70,8 +70,9 @@ def init_uq_pipeline(
 def run_uq_pipeline(
     question: str,
     evidence_packet: EvidencePacket,
-    model_version: str = "llama-3.3-70b-versatile",
+    model_version: str = "groq/compound-mini",
     verifier_version: str = "gp-v1",
+    llm_answer: str = "",
 ) -> tuple[ExtendedQuestionResponse, RunArtifact]:
     """
     Run the full UQ pipeline on a question with retrieved evidence.
@@ -136,8 +137,8 @@ def run_uq_pipeline(
         )
         return response, artifact
 
-    # Step 2: Claim decomposition
-    claims = _claim_composer.decompose("", evidence_packet)
+    # Step 2: Claim decomposition (from LLM answer if available, else from evidence)
+    claims = _claim_composer.decompose(llm_answer, evidence_packet)
 
     # Step 3: Evidence feature vector + verifier + conformal
     verifier_outputs = []

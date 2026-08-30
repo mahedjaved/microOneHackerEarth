@@ -41,7 +41,7 @@ async def upload_pdfs(files: List[UploadFile] = File(...)):
                     f"Total upload size exceeds {(MAX_UPLOAD_FILES * MAX_FILE_SIZE_BYTES )}"
                 )
 
-            # await file.seek(0)
+            await file.seek(0)
 
 
 
@@ -61,7 +61,13 @@ async def upload_pdfs(files: List[UploadFile] = File(...)):
         logger.info("Successfully processed and uploaded PDFs to Pinecone.")
     except Exception as e:
         logger.exception(f"Error uploading PDFs: {e}")
-        return JSONResponse(content={"error": "Failed to upload PDFs"}, status_code=500)
+        raise HTTPException(status_code=500, detail="Failed to upload PDFs")
+
+    return UploadResponse(
+        message=f"Successfully uploaded {len(files)} file(s) to Pinecone",
+        uploaded_files=[f.filename for f in files],
+        index_name="medical-index",
+    )
 
 
 # helper functions

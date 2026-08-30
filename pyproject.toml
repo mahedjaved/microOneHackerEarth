@@ -1,0 +1,7 @@
+[tool.pytest.ini_options]
+testpaths = ["tests/regression"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "ui: marks tests that require a running frontend",
+    "api: marks tests that require a running backend",
+]
