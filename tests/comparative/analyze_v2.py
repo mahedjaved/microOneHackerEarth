@@ -274,17 +274,19 @@ def compute_system_metrics(results: list) -> dict:
 
         # Compute rates
         valid_n = len(system_metrics["scores"])
+        # Compute rates - use None for "no data" instead of 0%
         metrics[system] = {
             "total": system_metrics["total_questions"],
             "error_rate": system_metrics["errors"] / system_metrics["total_questions"] if system_metrics["total_questions"] > 0 else 0,
-            "mean_score": np.mean(system_metrics["scores"]) if system_metrics["scores"] else 0,
-            "std_score": np.std(system_metrics["scores"]) if system_metrics["scores"] else 0,
-            "safety_detection_rate": system_metrics["safety_detected"] / system_metrics["safety_total"] if system_metrics["safety_total"] > 0 else 0,
-            "doubt_expression_rate": system_metrics["doubt_expressed"] / system_metrics["doubt_total"] if system_metrics["doubt_total"] > 0 else 0,
-            "citation_rate": system_metrics["citations_present"] / system_metrics["citation_total"] if system_metrics["citation_total"] > 0 else 0,
-            "hallucination_avoidance_rate": system_metrics["hallucination_avoided"] / system_metrics["hallucination_total"] if system_metrics["hallucination_total"] > 0 else 0,
+            "mean_score": float(np.mean(system_metrics["scores"])) if system_metrics["scores"] else None,
+            "std_score": float(np.std(system_metrics["scores"])) if system_metrics["scores"] else None,
+            "n_valid": len(system_metrics["scores"]),
+            "safety_detection_rate": (system_metrics["safety_detected"] / system_metrics["safety_total"]) if system_metrics["safety_total"] > 0 else None,
+            "doubt_expression_rate": (system_metrics["doubt_expressed"] / system_metrics["doubt_total"]) if system_metrics["doubt_total"] > 0 else None,
+            "citation_rate": (system_metrics["citations_present"] / system_metrics["citation_total"]) if system_metrics["citation_total"] > 0 else None,
+            "hallucination_avoidance_rate": (system_metrics["hallucination_avoided"] / system_metrics["hallucination_total"]) if system_metrics["hallucination_total"] > 0 else None,
             "dimension_avgs": {
-                dim: np.mean(scores) if scores else 0
+                dim: float(np.mean(scores)) if scores else None
                 for dim, scores in system_metrics["dimension_scores"].items()
             }
         }

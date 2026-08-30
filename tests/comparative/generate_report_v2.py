@@ -21,6 +21,20 @@ def load_json(path: str) -> dict:
         return json.load(f)
 
 
+def fmt_val(val, fmt="{:.3f}"):
+    """Format value or return N/A for None."""
+    if val is None:
+        return "<span style='color:#999'>N/A</span>"
+    return fmt.format(val)
+
+
+def fmt_pct(val):
+    """Format percentage or return N/A for None."""
+    if val is None:
+        return "<span style='color:#999'>N/A</span>"
+    return f"{val:.1%}"
+
+
 def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
     """Generate comprehensive HTML report with embedded charts."""
 
@@ -29,6 +43,8 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
     ece_data = load_json(os.path.join(analysis_dir, "ece_reliability.json"))
     roc_data = load_json(os.path.join(analysis_dir, "roc_retrieval.json"))
     metrics = load_json(os.path.join(analysis_dir, "system_metrics.json"))
+
+    systems = list(metrics.keys())
 
     # Generate Chart.js data
     risk_coverage_chart = {
@@ -126,7 +142,6 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
     }
 
     # System comparison chart
-    systems = list(metrics.keys())
     metric_names = ["safety_detection_rate", "doubt_expression_rate", "citation_rate", "hallucination_avoidance_rate"]
     metric_labels = ["Safety Detection", "Doubt Expression", "Citation Rate", "Hallucination Avoidance"]
     colors = [
@@ -143,7 +158,7 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
             "datasets": [
                 {
                     "label": sys,
-                    "data": [metrics[sys].get(m, 0) for m in metric_names],
+                    "data": [metrics[sys].get(m, 0) or 0 for m in metric_names],
                     "backgroundColor": colors[i % len(colors)],
                     "borderColor": colors[i % len(colors)].replace("0.7", "1")
                 }
@@ -169,7 +184,7 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
             "datasets": [
                 {
                     "label": "Mean Score",
-                    "data": [metrics[s].get("mean_score", 0) for s in systems],
+                    "data": [metrics[s].get("mean_score", 0) or 0 for s in systems],
                     "backgroundColor": colors[:len(systems)]
                 },
                 {
@@ -199,7 +214,7 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
             "datasets": [
                 {
                     "label": sys.replace("_", " ").title(),
-                    "data": [metrics[sys].get("dimension_avgs", {}).get(d, 0) for d in dimensions],
+                    "data": [metrics[sys].get("dimension_avgs", {}).get(d, 0) or 0 for d in dimensions],
                     "backgroundColor": colors[i % len(colors)]
                 }
                 for i, sys in enumerate(systems)
@@ -215,6 +230,56 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
             }
         }
     }
+
+    # Generate table rows with N/A handling
+    table_rows = ""
+    warning_msgs = []
+    for sys in systems:
+        m = metrics[sys]
+        mean_score = m.get("mean_score")
+        std_score = m.get("std_score")
+        error_rate = m.get("error_rate", 0)
+        safety = m.get("safety_detection_rate")
+        doubt = m.get("doubt_expression_rate")
+        citation = m.get("citation_rate")
+        halluc = m.get("hallucination_avoidance_rate")
+        n_valid = m.get("n_valid", 0)
+
+        # Check for high error rates
+        if error_rate > 0.5:
+            warning_msgs.append(f"<li><strong>{sys.replace('_', ' ').title()}</strong>: {error_rate:.1%} error rate - results may not reflect actual system behavior</li>")
+        elif error_rate > 0.1:
+            warning_msgs.append(f"<li>{sys.replace('_', ' ').title()}: {error_rate:.1%} error rate - some results excluded from averages</li>")
+
+        # Check for low valid sample counts
+        if mean_score is not None and n_valid < 5:
+            warning_msgs.append(f"<li>{sys.replace('_', ' ').title()}: Only {n_valid} valid responses - statistics may not be meaningful</li>")
+
+        table_rows += f"""
+                <tr>
+                    <td><strong>{sys.replace('_', ' ').title()}</strong></td>
+                    <td>{fmt_val(mean_score)}</td>
+                    <td>{fmt_val(std_score)}</td>
+                    <td class="{'metric-bad' if error_rate > 0.1 else 'metric-good'}">{fmt_pct(error_rate)}</td>
+                    <td>{fmt_pct(safety)}</td>
+                    <td>{fmt_pct(doubt)}</td>
+                    <td>{fmt_pct(citation)}</td>
+                    <td>{fmt_pct(halluc)}</td>
+                </tr>"""
+
+    # Warning section
+    warning_section = ""
+    if warning_msgs:
+        warning_section = f"""
+        <div class="section-title">⚠️ Data Quality Warnings</div>
+        <div class="chart-container" style="border-left: 4px solid #ffc107;">
+            <ul>
+                {''.join(warning_msgs)}
+            </ul>
+            <p><em>High error rates or low sample counts mean the metrics above may not reflect actual system behavior.
+            Fix infrastructure issues and re-run for valid results.</em></p>
+        </div>
+        """
 
     # Generate HTML
     html = f"""<!DOCTYPE html>
@@ -311,6 +376,8 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
         <h1>UQ-RAG Comparative Study Analysis</h1>
         <p class="subtitle">Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
 
+        {warning_section}
+
         <div class="section-title">Calibration Analysis</div>
         <div class="grid">
             <div class="chart-container">
@@ -352,18 +419,7 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
                 </tr>
             </thead>
             <tbody>
-                {"".join(f'''
-                <tr>
-                    <td><strong>{sys.replace("_", " ").title()}</strong></td>
-                    <td>{metrics[sys].get("mean_score", 0):.3f}</td>
-                    <td>{metrics[sys].get("std_score", 0):.3f}</td>
-                    <td class="{'metric-bad' if metrics[sys].get('error_rate', 0) > 0.1 else 'metric-good'}">{metrics[sys].get('error_rate', 0):.1%}</td>
-                    <td>{metrics[sys].get('safety_detection_rate', 0):.1%}</td>
-                    <td>{metrics[sys].get('doubt_expression_rate', 0):.1%}</td>
-                    <td>{metrics[sys].get('citation_rate', 0):.1%}</td>
-                    <td>{metrics[sys].get('hallucination_avoidance_rate', 0):.1%}</td>
-                </tr>
-                ''' for sys in systems)}
+                {table_rows}
             </tbody>
         </table>
 
@@ -409,7 +465,7 @@ def generate_html_report(analysis_dir: str, results_dir: str, output_path: str):
 """
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
 
     print(f"Report generated: {output_path}")
