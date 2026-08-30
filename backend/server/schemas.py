@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from enum import Enum
-from typing import Literal
+from typing import Literal, Optional
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 import uuid
 from datetime import datetime
@@ -238,3 +238,16 @@ class QuestionRequest(BaseModel):
 class QuestionResponse(BaseModel):
     response: str
     sources: list[str]
+
+
+class SystemResponse(BaseModel):
+    """Common response schema for comparative study endpoints (FR-007)."""
+    response: str
+    sources: list[str] = Field(default_factory=list)
+    system: str = Field(..., pattern="^(uq_rag|medrag_baseline|no_rag|simple_rag|sota_direct_llm)$")
+    confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
+    doubt_certificate: Optional[dict] = None
+    safety_check: str = "none"
+    emergency: bool = False
+    retrieval_scores: Optional[list[float]] = None
+    error: Optional[str] = None

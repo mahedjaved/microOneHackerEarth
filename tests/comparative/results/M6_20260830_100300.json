@@ -1,0 +1,110 @@
+{
+  "test_case": {
+    "id": "M6",
+    "question": "What are the contraindications for aspirin use?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "bleeding",
+      "ulcer",
+      "allergy",
+      "pregnancy"
+    ],
+    "expected_behavior": "answer_with_citation",
+    "should_have_citation": true
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": "Based on the information provided, aspirin should **not be given to children younger than\u202f16\u202fyears old** because of the risk of **Reye syndrome**, a rare but serious condition. This age\u2011related restriction is the primary contraindication mentioned.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf"
+        ],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": null,
+        "run_artifact_id": null
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "Based on the information provided, aspirin is contraindicated in **children younger than\u202f16\u202fyears old** because of the risk of Reye syndrome, a rare but serious condition. The context does not mention any other specific contraindications.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "emergency": false,
+        "retrieval_scores": [
+          0.590916634,
+          0.588567793,
+          0.491054535,
+          0.173977852,
+          0.17011261
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "**Aspirin (acetyl\u2011salicylic acid) is a widely used antiplatelet and analgesic, but it is not safe for everyone.**  \nBelow is a practical list of the main **absolute** and **relative** contraindications that clinicians (and patients) should consider before starting aspirin therapy.\n\n---\n\n## 1. Absolute Contraindications  \nThese conditions make aspirin use unsafe under virtually any circumstance.\n\n| Condition | Why aspirin is dangerous |\n|-----------|--------------------------|\n| **Known hypersensitivity or allergy to aspirin or other non\u2011steroidal anti\u2011inflammatory drugs (NSAIDs)** (e.g., urticaria, angio\u2011edema, bronchospasm) | Can trigger severe anaphylactoid reactions. |\n| **Active gastrointestinal (GI) ulcer or bleeding** (including erosive gastritis, duodenal ulcer, bleeding esophagitis) | Aspirin irreversibly inhibits COX\u20111 \u2192 \u2193 prostaglandins \u2192 impaired gastric mucosal protection \u2192 worsens bleeding. |\n| **Current major hemorrhage** (e.g., intracranial hemorrhage, intra\u2011abdominal bleeding, massive hemoptysis) | Platelet inhibition increases the risk of ongoing or recurrent bleeding. |\n| **History of hemorrhagic stroke** (intracerebral or subarachnoid) | Aspirin raises the chance of a recurrent bleed. |\n| **Severe thrombocytopenia** (platelet count <\u202f50\u202f\u00d7\u202f10\u2079/L) or platelet function disorders (e.g., Glanzmann thrombasthenia) | Further impairs clot formation. |\n| **Reye syndrome risk** \u2013 children or teenagers (\u2264\u202f18\u202fy) with a viral illness (especially influenza or varicella) | Aspirin is the classic trigger for this potentially fatal hepatic encephalopathy. |\n\n---\n\n## 2. Relative Contraindications / Situations Requiring Caution  \nAspirin can be used in many of these settings, but only after weighing benefits vs. risks, often with dose adjustment, gastro\u2011protective co\u2011therapy, or close monitoring.\n\n| Condition | Specific concerns & practical tips |\n|-----------|--------------------------------------|\n| **Peptic\u2011ulcer disease (history, but not active bleed)** | Use the lowest effective dose, consider a proton\u2011pump inhibitor (PPI) or H2\u2011blocker, and avoid concurrent NSAIDs. |\n| **Chronic kidney disease (CKD) \u2013 especially eGFR <\u202f30\u202fmL/min/1.73\u202fm\u00b2** | Aspirin may worsen renal perfusion; monitor renal function and use the lowest dose. |\n| **Uncontrolled hypertension** (SBP\u202f\u2265\u202f180\u202fmm\u202fHg or DBP\u202f\u2265\u202f110\u202fmm\u202fHg) | High BP + antiplatelet therapy \u2191 risk of intracerebral hemorrhage. Optimize BP first. |\n| **Asthma, especially aspirin\u2011exacerbated respiratory disease (AERD)** | Can provoke bronchospasm; consider alternative antiplatelet agents (e.g., clopidogrel). |\n| **History of ischemic stroke or transient ischemic attack (TIA) without hemorrhagic component** | Generally acceptable for secondary prevention, but evaluate bleeding risk (e.g., CHA\u2082DS\u2082\u2011VASc, HAS\u2011BLED). |\n| **Pregnancy** \u2013 especially third trimester | Aspirin crosses the placenta; low\u2011dose (<\u202f81\u202fmg) may be used for pre\u2011eclampsia prophylaxis, but higher doses are avoided. |\n| **Concurrent anticoagulant or other antiplatelet therapy** (e.g., warfarin, DOACs, clopidogrel) | Significantly raises bleeding risk; combination should be limited to specific indications (e.g., PCI) and closely monitored. |\n| **Liver disease (moderate to severe cirrhosis)** | Coagulopathy + portal hypertension \u2192 higher bleed risk; use only if clear cardiovascular benefit outweighs risk. |\n| **Alcohol misuse or heavy binge drinking** | Synergistic GI irritation and platelet inhibition \u2192 higher bleed risk. |\n| **Gout** (especially during acute attacks) | Aspirin can alter uric acid handling; low\u2011dose may be acceptable, but high doses can precipitate gout flares. |\n| **Diabetes with microvascular complications** | Not a strict contraindication, but combined with other risk factors (e.g., CKD, hypertension) warrants careful assessment. |\n\n---\n\n## 3. Practical Decision\u2011Making Tools\n\n| Tool | What it assesses | How it helps with aspirin decisions |\n|------|-------------------|--------------------------------------|\n| **Bleeding risk scores** (e.g., HAS\u2011BLED for atrial\u2011fibrillation patients) | Predicts major bleeding | If score \u2265\u202f3, reconsider aspirin or add gastro\u2011protection. |\n| **Cardiovascular risk scores** (e.g., ASCVD risk calculator) | Estimates 10\u2011yr atherosclerotic risk | Guides primary\u2011prevention aspirin use (generally **not** recommended when 10\u2011yr risk <\u202f10\u202f% and bleeding risk is moderate/high). |\n| **Aspirin\u2011related GI risk calculator** (e.g., *Aspirin GI Risk Score*) | Combines age, ulcer history, NSAID use, etc. | Determines need for PPI co\u2011therapy. |\n\n---\n\n## 4. Summary of \u201cWhen to Say No\u201d\n\n- **Never** give aspirin to anyone with an active bleed, known aspirin allergy, or a recent hemorrhagic stroke.\n- **Never** give aspirin to children/teens with a viral illness (to avoid Reye syndrome).\n- **Avoid** or **use only with extreme caution** in patients with:\n  - Uncontrolled hypertension,\n  - Severe CKD,\n  - Active peptic ulcer disease,\n  - Aspirin\u2011exacerbated asthma,\n  - Concurrent strong anticoagulation,\n  - Advanced liver disease,\n  - Pregnancy beyond the first trimester (unless specifically indicated).\n\nWhen any of the relative contraindications are present, the clinician should:\n1. **Quantify both cardiovascular benefit and bleeding risk** using the tools above.\n2. **Select the lowest effective aspirin dose** (often 81\u202fmg daily for antiplatelet effect).\n3. **Add gastro\u2011protective therapy** (e.g., a PPI) if GI bleed risk is moderate\u2011high.\n4. **Re\u2011evaluate periodically** (e.g., every 6\u201312\u202fmonths) to see if the risk profile has changed.\n\n---\n\n### Quick Reference Cheat\u2011Sheet\n\n| **Contraindication** | **Action** |\n|----------------------|------------|\n| Allergy to aspirin/NSAIDs | **Do not give** |\n| Active GI bleed or ulcer | **Do not give** |\n| Hemorrhagic stroke (current or past) | **Do not give** |\n| Children/teens with viral infection | **Do not give** |\n| Severe thrombocytopenia / platelet disorder | **Do not give** |\n| Uncontrolled HTN (\u2265\u202f180/110) | Control BP first; then consider |\n| CKD eGFR\u202f<\u202f30\u202fmL/min/1.73\u202fm\u00b2 | Use low dose, monitor renal function |\n| Aspirin\u2011exacerbated asthma | Avoid; use alternative antiplatelet |\n| Concurrent anticoagulant (unless specific indication) | Re\u2011assess risk; limit duration |\n| Pregnancy (3rd trimester) | Avoid high doses; low dose only if indicated |\n\n---\n\n**Bottom line:** Aspirin is a powerful antiplatelet drug, but its benefits must be balanced against a patient\u2019s bleeding risk and any specific medical conditions that make platelet inhibition hazardous. When in doubt, a brief discussion with a pharmacist or a specialist (cardiology, gastroenterology, or hematology) can help tailor the safest approach.",
+        "system": "no_rag"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found",
+        "Has citation"
+      ],
+      "scoring_timestamp": "2026-08-30T10:02:50.166864"
+    },
+    "medrag_baseline": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found",
+        "Has citation"
+      ],
+      "scoring_timestamp": "2026-08-30T10:02:55.715678"
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 1.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['bleeding', 'ulcer', 'allergy', 'pregnancy']",
+        "Missing citation"
+      ],
+      "scoring_timestamp": "2026-08-30T10:03:00.872612"
+    }
+  },
+  "timestamp": "20260830_100300"
+}
