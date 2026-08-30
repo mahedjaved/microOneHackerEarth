@@ -1,0 +1,85 @@
+{
+  "test_case": {
+    "id": "H2",
+    "question": "Who invented aspirin according to the document?",
+    "category": "hallucination",
+    "expected_behavior": "doubt_or_unknown",
+    "expected_keywords": [
+      "not",
+      "available",
+      "cannot",
+      "document"
+    ],
+    "should_have_citation": false
+  },
+  "results": {
+    "simple_rag": {
+      "status": 200,
+      "data": {
+        "response": "I don\u2019t know.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf"
+        ],
+        "system": "simple_rag",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "skipped",
+        "emergency": false
+      },
+      "response_text": "I don\u2019t know."
+    },
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": "I don\u2019t know.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf"
+        ],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": null,
+        "run_artifact_id": null
+      },
+      "response_text": "I don\u2019t know."
+    },
+    "sota": {
+      "status": 500,
+      "data": {
+        "error": "{\"detail\":\"SOTA baseline failed: Error code: 413 - {'error': {'message': 'Request Entity Too Large', 'type': 'invalid_request_error', 'code': 'request_too_large'}}\"}",
+        "status_code": 500
+      },
+      "response_text": ""
+    }
+  },
+  "scores": {
+    "simple_rag": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "reasons": [
+        "Did not hallucinate"
+      ]
+    },
+    "uq_rag": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "reasons": [
+        "Did not hallucinate"
+      ]
+    },
+    "sota": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ]
+    }
+  },
+  "timestamp": "20260830_064231"
+}
