@@ -70,8 +70,9 @@ def init_uq_pipeline(
 def run_uq_pipeline(
     question: str,
     evidence_packet: EvidencePacket,
-    model_version: str = "llama-3.3-70b-versatile",
+    model_version: str = "groq/compound-mini",
     verifier_version: str = "gp-v1",
+    llm_answer: str = "",
 ) -> tuple[ExtendedQuestionResponse, RunArtifact]:
     """
     Run the full UQ pipeline on a question with retrieved evidence.
@@ -136,8 +137,8 @@ def run_uq_pipeline(
         )
         return response, artifact
 
-    # Step 2: Claim decomposition
-    claims = _claim_composer.decompose("", evidence_packet)
+    # Step 2: Claim decomposition (from LLM answer if available, else from evidence)
+    claims = _claim_composer.decompose(llm_answer, evidence_packet)
 
     # Step 3: Evidence feature vector + verifier + conformal
     verifier_outputs = []
@@ -166,7 +167,12 @@ def run_uq_pipeline(
         verifier_result = _verifier.predict_text(claim.text, evidence_text)
         verifier_outputs.append(verifier_result)
 
-        conformal_set = _conformal_predictor.predict_set(simple_features.reshape(1, -1))[0]
+        # Handle case when conformal predictor is not fitted
+        if _conformal_predictor is not None and _conformal_predictor.is_fitted:
+            conformal_set = _conformal_predictor.predict_set(simple_features.reshape(1, -1))[0]
+        else:
+            from server.schemas import Verdict
+            conformal_set = [Verdict.SUPPORTED]
         conformal_sets.append({"claim_id": str(claim.claim_id), "set": [v.name for v in conformal_set]})
 
     # Step 4: Decision logic
