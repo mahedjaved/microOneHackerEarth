@@ -219,7 +219,7 @@ def archive_existing_runs():
     if not run_files:
         return
 
-    archive_dir.mkdir(parents=True, True)
+    archive_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     for f in run_files:
