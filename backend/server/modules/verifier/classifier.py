@@ -23,9 +23,9 @@ EMBEDDING_DIM = 384
 
 def _compute_embedding_features(claim_text: str, evidence_text: str, embedding_model) -> np.ndarray:
     """Compute 3-dim features for claim-evidence pair."""
-    # HuggingFaceEmbeddings uses embed_query/embed_documents, not encode
-    claim_emb = np.array(embedding_model.embed_query(claim_text))
-    evidence_emb = np.array(embedding_model.embed_query(evidence_text))
+    # Live server uses SentenceTransformer which has .encode()
+    claim_emb = embedding_model.encode(claim_text, show_progress_bar=False)
+    evidence_emb = embedding_model.encode(evidence_text, show_progress_bar=False)
 
     cosine_sim = float(np.dot(claim_emb, evidence_emb) / (np.linalg.norm(claim_emb) * np.linalg.norm(evidence_emb)))
     l2_dist = float(np.linalg.norm(claim_emb - evidence_emb))
