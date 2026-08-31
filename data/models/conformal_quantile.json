@@ -1,5 +1,5 @@
 {
-  "quantile": 0.0,
+  "quantile": 0.2,
   "alpha": 0.1,
   "method": "LAC",
   "calib_size": 300,
