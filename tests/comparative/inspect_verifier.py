@@ -25,45 +25,27 @@ sys.path.insert(0, str(backend_dir))
 from dotenv import load_dotenv
 load_dotenv(backend_dir / ".env")
 
-from server.modules.load_vectorstore import embedding_model, PINECONE_INDEX_NAME
 from server.modules.claims.composer import ClaimComposer
 from server.modules.verifier.classifier import ThreeWayVerifier
 from server.config import settings
 from pinecone import Pinecone
 from joblib import load
+from sentence_transformers import SentenceTransformer
+
+# Load embedding models
+# The live server uses SentenceTransformer for the verifier
+verifier_embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+# HuggingFaceEmbeddings for Pinecone retrieval queries
+from server.modules.load_vectorstore import embedding_model as retrieval_embedding_model
 
 pc = Pinecone(api_key=settings.pinecone_api_key)
-index = pc.Index(PINECONE_INDEX_NAME)
+index = pc.Index(settings.pinecone_index_name)
 
 # Load verifier model
-# Try multiple possible locations
-verifier_paths = [
-    "data/models/verifier_gp.joblib",  # relative to backend dir
-    "../data/models/verifier_gp.joblib",  # relative to backend dir
-    str(project_dir / "data/models/verifier_gp.joblib"),  # absolute
-]
-
-verifier_path = None
-for p in verifier_paths:
-    if os.path.exists(p):
-        verifier_path = p
-        break
-
-if verifier_path is None:
-    print("Verifier model not found. Searching for verifier models...")
-    import glob
-    models = glob.glob(str(project_dir / "data/models/**/*.joblib"), recursive=True)
-    for m in models:
-        print(f"  Found: {m}")
-    if models:
-        verifier_path = models[0]
-        print(f"Using: {verifier_path}")
-    else:
-        sys.exit(1)
-
+verifier_path = project_dir / "data/models/verifier_gp.joblib"
 print(f"Loading verifier from: {verifier_path}")
-pipeline = load(verifier_path)
-verifier = ThreeWayVerifier(embedding_model=embedding_model)
+pipeline = load(str(verifier_path))
+verifier = ThreeWayVerifier(embedding_model=verifier_embedding_model)
 verifier.pipeline = pipeline
 verifier.is_trained = True
 
@@ -88,8 +70,8 @@ for qid, question in questions:
     print(f"[{qid}] {question}")
     print(f"{'='*60}")
 
-    # Retrieve passages
-    emb = embedding_model.embed_query(question)
+    # Retrieve passages using the retrieval embedding model
+    emb = retrieval_embedding_model.embed_query(question)
     matches = index.query(vector=emb, top_k=2, include_metadata=True)["matches"]
     passages = [m["metadata"].get("text", "") for m in matches]
 
@@ -126,8 +108,9 @@ for qid, question in questions:
             avg = sum(all_supported) / len(all_supported)
             mx = max(all_supported)
             print(f"\n  Summary: avg SUPPORTED={avg:.3f}, max SUPPORTED={mx:.3f}")
-            if mx >= 0.8 and avg < 0.8:
-                print(f"  ⚠️  MAX >= 0.8 but AVG < 0.8 - boilerplate is dragging down the average!")
-                print(f"      Fix: use max() instead of average")
+            if mx >= 0.5:
+                print(f"  [OK] Max SUPPORTED >= 0.5 (will pass conformal threshold)")
+            else:
+                print(f"  [FAIL] Max SUPPORTED < 0.5 (will trigger doubt certificate)")
     else:
         print("\nNo sample answer available for this question")
