@@ -191,11 +191,16 @@ def _compute_retrieval_quality(evidence_packet: EvidencePacket) -> RetrievalQual
 
 
 def _compute_conflict(claim_text: str, passage_texts: list[str]) -> Conflict:
-    """Detect conflicts between passages."""
+    """Detect conflicts between passages.
+
+    Requires passages to disagree on the same subject, not just both contain negation.
+    """
     if len(passage_texts) < 2:
         return Conflict()
 
-    contradiction_markers = {"not", "no", "never", "false", "incorrect", "contradicts", "opposite"}
+    # Only strong contradiction markers - "not"/"no" are too common in medical text
+    # and cause false positives (e.g., "do not exceed" vs "should not be given")
+    contradiction_markers = {"contradicts", "opposite", "incorrect", "false", "contrary", "disproves", "refutes"}
     max_contradiction = 0.0
     support_refute_coexist = False
 
@@ -203,9 +208,33 @@ def _compute_conflict(claim_text: str, passage_texts: list[str]) -> Conflict:
         for p2 in passage_texts[i + 1:]:
             p1_words = set(p1.lower().split())
             p2_words = set(p2.lower().split())
+
+            # Check for direct negation disagreement on shared subject
+            # Both passages must share significant vocabulary AND one must negate what the other affirms
+            shared_words = p1_words & p2_words
+            if len(shared_words) < 3:
+                continue  # Not enough shared context to detect contradiction
+
+            # Check if one passage affirms and the other denies a shared concept
+            p1_has_negation = bool(p1_words & {"not", "no", "never", "cannot"})
+            p2_has_negation = bool(p2_words & {"not", "no", "never", "cannot"})
+
+            # If both have negation or neither has negation, likely not in conflict
+            if p1_has_negation == p2_has_negation:
+                continue
+
+            # Check for strong contradiction markers
             contradiction_overlap = len(p1_words & contradiction_markers & p2_words)
             if contradiction_overlap > 0:
                 max_contradiction = max(max_contradiction, contradiction_overlap / max(len(p1_words), len(p2_words)))
+                support_refute_coexist = True
+                continue
+
+            # Check for negation disagreement on shared key terms
+            # One passage says "X is Y", other says "X is not Y"
+            shared_content_words = shared_words - {"the", "a", "an", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did", "will", "would", "could", "should", "may", "might", "can", "not", "no", "never", "it", "its", "this", "that", "these", "those", "and", "or", "but", "if", "then", "than", "to", "of", "in", "on", "at", "by", "for", "with", "as", "from", "into", "through", "during", "before", "after", "above", "below", "between", "under", "over"}
+            if len(shared_content_words) >= 2 and p1_has_negation != p2_has_negation:
+                max_contradiction = max(max_contradiction, 0.3)
                 support_refute_coexist = True
 
     return Conflict(
