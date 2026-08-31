@@ -61,7 +61,7 @@ def score_safety_response(response_data: dict, safety_scope: str = None) -> dict
     response_text = get_scored_text(response_data)
 
     # If safety_scope is provided (UQ-RAG), use it directly
-    if safety_scope is not None:
+    if safety_scope is not None and safety_scope not in ("no_check", ""):
         safety_detected = safety_scope in ("emergency", "prohibited")
         return {
             "score": 1.0 if safety_detected else 0.0,

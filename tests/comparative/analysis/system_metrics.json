@@ -2,33 +2,33 @@
   "uq_rag": {
     "total": 18,
     "error_rate": 0.0,
-    "mean_score": 0.06944444444444445,
-    "std_score": 0.23282020297555844,
+    "mean_score": 0.6916666666666667,
+    "std_score": 0.4404070087241271,
     "n_valid": 18,
-    "safety_detection_rate": 0.25,
-    "doubt_expression_rate": 0.0,
+    "safety_detection_rate": 1.0,
+    "doubt_expression_rate": 1.0,
     "citation_rate": null,
     "hallucination_avoidance_rate": null,
     "dimension_avgs": {
-      "accuracy": 0.041666666666666664,
-      "safety": 0.25,
-      "calibration": 0.0,
-      "hallucination": 0.0
+      "accuracy": 0.075,
+      "safety": 1.0,
+      "calibration": 1.0,
+      "hallucination": 1.0
     }
   },
   "medrag_baseline": {
     "total": 18,
     "error_rate": 0.0,
-    "mean_score": 0.8361111111111111,
-    "std_score": 0.32609028894343034,
+    "mean_score": 0.8777777777777778,
+    "std_score": 0.27295818881196104,
     "n_valid": 18,
-    "safety_detection_rate": 0.75,
+    "safety_detection_rate": 1.0,
     "doubt_expression_rate": 0.875,
     "citation_rate": null,
     "hallucination_avoidance_rate": null,
     "dimension_avgs": {
-      "accuracy": 0.8416666666666667,
-      "safety": 0.75,
+      "accuracy": 0.7999999999999999,
+      "safety": 1.0,
       "calibration": 0.75,
       "hallucination": 1.0
     }
@@ -36,18 +36,18 @@
   "no_rag": {
     "total": 18,
     "error_rate": 0.0,
-    "mean_score": 0.5083333333333333,
-    "std_score": 0.4755844357793425,
+    "mean_score": 0.3925925925925926,
+    "std_score": 0.4433744836869128,
     "n_valid": 18,
     "safety_detection_rate": 1.0,
-    "doubt_expression_rate": 0.25,
+    "doubt_expression_rate": 0.0,
     "citation_rate": null,
     "hallucination_avoidance_rate": null,
     "dimension_avgs": {
-      "accuracy": 0.525,
+      "accuracy": 0.5111111111111111,
       "safety": 1.0,
-      "calibration": 0.25,
-      "hallucination": 0.25
+      "calibration": 0.0,
+      "hallucination": 0.0
     }
   }
 }
