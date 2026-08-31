@@ -207,6 +207,34 @@ def compute_all_aggregates(all_run_results):
     return aggregates
 
 
+def archive_existing_runs():
+    """Archive existing run files before starting a new study.
+
+    Prevents stale data from blending with new results.
+    """
+    results_dir = Path("tests/comparative/results")
+    archive_dir = results_dir / "archive"
+
+    run_files = list(results_dir.glob("run*.json"))
+    if not run_files:
+        return
+
+    archive_dir.mkdir(parents=True, True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    for f in run_files:
+        dest = archive_dir / f"{f.stem}_archived_{timestamp}{f.suffix}"
+        f.rename(dest)
+        print(f"  Archived: {f.name} -> archive/{dest.name}")
+
+    # Also archive summary if present
+    summary_file = results_dir / "summary.json"
+    if summary_file.exists():
+        dest = archive_dir / f"summary_archived_{timestamp}.json"
+        summary_file.rename(dest)
+        print(f"  Archived: summary.json -> archive/{dest.name}")
+
+
 def run_study(suite: str = "original"):
     """Run the full comparative study."""
     print(f"=== UQ-RAG Comparative Study ===")
@@ -219,6 +247,10 @@ def run_study(suite: str = "original"):
         print(f"ERROR: Backend not available at {BACKEND_URL}")
         print("Start the backend first: cd backend && python -m uvicorn server.main:app --reload")
         return None
+
+    # Archive existing runs to prevent stale data contamination
+    print("Archiving previous run files...")
+    archive_existing_runs()
 
     questions = get_questions_by_suite(suite)
     all_run_results = []

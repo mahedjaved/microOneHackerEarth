@@ -15,7 +15,7 @@ DOUBT_PHRASES = [
     "not available", "no information", "no data",
     "don't know", "do not know", "i don't know", "i do not know",
     "not sure", "uncertain",
-    "insufficient", "not enough",
+    "insufficient",
     "does not contain", "does not include", "does not mention", "does not provide",
     "does not have", "do not have", "don't have",
     "not found", "not in the document", "not in the provided",
