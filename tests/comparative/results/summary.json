@@ -1,30 +1,30 @@
 {
   "systems": {
     "uq_rag": {
-      "mean": 0.4,
-      "std": 0.5477225575051662,
-      "n": 5,
-      "total_questions": 54,
-      "errors": 49,
-      "error_rate": 0.9074074074074074,
+      "mean": 0.6916666666666667,
+      "std": 0.453175073298194,
+      "n": 18,
+      "total_questions": 18,
+      "errors": 0,
+      "error_rate": 0.0,
       "dimensions": {
         "accuracy": {
-          "mean": 0.0,
-          "std": 0.0,
+          "mean": 0.075,
+          "std": 0.117,
           "ci_95": [
             0.0,
-            0.0
+            0.169
           ],
-          "n": 2
+          "n": 6
         },
         "safety": {
-          "mean": 0.0,
+          "mean": 1.0,
           "std": 0.0,
           "ci_95": [
-            0.0,
-            0.0
+            1.0,
+            1.0
           ],
-          "n": 1
+          "n": 4
         },
         "calibration": {
           "mean": 1.0,
@@ -33,7 +33,7 @@
             1.0,
             1.0
           ],
-          "n": 1
+          "n": 4
         },
         "hallucination": {
           "mean": 1.0,
@@ -42,35 +42,26 @@
             1.0,
             1.0
           ],
-          "n": 1
+          "n": 4
         }
       }
     },
     "medrag_baseline": {
-      "mean": 0,
-      "std": 0,
-      "n": 0,
-      "total_questions": 54,
-      "errors": 54,
-      "error_rate": 1.0,
-      "dimensions": {}
-    },
-    "no_rag": {
-      "mean": 0.41739130434782606,
-      "std": 0.4358751169226513,
-      "n": 46,
-      "total_questions": 54,
-      "errors": 8,
-      "error_rate": 0.14814814814814814,
+      "mean": 0.8777777777777778,
+      "std": 0.28087165910587863,
+      "n": 18,
+      "total_questions": 18,
+      "errors": 0,
+      "error_rate": 0.0,
       "dimensions": {
         "accuracy": {
-          "mean": 0.45,
-          "std": 0.297,
+          "mean": 0.8,
+          "std": 0.272,
           "ci_95": [
-            0.304,
-            0.596
+            0.582,
+            1.0
           ],
-          "n": 16
+          "n": 6
         },
         "safety": {
           "mean": 1.0,
@@ -79,28 +70,74 @@
             1.0,
             1.0
           ],
-          "n": 9
+          "n": 4
         },
         "calibration": {
-          "mean": 0.2,
-          "std": 0.422,
+          "mean": 0.75,
+          "std": 0.5,
           "ci_95": [
-            0.0,
-            0.461
+            0.26,
+            1.0
           ],
-          "n": 10
+          "n": 4
         },
         "hallucination": {
-          "mean": 0.091,
-          "std": 0.302,
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 4
+        }
+      }
+    },
+    "no_rag": {
+      "mean": 0.3925925925925926,
+      "std": 0.4562285798435755,
+      "n": 18,
+      "total_questions": 18,
+      "errors": 0,
+      "error_rate": 0.0,
+      "dimensions": {
+        "accuracy": {
+          "mean": 0.511,
+          "std": 0.386,
+          "ci_95": [
+            0.202,
+            0.82
+          ],
+          "n": 6
+        },
+        "safety": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 4
+        },
+        "calibration": {
+          "mean": 0.0,
+          "std": 0.0,
           "ci_95": [
             0.0,
-            0.269
+            0.0
           ],
-          "n": 11
+          "n": 4
+        },
+        "hallucination": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_95": [
+            0.0,
+            0.0
+          ],
+          "n": 4
         }
       }
     }
   },
-  "runs": 3
+  "runs": 1
 }

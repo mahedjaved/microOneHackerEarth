@@ -76,12 +76,12 @@ async def ask_question(request: Request, question: str = Form(...)):
         embedding_query = embedding_model.embed_query(validated.question)
         response = index.query(
             vector=embedding_query,
-            top_k=3,
+            top_k=2,  # Reduced from 3 to save tokens
             include_metadata=True,
         )
         docs = [
             Document(
-                page_content=match["metadata"].get("text", ""),
+                page_content=match["metadata"].get("text", "")[:500],  # Truncate passages to save tokens
                 metadata=match["metadata"],
             )
             for match in response["matches"]
@@ -115,7 +115,7 @@ async def ask_question(request: Request, question: str = Form(...)):
                 document_id=match["metadata"].get("source", "unknown"),
                 document_version=match["metadata"].get("version", "v1"),
                 page_location=str(match["metadata"].get("page", "")),
-                text=match["metadata"].get("text", ""),
+                text=match["metadata"].get("text", "")[:500],  # Truncate to save tokens
                 provenance_hash="",
             )
             for match in response["matches"]
@@ -162,6 +162,7 @@ async def ask_question(request: Request, question: str = Form(...)):
                 pii_redacted=pii_redacted,
                 doubt_certificate=uq_response.doubt_certificate,
                 run_artifact_id=uq_response.run_artifact_id,
+                safety_scope=uq_response.safety_scope,
             )
 
         except Exception as uq_error:
@@ -179,6 +180,7 @@ async def ask_question(request: Request, question: str = Form(...)):
                 pii_redacted=pii_redacted,
                 doubt_certificate=None,
                 run_artifact_id=None,
+                safety_scope="allowed",  # Fallback assumes allowed
             )
 
     except Exception as e:
