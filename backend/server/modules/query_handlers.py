@@ -303,11 +303,21 @@ def _infer_uncertainty_causes(evidence_features: list[EvidenceFeatureVector], co
 
 
 def _compute_support_probability(verifier_outputs: list[VerifierResult]) -> float:
-    """Compute average support probability across claims."""
+    """Compute support probability across claims.
+
+    Uses MAX instead of average to avoid boilerplate disclaimer sentences
+    dragging down the score of well-supported factual claims.
+
+    Example: "The maximum dose is 500mg. Always consult a doctor."
+    - Claim 1: "The maximum dose is 500mg" -> SUPPORTED ~0.9
+    - Claim 2: "Always consult a doctor" -> SUPPORTED ~0.0 (generic advice)
+    - Average: 0.45 (falsely low)
+    - Max: 0.9 (correctly identifies well-supported factual claim)
+    """
     if not verifier_outputs:
         return 0.0
     probs = [vo.probabilities.get("SUPPORTED", 0.0) for vo in verifier_outputs]
-    return sum(probs) / len(probs)
+    return max(probs)
 
 
 def query_chain(chain, user_input: str):
