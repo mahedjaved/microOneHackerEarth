@@ -208,6 +208,7 @@ class ExtendedQuestionResponse(BaseModel):
     pii_redacted: bool = False
     doubt_certificate: DoubtCertificate | None = None
     run_artifact_id: uuid.UUID | None = None
+    safety_scope: SafetyScope = SafetyScope.ALLOWED  # Direct from safety gate enum
 
     model_config = ConfigDict(extra="forbid")
 

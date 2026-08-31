@@ -108,6 +108,7 @@ def run_uq_pipeline(
             doubt_certificate=None,
             run_artifact_id=artifact.run_id,
             disclaimer=safety_response["disclaimer"],
+            safety_scope=SafetyScope.EMERGENCY,
         ), artifact
 
     if safety_result.scope == SafetyScope.PROHIBITED:
@@ -117,6 +118,7 @@ def run_uq_pipeline(
             doubt_certificate=None,
             run_artifact_id=None,
             disclaimer=safety_result.reason,
+            safety_scope=SafetyScope.PROHIBITED,
         )
         artifact = build_run_artifact(
             original_question=question,
@@ -207,6 +209,7 @@ def run_uq_pipeline(
             sources=sources,
             doubt_certificate=None,
             run_artifact_id=artifact.run_id,
+            safety_scope=SafetyScope.ALLOWED,
         ), artifact
 
     # Non-singleton or non-supported: Doubt Certificate or EAV
@@ -263,6 +266,7 @@ def run_uq_pipeline(
         sources=[],
         doubt_certificate=doubt_certificate,
         run_artifact_id=artifact.run_id,
+        safety_scope=SafetyScope.ALLOWED,
     ), artifact
 
 

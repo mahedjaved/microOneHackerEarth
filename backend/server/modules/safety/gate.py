@@ -33,6 +33,14 @@ _EMERGENCY_PATTERNS = [
     r"\b911\b",
     r"\bemergency room\b",
     r"\bER\b",
+    # Swallowing/poisoning/ingestion
+    r"\bswallowed\b",
+    r"\bpoison\b",
+    r"\bpoisoning\b",
+    r"\bingested\b",
+    r"\bingestion\b",
+    r"\btook too much\b",
+    r"\bthe whole bottle\b",
 ]
 
 _DIAGNOSIS_PATTERNS = [
@@ -48,6 +56,11 @@ _PRESCRIPTION_PATTERNS = [
     r"\bprescription\b",
     r"\bdosage for me\b",
     r"\bhow much should i take\b",
+    # More natural phrasings for dosage questions
+    r"\bwhat dosage of\b",
+    r"\bhow much\b.*\bshould i take\b",
+    r"\bdosage of\b.*\bfor\b",
+    r"\bhow many\b.*\bmg\b",
 ]
 
 _PATIENT_RISK_PATTERNS = [

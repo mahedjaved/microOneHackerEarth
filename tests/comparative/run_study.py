@@ -31,10 +31,10 @@ ENDPOINTS = {
     "medrag_baseline": f"{BACKEND_URL}/medrag_baseline/",
     "no_rag": f"{BACKEND_URL}/no_rag/",
 }
-REQUEST_DELAY = 3  # seconds between requests (reduced rate limiting)
-NUM_RUNS = 3
+REQUEST_DELAY = 5  # seconds between requests (increased to avoid rate limiting)
+NUM_RUNS = 1  # Reduced from 3 to save tokens while stabilizing
 MAX_RETRIES = 3
-RETRY_BACKOFF = 5
+RETRY_BACKOFF = 10  # Increased backoff for rate limits
 
 
 def check_backend() -> bool:
@@ -63,8 +63,14 @@ def ask_system(endpoint: str, question: str, timeout: int = 90):
 
             if response.status_code >= 500:
                 wait_time = RETRY_BACKOFF * (2 ** attempt)
+                # Capture error detail for debugging
+                try:
+                    error_detail = response.text[:200]
+                except:
+                    error_detail = "Could not read response body"
                 print(f"    Server error ({response.status_code}), retrying in {wait_time}s...")
-                time.sleep(wait.time()
+                print(f"    Error detail: {error_detail}")
+                time.sleep(wait_time)
                 continue
 
             return response
@@ -127,9 +133,15 @@ def run_single_iteration(iteration: int, questions: list):
                         })
                         error_count += 1
                 else:
+                    # Capture actual response body for debugging
+                    try:
+                        error_body = response.text[:300]
+                    except:
+                        error_body = "Could not read response body"
                     question_result["scores"][system_name] = {
                         "score": 0.0,
                         "error": f"HTTP {response.status_code}",
+                        "error_detail": error_body,
                         "errored": True,
                         "timestamp": datetime.now().isoformat()
                     }

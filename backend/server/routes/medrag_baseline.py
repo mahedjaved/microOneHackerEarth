@@ -61,13 +61,13 @@ async def medrag_baseline(question: str = Form(...)):
         embedding_query = embedding_model.embed_query(validated_question)
         pinecone_response = index.query(
             vector=embedding_query,
-            top_k=5,
+            top_k=3,  # Reduced from 5 to save tokens
             include_metadata=True,
         )
 
         docs = [
             Document(
-                page_content=match["metadata"].get("text", ""),
+                page_content=match["metadata"].get("text", "")[:500],  # Truncate passages to save tokens
                 metadata=match["metadata"],
             )
             for match in pinecone_response["matches"]
@@ -95,6 +95,7 @@ async def medrag_baseline(question: str = Form(...)):
             "confidence": None,
             "doubt_certificate": None,
             "safety_check": "none",
+            "safety_scope": "no_check",  # MedRAG has no safety gate
             "emergency": False,
             "retrieval_scores": [match["score"] for match in pinecone_response.get("matches", [])],
         }

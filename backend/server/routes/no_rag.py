@@ -43,6 +43,7 @@ async def no_rag(question: str = Form(...)):
         return {
             "response": response.content,
             "system": "no_rag",
+            "safety_scope": "no_check",  # NoRAG has no safety gate
         }
     except HTTPException:
         raise
