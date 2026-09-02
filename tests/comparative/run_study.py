@@ -31,10 +31,11 @@ ENDPOINTS = {
     "medrag_baseline": f"{BACKEND_URL}/medrag_baseline/",
     "no_rag": f"{BACKEND_URL}/no_rag/",
 }
-REQUEST_DELAY = 5  # seconds between requests (increased to avoid rate limiting)
+REQUEST_DELAY = 1  # seconds between requests (reduced from 5 for local runs; was a rate-limit guard, not a methodological requirement)
 NUM_RUNS = 1  # Reduced from 3 to save tokens while stabilizing
-MAX_RETRIES = 3
+MAX_RETRIES = 2  # Reduced from 3 to fail faster on hung endpoints (prevents 4.5 min stall per question)
 RETRY_BACKOFF = 10  # Increased backoff for rate limits
+ERROR_RATE_THRESHOLD = 0.05  # Warn if any system exceeds 5% error rate (defense-in-depth against timeout-induced selection bias)
 
 
 def check_backend() -> bool:
@@ -46,7 +47,7 @@ def check_backend() -> bool:
         return False
 
 
-def ask_system(endpoint: str, question: str, timeout: int = 90):
+def ask_system(endpoint: str, question: str, timeout: int = 45):
     """Send question to a system with retry-with-backoff."""
     for attempt in range(MAX_RETRIES):
         try:
@@ -113,13 +114,18 @@ def run_single_iteration(iteration: int, questions: list):
         for system_name, endpoint in ENDPOINTS.items():
             try:
                 time.sleep(REQUEST_DELAY)
+                # Per-question latency logging (P2: defense against
+                # timeout-induced selection bias flagged by Nemotron reviewer)
+                t_start = time.time()
                 response = ask_system(endpoint, question)
+                latency_seconds = round(time.time() - t_start, 3)
 
                 if response.status_code == 200:
                     data = response.json()
                     question_result["scores"][system_name] = {
                         "api_response": data,
-                        "timestamp": datetime.now().isoformat()
+                        "timestamp": datetime.now().isoformat(),
+                        "latency_seconds": latency_seconds,
                     }
                     try:
                         score_result = score_response(test_case, data, system_name)
@@ -129,7 +135,8 @@ def run_single_iteration(iteration: int, questions: list):
                             "score": 0.0,
                             "error": f"Scoring error: {str(score_err)}",
                             "errored": True,
-                            "timestamp": datetime.now().isoformat()
+                            "timestamp": datetime.now().isoformat(),
+                            "latency_seconds": latency_seconds,
                         })
                         error_count += 1
                 else:
@@ -143,7 +150,8 @@ def run_single_iteration(iteration: int, questions: list):
                         "error": f"HTTP {response.status_code}",
                         "error_detail": error_body,
                         "errored": True,
-                        "timestamp": datetime.now().isoformat()
+                        "timestamp": datetime.now().isoformat(),
+                        "latency_seconds": latency_seconds,
                     }
                     error_count += 1
             except Exception as e:
@@ -151,7 +159,7 @@ def run_single_iteration(iteration: int, questions: list):
                     "score": 0.0,
                     "error": str(e),
                     "errored": True,
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
                 error_count += 1
 
@@ -212,7 +220,7 @@ def archive_existing_runs():
 
     Prevents stale data from blending with new results.
     """
-    results_dir = Path("tests/comparative/results")
+    results_dir = Path(__file__).parent / "results"
     archive_dir = results_dir / "archive"
 
     run_files = list(results_dir.glob("run*.json"))
@@ -262,7 +270,7 @@ def run_study(suite: str = "original"):
 
         # Save per-run results
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        results_dir = Path("tests/comparative/results")
+        results_dir = Path(__file__).parent / "results"
         results_dir.mkdir(parents=True, exist_ok=True)
         run_file = results_dir / f"run{run_idx}_{timestamp}.json"
         with open(run_file, "w") as f:
@@ -273,7 +281,8 @@ def run_study(suite: str = "original"):
     aggregates = compute_all_aggregates(all_run_results)
 
     # Save summary
-    with open("tests/comparative/results/summary.json", "w") as f:
+    summary_path = Path(__file__).parent / "results" / "summary.json"
+    with open(summary_path, "w") as f:
         json.dump(aggregates, f, indent=2)
 
     # Print summary
@@ -284,6 +293,19 @@ def run_study(suite: str = "original"):
 
     winner = max(aggregates["systems"].items(), key=lambda x: x[1]["mean"])
     print(f"\nWinner: {winner[0]} (score: {winner[1]['mean']:.3f})")
+
+    # Error-rate guard (P2: defense against timeout-induced selection bias)
+    over_threshold = [
+        (s, m["error_rate"])
+        for s, m in aggregates["systems"].items()
+        if m.get("error_rate", 0) > ERROR_RATE_THRESHOLD
+    ]
+    if over_threshold:
+        print(f"\n[WARNING] Error rate exceeds {ERROR_RATE_THRESHOLD:.0%} for:")
+        for s, rate in over_threshold:
+            print(f"    {s}: {rate:.1%}")
+        print("    Results may be biased by timeout-induced selection.")
+        print("    Consider increasing timeout or running with --suite=original for a smaller, faster test.")
 
     return aggregates
 

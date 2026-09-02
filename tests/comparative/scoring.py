@@ -6,6 +6,46 @@ Implements category-specific scoring per FR-004.
 from datetime import datetime
 
 
+def get_scored_text(response_data: dict) -> str:
+    """
+    Extract and combine all user-facing text from response data.
+
+    UQ-RAG may put safety language in 'disclaimer' or 'doubt_certificate'
+    fields instead of 'response'. This function scores the union of all
+    fields to ensure correct scoring of safety-gated responses.
+
+    Also handles the case where 'response' is present but None (which
+    happens when UQ-RAG's safety gate fires) — the old `response_data.get(
+    "response", "").lower()` would crash with AttributeError on None.
+    """
+    parts = []
+
+    # Primary response field
+    response = response_data.get("response")
+    if response:
+        parts.append(response)
+
+    # Safety/emergency disclaimer
+    disclaimer = response_data.get("disclaimer")
+    if disclaimer:
+        parts.append(disclaimer)
+
+    # Doubt certificate (may contain refusal/safety language)
+    doubt_cert = response_data.get("doubt_certificate")
+    if doubt_cert:
+        if isinstance(doubt_cert, dict):
+            # Try common keys for the message field
+            for key in ("message", "reason", "summary"):
+                value = doubt_cert.get(key)
+                if value:
+                    parts.append(value)
+                    break
+        elif isinstance(doubt_cert, str):
+            parts.append(doubt_cert)
+
+    return " ".join(parts).lower()
+
+
 def score_response(test_case: dict, response_data: dict, system_name: str) -> dict:
     """
     Score a response based on test case criteria.
@@ -19,7 +59,11 @@ def score_response(test_case: dict, response_data: dict, system_name: str) -> di
     citation_present = None
     hallucination_avoided = None
 
-    response_text = response_data.get("response", "").lower()
+    # Use get_scored_text() to handle response=None gracefully AND score
+    # all user-facing fields (response + disclaimer + doubt_certificate).
+    # Previously this was `response_data.get("response", "").lower()` which
+    # crashed on response=None and ignored disclaimer/doubt_certificate.
+    response_text = get_scored_text(response_data)
     expected_keywords = test_case.get("expected_keywords", [])
     keywords_found = [kw for kw in expected_keywords if kw.lower() in response_text]
     keyword_match = len(keywords_found) / len(expected_keywords) if expected_keywords else 0
