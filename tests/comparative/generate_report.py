@@ -6,7 +6,13 @@ Generates examiner evidence report per FR-005.
 import json
 import glob
 import os
+import sys
 from datetime import datetime
+
+# Add repo root to path so we can import tests.comparative.* as a package
+_REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
 
 from tests.comparative.scoring import (
     compute_suite_average,
@@ -19,14 +25,35 @@ from tests.comparative.test_dataset import ACCURACY_SUITE_IDS, SAFETY_SUITE_IDS
 
 
 def load_results():
-    """Load all comparison results"""
+    """Load all comparison results.
+
+    Each run*.json file contains a list of per-question results. This
+    function flattens all files into a single list of per-question dicts.
+    """
     results = []
     for file in sorted(glob.glob("tests/comparative/results/*.json")):
         if "summary" in file:
             continue
         with open(file) as f:
-            results.append(json.load(f))
+            data = json.load(f)
+        # Each run file is a list of per-question results; flatten.
+        if isinstance(data, list):
+            results.extend(data)
+        elif isinstance(data, dict):
+            # Fallback: single-question file (shouldn't happen, but be safe)
+            results.append(data)
     return results
+
+
+def _is_errored(score_data: dict) -> bool:
+    """Check if a score entry represents a system error (not a behavioral failure).
+
+    Errored entries are tracked separately and excluded from behavioral
+    averages to match the convention in run_study.py. This fixes the
+    contradictory error handling between the two files (first Nemotron
+    reviewer flagged this).
+    """
+    return bool(score_data.get("errored"))
 
 
 def calculate_metrics(results):
@@ -35,6 +62,7 @@ def calculate_metrics(results):
         "uq_rag": {
             "total_score": 0,
             "count": 0,
+            "error_count": 0,
             "safety_scores": [],
             "doubt_scores": [],
             "citation_scores": [],
@@ -45,6 +73,7 @@ def calculate_metrics(results):
         "medrag_baseline": {
             "total_score": 0,
             "count": 0,
+            "error_count": 0,
             "safety_scores": [],
             "doubt_scores": [],
             "citation_scores": [],
@@ -55,6 +84,7 @@ def calculate_metrics(results):
         "no_rag": {
             "total_score": 0,
             "count": 0,
+            "error_count": 0,
             "safety_scores": [],
             "doubt_scores": [],
             "citation_scores": [],
@@ -73,8 +103,12 @@ def calculate_metrics(results):
         for system_name, score_data in scores.items():
             if system_name not in metrics:
                 continue
-            metrics[system_name]["total_score"] += score_data.get("score", 0)
             metrics[system_name]["count"] += 1
+            if _is_errored(score_data):
+                metrics[system_name]["error_count"] += 1
+                continue
+            # Only add to total_score if NOT errored (matches run_study.py)
+            metrics[system_name]["total_score"] += score_data.get("score", 0)
 
             if category.startswith("safety_"):
                 metrics[system_name]["safety_scores"].append(score_data)
@@ -95,8 +129,13 @@ def calculate_metrics(results):
                 metrics[system_name]["safety_suite_scores"].append(score_data)
 
     for system_name, data in metrics.items():
-        if data["count"] > 0:
-            data["average_score"] = round(data["total_score"] / data["count"], 2)
+        # Use count excluding errors for the denominator (matches run_study.py)
+        behavioral_count = data["count"] - data["error_count"]
+        if behavioral_count > 0:
+            data["average_score"] = round(data["total_score"] / behavioral_count, 2)
+        else:
+            data["average_score"] = 0.0
+        data["error_rate"] = round(data["error_count"] / data["count"], 2) if data["count"] > 0 else 0.0
         data["safety_rate"] = compute_safety_detection_rate(data["safety_scores"])
         data["doubt_rate"] = compute_doubt_expression_rate(data["doubt_scores"])
         data["citation_rate"] = compute_citation_rate(data["citation_scores"])
@@ -114,6 +153,15 @@ def generate_html_report():
     metrics = calculate_metrics(results)
 
     winner = max(metrics.keys(), key=lambda s: metrics[s].get("composite_score", 0))
+
+    # Compute error-rate warning banner before the f-string (avoids
+    # backslash-in-f-string issues in Python <3.12)
+    over_threshold_systems = [s for s in ['uq_rag', 'medrag_baseline', 'no_rag']
+                              if metrics[s].get('error_rate', 0) > 0.05]
+    if over_threshold_systems:
+        warning_banner = '<p class="metric-bad"><strong>WARNING:</strong> Error rate exceeds 5% threshold for one or more systems. Results may be biased.</p>'
+    else:
+        warning_banner = ''
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -143,6 +191,15 @@ tr:nth-child(even) {{ background: #f5f5f5; }}
 <h1>UQ-RAG Comparative Study Report</h1>
 <p>Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
 <p>Winner: <strong class="metric-good">{winner}</strong> (Composite Score: {metrics[winner].get("composite_score", 0)})</p>
+
+<h2>Reliability</h2>
+<p>Errored calls (excluded from behavioral averages; tracked separately for transparency):</p>
+<ul>
+<li>UQ-RAG: {metrics['uq_rag'].get('error_count', 0)}/{metrics['uq_rag'].get('count', 0)} ({metrics['uq_rag'].get('error_rate', 0):.0%})</li>
+<li>MedRAG Baseline: {metrics['medrag_baseline'].get('error_count', 0)}/{metrics['medrag_baseline'].get('count', 0)} ({metrics['medrag_baseline'].get('error_rate', 0):.0%})</li>
+<li>No-RAG Baseline: {metrics['no_rag'].get('error_count', 0)}/{metrics['no_rag'].get('count', 0)} ({metrics['no_rag'].get('error_rate', 0):.0%})</li>
+</ul>
+{warning_banner}
 
 <h2>Executive Summary</h2>
 <p>This report compares three systems:</p>

@@ -4,8 +4,7 @@ Serves as the simplest baseline for comparison per FR-002.
 """
 
 from fastapi import APIRouter, Form, HTTPException
-from langchain_groq import ChatGroq
-from ..config import settings
+from ..modules.llm import get_direct_llm
 
 router = APIRouter()
 
@@ -25,10 +24,7 @@ async def no_rag(question: str = Form(...)):
         if not validated_question:
             raise HTTPException(status_code=422, detail="Question cannot be empty")
 
-        llm = ChatGroq(
-            model="openai/gpt-oss-120b",
-            api_key=settings.groq_api_key_resolved,
-        )
+        llm = get_direct_llm()
 
         messages = [
             {

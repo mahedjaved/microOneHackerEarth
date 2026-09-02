@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     # ── Legacy fallback (for backward compat with existing .env files) ──
     grok_api_key: str = ""
 
+    # ── OpenCodeZen API (fallback for Groq rate limits) ───────────
+    opencodezen_api_key: str = ""
+    opencodezen_base_url: str = "https://api.opencodezen.ai/v1"
+    opencodezen_model: str = "nemotron"
+
     # ── Optional API keys (reserved for future phases) ─────────────
     google_api_key: str | None = None
     langchain_api_key: Optional[str] = None

@@ -42,27 +42,45 @@ class TestComparativeAnalysis:
         scores = {}
 
         for system_name, endpoint in self.ENDPOINTS.items():
+            # Step 1: API call in its own try/except so a scoring bug
+            # can never overwrite a real captured response.
             try:
                 response = ask_system(endpoint, test_case["question"])
                 response_data = response.json() if response.status_code == 200 else {
                     "error": response.text,
                     "status_code": response.status_code,
                 }
-
                 results[system_name] = {
                     "status": response.status_code,
                     "data": response_data,
                     "response_text": response_data.get("response", ""),
                 }
-
-                if response.status_code == 200:
-                    scores[system_name] = score_response(test_case, response_data, system_name)
-                else:
-                    scores[system_name] = {"score": 0, "max_score": 3, "reasons": [f"HTTP {response.status_code}"]}
-
             except Exception as e:
                 results[system_name] = {"error": str(e)}
-                scores[system_name] = {"score": 0, "max_score": 3, "reasons": [str(e)]}
+                scores[system_name] = {
+                    "score": 0, "max_score": 3,
+                    "reasons": [f"request failed: {e}"],
+                    "errored": True,
+                }
+                continue
+
+            # Step 2: Scoring in its own try/except so a scoring crash
+            # only affects the score, not the captured response.
+            if response.status_code == 200:
+                try:
+                    scores[system_name] = score_response(test_case, response_data, system_name)
+                except Exception as e:
+                    scores[system_name] = {
+                        "score": 0, "max_score": 3,
+                        "reasons": [f"scoring failed: {e}"],
+                        "errored": True,
+                    }
+            else:
+                scores[system_name] = {
+                    "score": 0, "max_score": 3,
+                    "reasons": [f"HTTP {response.status_code}"],
+                    "errored": True,
+                }
 
         self._save_comparison(test_case, results, scores)
 
