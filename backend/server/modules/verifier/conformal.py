@@ -4,11 +4,24 @@ Split conformal prediction using MAPIE.
 Converts calibrated probabilities into prediction sets with coverage guarantees.
 """
 
+import os
+import sys
 from typing import Optional
 import numpy as np
 from mapie.classification import SplitConformalClassifier
 
-from server.schemas import Verdict
+# Make the server package importable when this module is used in isolation
+# (e.g., from tests/comparative/ without the backend on sys.path).
+_BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+if _BACKEND_ROOT not in sys.path:
+    sys.path.insert(0, _BACKEND_ROOT)
+
+try:
+    from server.schemas import Verdict
+except ImportError:
+    # Verdict is only needed by the ConformalPredictor class; the
+    # expected-loss quantile functions below don't depend on it.
+    Verdict = None  # type: ignore
 
 
 class ConformalPredictor:
@@ -116,5 +129,98 @@ class ConformalPredictor:
         scores = self.predictor.conformity_scores
         quantile = float(np.quantile(scores, 1.0 - self.alpha))
         return quantile
+
+
+# =============================================================================
+# Expected-loss-driven quantile selection (spec 001-bayesian-evidence-fusion)
+# FR-006, FR-007, FR-013
+# =============================================================================
+
+
+def _parse_cost_ratio(cost_ratio: str) -> tuple[float, float]:
+    """Parse a "N:M" cost ratio string into (confident_wrong, over_abstain)."""
+    try:
+        n, m = cost_ratio.split(":")
+        return (float(n), float(m))
+    except (ValueError, AttributeError):
+        return (10.0, 1.0)
+
+
+def _expected_loss(
+    entries: list[dict],
+    cost_wrong: float,
+    cost_abstain: float,
+    q: float,
+) -> float:
+    """
+    Compute expected loss at a given abstention threshold q.
+
+    For each (claim, passage, ground_truth_support) entry, assume the
+    per-passage support probability equals ground_truth_support (perfect
+    calibration as a reference). Then:
+      - If the verifier abstains (p < q), pay cost_abstain.
+      - If the verifier doesn't abstain and the claim is unsupported,
+        pay cost_wrong (confident-wrong).
+      - If the verifier doesn't abstain and the claim is supported, pay 0.
+
+    Returns the mean loss across entries.
+    """
+    if not entries:
+        return 0.0
+    total = 0.0
+    for entry in entries:
+        p = 1.0 if entry.get("ground_truth_support") else 0.0
+        if p < q:
+            total += cost_abstain
+        elif not entry.get("ground_truth_support"):
+            total += cost_wrong
+    return total / len(entries)
+
+
+def compute_quantile_from_calibration(
+    calibration_set_path: str,
+    cost_ratio: str = "10:1",
+    step: float = 0.01,
+) -> float:
+    """
+    Choose the conformal abstention quantile by minimizing expected loss
+    on a labeled calibration set under a stated cost ratio.
+
+    Spec: 001-bayesian-evidence-fusion FR-006, SC-004.
+    Contract: contracts/contracts.md — reproducible from inputs.
+
+    Args:
+        calibration_set_path: Path to a JSON file with shape:
+            {"entries": [{"ground_truth_support": bool, ...}, ...]}
+        cost_ratio: "N:M" string (confident_wrong : over_abstain).
+            Default "10:1" (medical-safety prior).
+        step: Quantile sweep granularity. Default 0.01.
+
+    Returns:
+        The quantile q in [0, 1] that minimizes expected loss.
+    """
+    import json
+
+    with open(calibration_set_path) as f:
+        cal = json.load(f)
+    entries = cal.get("entries", [])
+
+    cost_wrong, cost_abstain = _parse_cost_ratio(cost_ratio)
+
+    best_q = 0.0
+    best_loss = float("inf")
+    # Sweep q in [0, 1] at the given step granularity
+    # Use a stable integer counter to avoid float accumulation
+    n_steps = int(round(1.0 / step))
+    for i in range(n_steps + 1):
+        q = i * step
+        if q > 1.0:
+            q = 1.0
+        loss = _expected_loss(entries, cost_wrong, cost_abstain, q)
+        if loss < best_loss:
+            best_loss = loss
+            best_q = q
+
+    return best_q
 
 

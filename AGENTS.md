@@ -1,206 +1,134 @@
-# AGENTS.md — microOne HackerEarth
+# AGENTS.md — microOne HackerEarth (MedRAGAssistant / CURA-Med)
 
 ## What this repo is
 
-This is an entry for the **micro1 Agentic Workflows Hackathon** (HackerEarth).
-The challenge: pick a meaningful, well-understood problem and use AI agents to
-solve it, demonstrating clear measurable improvement over a fair baseline.
+Medical RAG chatbot with uncertainty quantification (CURA-Med / SourceProof Medical).
+FastAPI backend + Streamlit frontend. Active development — not a placeholder repo.
 
-The full challenge brief lives in `docs/micro1 - First Hackathon97ce7c5.pdf`.
-**This file is gitignored** — see `.gitignore`. Do not move, rename, or delete
-it. It is the project's source of truth and is not recoverable from git.
+## Repo layout
 
-## Current phase
-
-**Problem definition only. No code yet.** The repo currently contains only
-`.git/`, `.gitignore`, and the gitignored `docs/` folder. The intended workflow
-(before any implementation) is:
-
-1. Define the problem in `docs/problem.docx` (or equivalent).
-2. Adopt spec-driven development via **speckit**.
-3. Draft a `constitution.md` capturing project principles and constraints.
-
-Do not write application code until the problem and spec are in place.
+- `backend/server/` — FastAPI app, routes, modules, config. This is the real entrypoint.
+- `frontend/` — Streamlit UI. Depends on `API_URL` env var.
+- `backend/tests/` — unit tests (pytest + TestClient).
+- `tests/regression/` — Playwright-based integration/UI tests.
+- `data/` — corpus, FAISS index, trained models. Mostly gitignored; prebuilt artifacts are present.
+- `specs/` — speckit feature specs.
+- `submission/` — hackathon deliverables (reproduction guide, changelog, trajectories).
+- `.specify/` — speckit constitution, templates, PowerShell scripts.
 
 ## Shell and environment
 
-- **OS:** Windows, **shell is PowerShell** (not bash). `ls`, `la` flags, and
-  other bash-isms do not work. Use `Get-ChildItem`, `Select-Object`, etc.
-- **Python:** available at system path (Python 3.10). `pypdf` is installed for
-  reading the hackathon PDF if needed again.
+- **OS:** Windows 11, **shell is PowerShell** (not bash). `ls`, `&&` chains in scripts, and bash-isms do not work.
+- **Python:** backend uses Python 3.10 locally, 3.13 in Docker. Root `requirements.txt` includes `specify-cli` which requires Python 3.11+.
+- **Venvs:** backend has its own `.venv/` (gitignored). Root `.venv/` is for speckit only.
 
-## Hackathon structure you must satisfy
+## Exact commands
 
-Judging is out of 100 pts across: Problem & User Value (15), Agent Solution &
-Engineering (30), End-to-End Quality (20), Measured Improvement (15),
-Reproducibility (15), Hot Take / Insights (5).
+### Backend unit tests (fast, no services needed)
 
-Required deliverables (per the brief):
-- **Code + Improvement Changelog** — every meaningful iteration tied to evidence,
-  including removed experiments and what they taught you.
-- **Reproduction guide** — written for a clean environment; exact commands,
-  data, expected output, versions, runtime, cost.
-- **Solution video** (≤5 min) — problem, baseline, one full execution, final
-  comparison, biggest contributing change, one removed experiment.
-- **Agent trajectories** — representative runs per agent, from instructions
-  through tools/responses to final result, including retries and human checkpoints.
+```powershell
+cd backend
+python -m pytest tests/ -v --tb=short
+```
 
-## Ground rules (binding)
+Expected: ~73 passed. Dummy keys in `backend/server/.env` are sufficient; Pinecone/Groq features degrade gracefully without real keys.
 
-- Keep consequential actions in a sandbox/simulation; require human approval
-  before real effects.
-- Include a qualified human reviewer for anything that could significantly
-  affect someone.
-- Use only public, synthetic, or approved-anonymous data. No private data.
-- **No credentials or private info in the submission.**
-- Every claim about results must link to submitted evidence.
-- Judges must be able to run and reproduce the main result.
+### Train verifier (required before UQ pipeline works)
 
-## Repo conventions
+```powershell
+cd backend
+python scripts/train_verifier.py
+```
 
-- `/docs` and `/notes` are gitignored — reference material, drafts, and large
-  files go there and are not tracked.
-- `.kilo/`, `.claude/`, `.opencode/` are also gitignored.
-- Keep the working tree clean; the submission must be reproducible from clone.
+Artifacts land in `data/models/` and `data/training/`. These directories are gitignored but prebuilt artifacts are already present in the repo.
 
-## Speckit (spec-driven development)
+### End-to-end UQ pipeline test
 
-This project uses [speckit](https://github.com/github/spec-kit) for spec-driven development.
-The CLI is installed in `.venv` (Python 3.11). All speckit commands must run via the venv:
+```powershell
+cd backend
+python scripts/test_e2e.py
+```
+
+### Regression tests (requires running services)
+
+```powershell
+# Terminal 1: start backend
+cd backend
+python -m uvicorn server.main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: start frontend
+cd frontend
+streamlit run app.py
+
+# Terminal 3: run tests
+pytest tests/regression/ -v
+```
+
+UI tests need Playwright + Chromium:
+```powershell
+pip install pytest-playwright playwright
+python -m playwright install chromium
+```
+
+### Speckit (run from repo root via root venv)
 
 ```powershell
 .venv\Scripts\specify.exe <command>
 ```
 
-Available commands (also registered as Kilo slash commands in `.kilo/commands/`):
-- `/speckit.constitution` — establish/update project principles (`.specify/memory/constitution.md`)
-- `/speckit.specify` — create baseline spec (who, bottleneck, why it matters)
-- `/speckit.clarify` — resolve ambiguities before planning
-- `/speckit.plan` — generate implementation plan
-- `/speckit.checklist` — validate requirements completeness
-- `/speckit.tasks` — break plan into actionable tasks
-- `/speckit.analyze` — cross-artifact consistency check (run before implement)
-- `/speckit.implement` — execute tasks
-- `/speckit.converge` — assess codebase against artifacts, append remaining work
+Workflow order: constitution → specify → clarify → plan → checklist → tasks → analyze → implement → converge
 
-**Artifacts live in:**
-- `.specify/memory/constitution.md` — project principles (currently a template, needs filling)
-- `.specify/templates/` — spec, plan, tasks, checklist templates
-- `.specify/scripts/powershell/` — helper scripts (PowerShell, since this is Windows)
+## Project history and current state
 
-**Workflow order:** constitution → specify → clarify → plan → checklist → tasks → analyze → implement → converge
+The repo has evolved through several distinct phases documented in `docs/` and `guidance/`:
 
-**Rules:**
-- Do not run speckit outside the `.venv` — the CLI is not globally installed.
-- Always run from the repo root (`D:\PROJECTS\CLAUDE_CLI_AGENTS\HACKER_EARTH\HACKATHONS\microOneHackerEarth`).
-- PowerShell scripts (`.ps1`) are the native script type here, not bash.
+- **2026-08-30**: Comparative study framework implemented via speckit (`specs/003-comparative-study/`). Initial results showed UQ-RAG scoring lower than baselines (1.7 vs 2.36/2.5).
+- **2026-09-02 to 2026-09-04**: Intensive debugging and expert review sessions (documented in `docs/chat_compilation_report.md`). Key findings:
+  - Scoring bugs in `tests/comparative/scoring.py` crashed on `None` responses and ignored `disclaimer` field
+  - Conformal predictor was a stub (`is_fitted = True` without fitting) — UQ pipeline silently fell back to baseline RAG
+  - `backend/server/modules/output/` was gitignored by a broad `output/` rule
+  - Comparative study runtime was >60 min due to `REQUEST_DELAY=5`, `MAX_RETRIES=3`, `timeout=90`
+- **2026-09-03 to 2026-09-04**: Speckit lifecycle for Bayesian evidence-fusion refactor (`specs/001-bayesian-evidence-fusion/`). Core functions implemented and tested, but **not yet wired into live pipeline** (`query_handlers.py:305` still uses `max(probs)`).
+- **Current state**: All 73 backend unit tests pass. UQ pipeline initializes on startup with prebuilt artifacts in `data/models/`. The comparative study has known scoring bugs with a revised scorer available in `guidance/eval_review_expert.md`.
 
-# Research Engineering Rules
+## Critical gotchas
 
-## Correctness
+- **Do not run speckit outside `.venv`** — the CLI is not globally installed.
+- **Root `requirements.txt` is not for backend runtime.** It mixes `specify-cli` (Python 3.11+) with backend deps. Install backend deps from `backend/server/requirements.txt` when using Python 3.10.
+- **`backend/.gitignore` excludes `data/`, `models/`, `*.md`, `*.docx`.** Docs and data artifacts are not tracked in git. The hackathon PDF in `docs/` is gitignored and is the project's source of truth.
+- **`backend/server/.env` exists with dummy keys** (gitignored). Do not commit real keys.
+- **Frontend `API_URL` defaults to `http://127.0.0.1:8000`.** Override via `frontend/.env` when backend runs elsewhere.
+- **Docker multi-stage uses Python 3.13-slim** and downloads `en_core_web_md` during build. Render free-tier build timeout is a known concern (15 min).
+- **PII / injection features degrade gracefully** when Presidio or dependencies are missing — tests account for this.
+- **`backend/server/modules/output/` was previously gitignored** by a broad `output/` rule in `backend/.gitignore`. Verify it is tracked before relying on fresh clones initializing the UQ pipeline.
+- **Comparative study scoring has known bugs** (see `guidance/eval_review_expert.md` and `guidance/indepth_guidance.md`): `response_data.get("response", "").lower()` crashes on `None`; scorer ignores `disclaimer` field; API call and scoring share a try/except so crashes overwrite real responses. A revised scorer exists in `guidance/eval_review_expert.md`.
+- **Conformal predictor was a stub** (`is_fitted = True` without fitting). `ConformalPredictor.from_quantile()` and `predict_set_from_probs()` were added but may not be wired into `query_handlers.py:305` yet — verify before trusting UQ pipeline output.
+- **`run_artifact_id` is the canary for real UQ execution.** If it is `None` on a non-safety query, the request fell back to baseline RAG through an exception handler.
+- **Bayesian refactor is partially implemented.** `compute_support_probability()` in `backend/server/modules/verifier/bayesian_fusion.py` has 8 passing tests, but `query_handlers.py:305` still uses `max(probs)`. See `specs/001-bayesian-evidence-fusion/tasks.md` for T026–T034 convergence tasks.
 
-Passing tests does not establish scientific correctness.
+## Architecture
 
-Plausible output does not establish scientific correctness.
+- Backend entrypoint: `backend/server/main.py` — mounts routers for upload, ask, baselines, health, metrics.
+- UQ pipeline initializes on startup (`_init_uq_pipeline`) loading models from `data/models/`.
+- Config: `backend/server/config.py` via `pydantic_settings`. All env vars validated at startup.
+- Frontend is a thin Streamlit shell (`frontend/app.py`) delegating to components.
 
-Improved benchmark performance does not establish scientific correctness.
+## Testing quirks
 
-Significant changes require both engineering and scientific validation.
+- `pyproject.toml` at root sets `testpaths = ["tests/regression"]` with markers `slow`, `ui`, `api`. Backend unit tests live under `backend/tests/` and are not picked up by root pytest config.
+- Regression tests use Playwright `sync_playwright` with headless Chromium. They wait for backend/frontend health endpoints with 30s timeout.
+- `tests/regression/conftest.py` creates a minimal valid PDF fixture inline — no external fixture files needed for most tests.
 
-## Investigation
+## Research engineering rules
 
-For unexpected behaviour:
+For scientifically significant changes, consult both:
+1. `research-supervisor` — diagnosis, hypothesis evaluation, scientific reasoning.
+2. `research-reviewer` — independent validation of proposed fix before declaring resolved.
 
-1. Reproduce it.
-2. Establish expected behaviour.
-3. Trace the relevant code/data flow.
-4. Form competing hypotheses.
-5. Run discriminating experiments.
-6. Establish root cause.
-7. Implement the smallest justified fix.
-8. Re-run validation.
+Do not declare a significant change complete based solely on passing tests.
 
-Do not repeatedly change code until the symptom disappears.
+## Submission constraints
 
-## Scientific implementations
-
-When implementing scientific methods:
-
-- identify the mathematical formulation
-- identify the implementation
-- verify assumptions
-- verify equations
-- verify units
-- verify dimensions
-- verify numerical conventions
-- verify preprocessing
-- verify evaluation methodology
-- verify experimental controls
-
-Use primary literature/specifications when available.
-
-## Supervisor
-
-Use `research-supervisor` when:
-
-- root cause is uncertain
-- competing explanations exist
-- scientific correctness is questionable
-- numerical behaviour is unexpected
-- core algorithms are changing
-- experimental methodology is changing
-- evidence is contradictory
-- a significant conclusion is about to be made
-
-The supervisor is an independent reviewer.
-
-It should challenge conclusions rather than merely confirm them.
-
-## Supervisor and reviewer (mandatory two-agent consultation)
-
-For every non-trivial change to a scientifically or architecturally
-significant component — and **especially** before declaring a
-significant issue resolved — consult BOTH independent reviewers:
-
-1. **`research-supervisor`** — for diagnosis, hypothesis evaluation,
-   and scientific/engineering reasoning when the root cause is
-   uncertain or the change touches a core scientific algorithm.
-
-2. **`research-reviewer`** — for independent validation of the
-   proposed fix and the evidence supporting it, after implementation
-   and before declaring the issue resolved.
-
-The two agents serve different purposes:
-
-- The **supervisor** asks: "What is probably causing this?"
-- The **reviewer** asks: "Is the proposed solution actually justified?"
-
-Workflow:
-
-```
-Step 3.7 Flash (investigation)
-        │
-        ▼
-   research-supervisor  ──► diagnosis / next experiment
-        │
-        ▼
-Step 3.7 Flash (implements, tests)
-        │
-        ▼
-   research-reviewer  ──► APPROVE / REJECT (before declaring resolved)
-```
-
-Do not declare a significant change complete based solely on
-passing tests. The reviewer must independently confirm.
-
-## Final conclusions
-
-For significant changes report:
-
-- root cause
-- fix
-- evidence
-- tests
-- scientific validity
-- engineering validity
-- remaining uncertainty
+- No private data or credentials in submission.
+- Every result claim must link to evidence in `submission/`.
+- Judges must be able to reproduce from clone.

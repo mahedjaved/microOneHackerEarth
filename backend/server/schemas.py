@@ -164,6 +164,22 @@ class DoubtCertificate(BaseModel):
     corpus_id: str
     calibration_id: str
     human_review_recommended: bool = False
+    # Schema v1.1.0 (spec 001-bayesian-evidence-fusion): backwards-compatible
+    # optional fields for the new Bayesian log-odds combination path. When
+    # UQ_USE_BAYESIAN_FUSION is true (default), these are populated. When the
+    # legacy mean/max path is active (UQ_USE_BAYESIAN_FUSION=0), they are None.
+    prior: float | None = Field(
+        default=None,
+        description="Bayesian prior probability used for log-odds combination. None on the legacy path.",
+    )
+    combined_posterior: float | None = Field(
+        default=None,
+        description="Posterior probability after log-odds combination. None on the legacy path.",
+    )
+    relevance_weighted: bool | None = Field(
+        default=None,
+        description="True if any passage was relevance-dampened (< 0.3 cosine to question). None on the legacy path.",
+    )
 
 class RedactedQuestion(BaseModel):
     run_id: uuid.UUID

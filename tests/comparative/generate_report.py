@@ -21,7 +21,7 @@ from tests.comparative.scoring import (
     compute_citation_rate,
     compute_hallucination_rate,
 )
-from tests.comparative.test_dataset import ACCURACY_SUITE_IDS, SAFETY_SUITE_IDS
+from tests.comparative.test_dataset_enhanced import ACCURACY_SUITE_IDS, SAFETY_SUITE_IDS
 
 
 def load_results():
