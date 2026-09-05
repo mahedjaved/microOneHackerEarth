@@ -9,7 +9,8 @@ sys.path.insert(0, str(backend_dir))
 from server.main import _init_uq_pipeline
 from server.modules.query_handlers import run_uq_pipeline
 from server.modules.corpus.loader import build_evidence_packet
-from server.schemas import Passage
+from server.modules.output.answer import ClaimExporter
+from server.schemas import Passage, PerturbationType, PipelineMode
 
 # Initialize UQ pipeline
 _init_uq_pipeline()
@@ -46,4 +47,15 @@ response, artifact = run_uq_pipeline(
 print(f"Response: {response}")
 print(f"Final decision: {artifact.final_decision}")
 print(f"Run ID: {artifact.run_id}")
+
+# Export claims for offline abstention analysis
+exporter = ClaimExporter(output_dir="data/runs")
+exporter.export(
+    claims=artifact.claims,
+    question_id="test-e2e-1",
+    run_artifact_id=str(artifact.run_id),
+    perturbation_type=PerturbationType.CLEAN,
+    pipeline_mode=PipelineMode.FULL,
+)
+print("Claims exported to data/runs/claims.jsonl")
 print("End-to-end test passed!")

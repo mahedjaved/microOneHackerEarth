@@ -1,5 +1,6 @@
 """Tests for CURA-Med verifier modules."""
 
+import uuid
 import numpy as np
 import pytest
 from server.modules.verifier.classifier import ThreeWayVerifier
@@ -183,3 +184,121 @@ class TestConformalPredictor:
         conformal = ConformalPredictor(alpha=0.10, method="LAC")
         with pytest.raises(RuntimeError):
             conformal.predict_set(np.array([[0.5, 0.5, 0.5]]))
+
+
+class TestQueryHandlersBayesianFusion:
+    """T007: Assert the live claim-verification path calls compute_support_probability()."""
+
+    def test_compute_support_probability_delegates_to_bayesian_fusion(self):
+        from unittest.mock import patch, MagicMock
+        from server.modules.query_handlers import _compute_support_probability
+        from server.schemas import VerifierResult, Verdict
+
+        mock_verifier_outputs = [
+            VerifierResult(
+                claim_id=uuid.uuid4(),
+                predicted_label=Verdict.SUPPORTED,
+                probabilities={"SUPPORTED": 0.9, "REFUTED": 0.05, "INSUFFICIENT": 0.05},
+                calibrated=True,
+                conformal_set=[Verdict.SUPPORTED],
+                coverage_target=0.90,
+                calibration_id="calibration-v1",
+            ),
+            VerifierResult(
+                claim_id=uuid.uuid4(),
+                predicted_label=Verdict.SUPPORTED,
+                probabilities={"SUPPORTED": 0.7, "REFUTED": 0.2, "INSUFFICIENT": 0.1},
+                calibrated=True,
+                conformal_set=[Verdict.SUPPORTED],
+                coverage_target=0.90,
+                calibration_id="calibration-v1",
+            ),
+        ]
+
+        with patch("server.modules.query_handlers.compute_support_probability") as mock_bayesian:
+            mock_bayesian.return_value = (0.85, False)
+            result = _compute_support_probability(mock_verifier_outputs)
+            mock_bayesian.assert_called_once()
+            call_args = mock_bayesian.call_args[0][0]
+            assert len(call_args) == 2
+            assert call_args[0] == (0.9, 1.0)
+            assert call_args[1] == (0.7, 1.0)
+            assert result == 0.85
+
+
+class TestQueryHandlersConformalWiring:
+    """T008: Assert ConformalPredictor.predict_set_from_probs() is called at runtime."""
+
+    def test_predict_set_from_probs_called_at_runtime(self):
+        from unittest.mock import MagicMock, patch
+        from server.modules.query_handlers import run_uq_pipeline
+        from server.schemas import (
+            Verdict, EvidencePacket, Passage, SafetyResult, SafetyScope,
+            VerifierResult, ExtendedQuestionResponse, RunArtifact,
+        )
+        import uuid
+
+        # Build a minimal conformal predictor mock
+        mock_conformal = MagicMock()
+        mock_conformal.is_fitted = True
+        mock_conformal.predict_set_from_probs.return_value = [Verdict.SUPPORTED]
+
+        # Build a minimal verifier result
+        mock_verifier_result = VerifierResult(
+            claim_id=uuid.uuid4(),
+            predicted_label=Verdict.SUPPORTED,
+            probabilities={"SUPPORTED": 0.9, "REFUTED": 0.05, "INSUFFICIENT": 0.05},
+            calibrated=True,
+            conformal_set=[Verdict.SUPPORTED],
+            coverage_target=0.90,
+            calibration_id="calibration-v1",
+        )
+
+        # Build a minimal evidence packet
+        mock_passage = MagicMock(spec=Passage)
+        mock_passage.text = "test evidence"
+        mock_evidence_packet = MagicMock(spec=EvidencePacket)
+        mock_evidence_packet.passages = [mock_passage]
+        mock_evidence_packet.corpus_id = "test-corpus"
+        mock_evidence_packet.corpus_hash = "abc123"
+
+        # Mock claim
+        mock_claim = MagicMock()
+        mock_claim.claim_id = uuid.uuid4()
+        mock_claim.text = "test claim"
+
+        with patch.dict("server.modules.query_handlers.__dict__", {
+            "_conformal_predictor": mock_conformal,
+            "_claim_composer": MagicMock(),
+            "_verifier": MagicMock(),
+            "_answer_composer": MagicMock(),
+            "_calibration_artifact": None,
+            "_embedding_model": None,
+        }):
+            # Patch dependencies
+            with patch("server.modules.query_handlers.classify_scope") as mock_classify, \
+                 patch("server.modules.query_handlers.compute_simple_features") as mock_simple, \
+                 patch("server.modules.query_handlers.compute_feature_vector") as mock_feature, \
+                 patch("server.modules.query_handlers.build_run_artifact") as mock_artifact, \
+                 patch("server.modules.query_handlers.build_doubt_certificate") as mock_doubt:
+                
+                mock_classify.return_value = SafetyResult(scope=SafetyScope.ALLOWED, reason="")
+                mock_simple.return_value = MagicMock()
+                mock_feature.return_value = MagicMock()
+                mock_artifact.return_value = MagicMock(spec=RunArtifact, run_id=uuid.uuid4())
+                mock_doubt.return_value = MagicMock()
+
+                # Set up claim composer and verifier mocks
+                import server.modules.query_handlers as qh
+                qh._claim_composer.decompose.return_value = [mock_claim]
+                qh._verifier.predict_text.return_value = mock_verifier_result
+                qh._answer_composer.compose_with_sources.return_value = ("answer text", ["source1"])
+
+                response, artifact = run_uq_pipeline(
+                    question="test question",
+                    evidence_packet=mock_evidence_packet,
+                )
+
+                mock_conformal.predict_set_from_probs.assert_called_once()
+                call_args = mock_conformal.predict_set_from_probs.call_args[0][0]
+                assert "SUPPORTED" in call_args
