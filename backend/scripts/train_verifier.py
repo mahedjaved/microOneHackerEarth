@@ -114,22 +114,10 @@ def generate_training_data(chunks: List[dict], n_pairs: int = 1000) -> List[dict
     return pairs
 
 
-def extract_features(claim_text: str, evidence_text: str, embedding_model: SentenceTransformer) -> np.ndarray:
-    """Extract 3-dim features: cosine_sim, l2_dist, word_overlap."""
-    claim_emb = embedding_model.encode(claim_text, show_progress_bar=False)
-    evidence_emb = embedding_model.encode(evidence_text, show_progress_bar=False)
-
-    cosine_sim = float(np.dot(claim_emb, evidence_emb) / (np.linalg.norm(claim_emb) * np.linalg.norm(evidence_emb)))
-    l2_dist = float(np.linalg.norm(claim_emb - evidence_emb))
-
-    claim_words = set(claim_text.lower().split())
-    evidence_words = set(evidence_text.lower().split())
-    overlap = len(claim_words & evidence_words)
-    total = len(claim_words) + len(evidence_words)
-    word_overlap = overlap / total if total > 0 else 0.0
-
-    features = np.array([cosine_sim, l2_dist, word_overlap], dtype=np.float64)
-    return features
+def extract_features(claim_text: str, evidence_text: str, embedding_model) -> np.ndarray:
+    """Extract 4-dim features: cosine_sim, l2_dist, word_overlap, numeric_containment."""
+    from server.modules.verifier.classifier import _compute_embedding_features
+    return _compute_embedding_features(claim_text, evidence_text, embedding_model)
 
 
 def train_verifier():
