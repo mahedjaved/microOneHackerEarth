@@ -12,7 +12,7 @@
     "INSUFFICIENT": 1000
   },
   "embedding_model": "all-MiniLM-L6-v2",
-  "feature_dim": 3,
+  "feature_dim": 4,
   "feature_type": "cosine_l2_overlap_3",
   "description": "3-dim features: cosine_sim, l2_dist, word_overlap",
   "classifier": "RandomForest",

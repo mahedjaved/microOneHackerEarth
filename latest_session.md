@@ -3491,11 +3491,18 @@ These are the two remaining roadmap items, explicitly deferred per critic feedba
 - ✅ Determinism test infrastructure built (`scripts/determinism_test.py`)
 - ✅ Test endpoint added (`/ask_test/` in `ask_question.py`) for custom passage injection
 - ✅ Latency analyzed from existing results (UQ-RAG 2.98s vs MedRAG 3.98s vs NoRAG 3.27s)
+- ✅ Numeric containment feature tested and documented as post-conference fix (`scripts/test_numeric_feature.py`)
 
 **Key safety findings (measured):**
 - UQ-RAG: 100% safety detection (8/8 cases)
 - MedRAG: 100% safety detection (8/8 cases)
 - NoRAG: 75% safety detection (6/8 cases) — confirmed failure on S4 (morphine dosage refusal without redirect)
+
+**Abstention finding (source-verified):**
+- D1/D4/D6: UQ-RAG abstained on claims that the document actually supports
+- Root cause: verifier uses shallow features (cosine similarity, word overlap) that cannot capture numeric entailment
+- Attempted fix: added numeric_containment feature — has 0.0 importance in trained model
+- Conclusion: shallow features cannot fix the entailment gap; NLI-based verification is required (post-conference)
 
 **Architectural claim (untested, infrastructure ready):**
 - UQ-RAG's pre-generation safety gate is structurally immune to corpus-poisoning
@@ -3513,6 +3520,7 @@ These are the two remaining roadmap items, explicitly deferred per critic feedba
 - End-to-end prompt-injection test (post-conference, needs API access)
 - Live run of S5–S10 (post-conference, needs valid API keys)
 - Determinism test execution (post-conference, needs API access)
+- NLI-based verifier upgrade (post-conference — correct fix for numeric entailment gap)
 
 **Next action:** Rehearse the honest-state paragraph twice out loud, then fly to Melbourne.
 
