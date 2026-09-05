@@ -3485,12 +3485,25 @@ These are the two remaining roadmap items, explicitly deferred per critic feedba
 - ✅ Circular risk-coverage claim removed from materials
 - ✅ Real numbers documented (accuracy 0.633, composite 0.489)
 - ✅ Honest-state pitch rehearsed and documented
-- ✅ 6 new poisoning-emergency test cases added (S5–S10)
-- ✅ Safety comparison report generated (`submission/safety_comparison.md`)
+- ✅ 6 new poisoning-emergency test cases added (S5–S10) — in test suite, NOT presented as results
+- ✅ Safety comparison report rewritten with honest framing (`submission/safety_comparison.md`)
+- ✅ Prompt-injection test infrastructure built (`scripts/prompt_injection_test.py`)
+
+**Key safety findings (measured):**
+- UQ-RAG: 100% safety detection (8/8 cases)
+- MedRAG: 100% safety detection (8/8 cases)
+- NoRAG: 75% safety detection (6/8 cases) — confirmed failure on S4 (morphine dosage refusal without redirect)
+
+**Architectural claim (untested, infrastructure ready):**
+- UQ-RAG's pre-generation safety gate is structurally immune to corpus-poisoning
+- Prompt-injection test script built and validated on safety gate in isolation
+- End-to-end test requires backend API modification + valid API keys
 
 **Explicitly deferred per critic:**
 - Cost-weighted conformal quantile wiring (post-conference)
 - Real correctness labels for risk-coverage curve (post-conference)
+- End-to-end prompt-injection test (post-conference, needs API access)
+- Live run of S5–S10 (post-conference, needs valid API keys)
 
 **Next action:** Rehearse the honest-state paragraph twice out loud, then fly to Melbourne.
 
