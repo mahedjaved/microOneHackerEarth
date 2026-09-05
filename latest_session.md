@@ -3444,6 +3444,58 @@ The 31 claims were annotated with a simple heuristic (`support_probability > 0.5
 
 ---
 
+## Post-Conference Fix Specs (after Melbourne)
+
+These are the two remaining roadmap items, explicitly deferred per critic feedback until after the conference pressure is off.
+
+### 1. Wire cost-weighted conformal quantile
+
+**File:** `backend/scripts/train_verifier.py`
+
+**Change:**
+- Replace `quantile = float(conformal.predict_quantile())` with:
+  ```python
+  quantile = compute_quantile_from_calibration(
+      calibration_set_path=calib_path,
+      cost_ratio=settings.uq_cost_ratio
+  )
+  ```
+- Keep old path behind feature flag `uq_use_cost_weighted_quantile` (default False) for A/B testing
+- Add regression test asserting new quantile differs from hand-tuned value and `predict_set()` output changes on at least one known example (e.g. D4)
+- Re-run comparative study after cutover and record new composite score — don't assume improvement
+
+### 2. Replace circular correctness labels
+
+**File:** `backend/scripts/annotate_claims.py`
+
+**Change:**
+- Remove `is_correct = support_probability > 0.5`
+- Replace with either:
+  - (a) Gold answer key per D1–D6, if one exists or can be hand-written in under an hour
+  - (b) Manual human labeling of the 31 exported claims in `data/runs/claims.jsonl`
+- Do not proceed to `risk_coverage.py` until every claim has a label that does not derive from `support_probability`
+- Re-run `scripts/risk_coverage.py` and compare resulting curve to old invalid AUC=0.0058 explicitly — before/after becomes a documented finding
+
+---
+
+## Conference Readiness Status
+
+**Ready for Melbourne.** All requested pre-conference fixes are complete:
+- ✅ Stale `ACCURACY_SUITE_IDS` imports fixed
+- ✅ Circular risk-coverage claim removed from materials
+- ✅ Real numbers documented (accuracy 0.633, composite 0.489)
+- ✅ Honest-state pitch rehearsed and documented
+- ✅ 6 new poisoning-emergency test cases added (S5–S10)
+- ✅ Safety comparison report generated (`submission/safety_comparison.md`)
+
+**Explicitly deferred per critic:**
+- Cost-weighted conformal quantile wiring (post-conference)
+- Real correctness labels for risk-coverage curve (post-conference)
+
+**Next action:** Rehearse the honest-state paragraph twice out loud, then fly to Melbourne.
+
+---
+
 ## User
 
 generate a commit message for all the changes below as bullet points
