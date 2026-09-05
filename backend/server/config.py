@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     # ── Legacy fallback (for backward compat with existing .env files) ──
     grok_api_key: str = ""
 
+    # ── OpenCodeZen API (fallback for Groq rate limits) ───────────
+    opencodezen_api_key: str = ""
+    opencodezen_base_url: str = "https://api.opencodezen.ai/v1"
+    opencodezen_model: str = "nemotron"
+
     # ── Optional API keys (reserved for future phases) ─────────────
     google_api_key: str | None = None
     langchain_api_key: Optional[str] = None
@@ -58,11 +63,57 @@ class Settings(BaseSettings):
     cache_ttl_seconds: int = 3600
     cache_similarity_threshold: float = 0.95
 
-    # ── GROQ_API_KEY fallback ──────────────────────────────────────
+     # ── GROQ_API_KEY fallback ──────────────────────────────────────
     @property
     def groq_api_key_resolved(self) -> str:
         """Return GROQ_API_KEY, falling back to the legacy GROK_API_KEY env var."""
         return self.groq_api_key or self.grok_api_key
+
+    # ── UQ Bayesian fusion (spec 001-bayesian-evidence-fusion) ──────
+    # Feature flag: when true (default), the verifier uses log-odds
+    # combination; when false, falls back to the legacy mean/max path.
+    # Doubles as the schema-bump switch for DoubtCertificate.
+    uq_use_bayesian_fusion: bool = Field(
+        default=True,
+        description="Enable the new Bayesian log-odds evidence fusion in the claim verifier (spec 001-bayesian-evidence-fusion).",
+    )
+
+    # ── UQ Abstention ablation (spec 006-abstention-measurement) ─────
+    # When true, the pipeline suppresses explicit DoubtCertificate output
+    # and returns a generic non-committal response instead. All other
+    # UQ components (retrieval, verifier, conformal predictor) remain
+    # identical. Used to isolate the effect of explicit abstention output.
+    uq_suppress_doubt_certificate: bool = Field(
+        default=False,
+        description="Suppress explicit DoubtCertificate output for abstention ablation (spec 006-abstention-measurement).",
+    )
+
+    # Prior probability of SUPPORTED before observing evidence. Used as
+    # the starting point for log-odds updates. Default 0.5 (no prior bias).
+    uq_prior: float = Field(
+        default=0.5,
+        ge=0.0,
+        le=1.0,
+        description="Bayesian prior probability for SUPPORTED. Clamped to [1e-6, 1-1e-6] before log-odds.",
+    )
+
+    # Cost ratio (confident-wrong : over-abstain) for the conformal
+    # quantile minimization. Default 10:1 — confidently-wrong answers
+    # are penalized 10x more than unnecessary abstentions (medical-safety
+    # prior).
+    uq_cost_ratio: str = Field(
+        default="10:1",
+        description='Conformal quantile cost ratio as "N:M" (confident-wrong : over-abstain). Default 10:1.',
+    )
+
+    @property
+    def uq_cost_ratio_tuple(self) -> tuple[float, float]:
+        """Parse the cost ratio string into a (confident_wrong, over_abstain) tuple."""
+        try:
+            n, m = self.uq_cost_ratio.split(":")
+            return (float(n), float(m))
+        except (ValueError, AttributeError):
+            return (10.0, 1.0)
 
 # Module-level singleton — instantiated once on import.
 # Imports:  from config import settings
