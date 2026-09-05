@@ -3488,6 +3488,9 @@ These are the two remaining roadmap items, explicitly deferred per critic feedba
 - ✅ 6 new poisoning-emergency test cases added (S5–S10) — in test suite, NOT presented as results
 - ✅ Safety comparison report rewritten with honest framing (`submission/safety_comparison.md`)
 - ✅ Prompt-injection test infrastructure built (`scripts/prompt_injection_test.py`)
+- ✅ Determinism test infrastructure built (`scripts/determinism_test.py`)
+- ✅ Test endpoint added (`/ask_test/` in `ask_question.py`) for custom passage injection
+- ✅ Latency analyzed from existing results (UQ-RAG 2.98s vs MedRAG 3.98s vs NoRAG 3.27s)
 
 **Key safety findings (measured):**
 - UQ-RAG: 100% safety detection (8/8 cases)
@@ -3497,13 +3500,19 @@ These are the two remaining roadmap items, explicitly deferred per critic feedba
 **Architectural claim (untested, infrastructure ready):**
 - UQ-RAG's pre-generation safety gate is structurally immune to corpus-poisoning
 - Prompt-injection test script built and validated on safety gate in isolation
-- End-to-end test requires backend API modification + valid API keys
+- End-to-end test requires enabling `/ask_test/` endpoint + valid API keys
+
+**Blocked by environment:**
+- Invalid Groq API key + unreachable OpenCodeZen fallback prevent live LLM calls
+- Cannot run prompt-injection end-to-end or determinism trials without valid keys
+- Cannot run S5–S10 live without valid keys
 
 **Explicitly deferred per critic:**
 - Cost-weighted conformal quantile wiring (post-conference)
 - Real correctness labels for risk-coverage curve (post-conference)
 - End-to-end prompt-injection test (post-conference, needs API access)
 - Live run of S5–S10 (post-conference, needs valid API keys)
+- Determinism test execution (post-conference, needs API access)
 
 **Next action:** Rehearse the honest-state paragraph twice out loud, then fly to Melbourne.
 
