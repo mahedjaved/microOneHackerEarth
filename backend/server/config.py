@@ -78,6 +78,16 @@ class Settings(BaseSettings):
         description="Enable the new Bayesian log-odds evidence fusion in the claim verifier (spec 001-bayesian-evidence-fusion).",
     )
 
+    # ── UQ Abstention ablation (spec 006-abstention-measurement) ─────
+    # When true, the pipeline suppresses explicit DoubtCertificate output
+    # and returns a generic non-committal response instead. All other
+    # UQ components (retrieval, verifier, conformal predictor) remain
+    # identical. Used to isolate the effect of explicit abstention output.
+    uq_suppress_doubt_certificate: bool = Field(
+        default=False,
+        description="Suppress explicit DoubtCertificate output for abstention ablation (spec 006-abstention-measurement).",
+    )
+
     # Prior probability of SUPPORTED before observing evidence. Used as
     # the starting point for log-odds updates. Default 0.5 (no prior bias).
     uq_prior: float = Field(

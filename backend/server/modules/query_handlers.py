@@ -29,12 +29,14 @@ from server.modules.claims.composer import ClaimComposer
 from server.modules.claims.feature_vector import compute_feature_vector, compute_simple_features
 from server.modules.verifier.classifier import ThreeWayVerifier
 from server.modules.verifier.conformal import ConformalPredictor
+from server.modules.verifier.bayesian_fusion import compute_support_probability
 from server.modules.eav.controller import EAVController
 from server.modules.output.answer import AnswerComposer
 from server.modules.output.doubt_certificate import build_doubt_certificate
 from server.modules.output.safety_response import build_safety_response
 from server.modules.artifacts.run_artifact import build_run_artifact
 from server.logger import logger
+from server.config import settings
 
 
 # Global instances (loaded at startup)
@@ -234,14 +236,21 @@ def run_uq_pipeline(
         eav_actions.append(eav_record)
         # post_conformal_set would be computed after EAV action execution
 
-    doubt_certificate = build_doubt_certificate(
-        conformal_set=conformal_sets[0]["set"] if conformal_sets else ["INSUFFICIENT"],
-        uncertainty_causes=uncertainty_causes,
-        corpus_id=evidence_packet.corpus_id,
-        calibration_artifact=_calibration_artifact,
-        actions_taken=eav_actions,
-        support_probability=support_probability,
-    )
+    # Step 5: Doubt certificate or abstention suppression
+    suppress_doubt = getattr(settings, "uq_suppress_doubt_certificate", False)
+    if suppress_doubt:
+        doubt_certificate = None
+        response_text = "I'm sorry, I don't have enough information to answer that question reliably."
+    else:
+        doubt_certificate = build_doubt_certificate(
+            conformal_set=conformal_sets[0]["set"] if conformal_sets else ["INSUFFICIENT"],
+            uncertainty_causes=uncertainty_causes,
+            corpus_id=evidence_packet.corpus_id,
+            calibration_artifact=_calibration_artifact,
+            actions_taken=eav_actions,
+            support_probability=support_probability,
+        )
+        response_text = None
 
     artifact = build_run_artifact(
         original_question=question,
@@ -259,10 +268,11 @@ def run_uq_pipeline(
         eav_actions=eav_actions,
         final_decision=FinalDecision.DOUBT_CERTIFICATE,
         latency_ms=int((time.time() - start_time) * 1000),
+        doubt_certificate_suppressed=suppress_doubt,
     )
 
     return ExtendedQuestionResponse(
-        response=None,
+        response=response_text,
         sources=[],
         doubt_certificate=doubt_certificate,
         run_artifact_id=artifact.run_id,
@@ -303,21 +313,20 @@ def _infer_uncertainty_causes(evidence_features: list[EvidenceFeatureVector], co
 
 
 def _compute_support_probability(verifier_outputs: list[VerifierResult]) -> float:
-    """Compute support probability across claims.
+    """Compute support probability across claims using Bayesian log-odds fusion.
 
-    Uses MAX instead of average to avoid boilerplate disclaimer sentences
-    dragging down the score of well-supported factual claims.
-
-    Example: "The maximum dose is 500mg. Always consult a doctor."
-    - Claim 1: "The maximum dose is 500mg" -> SUPPORTED ~0.9
-    - Claim 2: "Always consult a doctor" -> SUPPORTED ~0.0 (generic advice)
-    - Average: 0.45 (falsely low)
-    - Max: 0.9 (correctly identifies well-supported factual claim)
+    Delegates to `compute_support_probability` from `bayesian_fusion.py`.
+    Passages are treated as equally relevant (relevance=1.0) because
+    `VerifierResult` does not carry per-passage relevance scores.
     """
     if not verifier_outputs:
         return 0.0
-    probs = [vo.probabilities.get("SUPPORTED", 0.0) for vo in verifier_outputs]
-    return max(probs)
+    passages = [
+        (vo.probabilities.get("SUPPORTED", 0.0), 1.0)
+        for vo in verifier_outputs
+    ]
+    posterior, _ = compute_support_probability(passages)
+    return posterior
 
 
 def query_chain(chain, user_input: str):

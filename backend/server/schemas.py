@@ -60,6 +60,25 @@ class UncertaintyCause(BaseModel):
     type: UncertaintyCauseType
     detail: str
 
+class PerturbationType(str, Enum):
+    CLEAN = "clean"
+    ADVERSARIAL = "adversarial"
+
+class PipelineMode(str, Enum):
+    FULL = "full"
+    ABSTENTION_SUPPRESSED = "abstention_suppressed"
+
+class ClaimRecord(BaseModel):
+    """Per-claim evidence packet exported for offline abstention analysis."""
+    claim_id: str
+    question_id: str
+    support_probability: float = Field(ge=0.0, le=1.0)
+    conformal_set: list[str]
+    is_correct: bool
+    perturbation_type: PerturbationType
+    pipeline_mode: PipelineMode
+    run_artifact_id: str
+
 class EAVAction(BaseModel):
     action_id: uuid.UUID
     action_type: EAVActionType
@@ -204,6 +223,7 @@ class RunArtifact(BaseModel):
     eav_actions: list[EAVAction] = Field(default_factory=list)
     final_decision: FinalDecision
     latency_ms: int = 0
+    doubt_certificate_suppressed: bool = False
 
 class CalibrationArtifact(BaseModel):
     calibration_id: str
