@@ -1,7 +1,7 @@
 {
-  "model_path": "D:\\PROJECTS\\CLAUDE_CLI_AGENTS\\HACKER_EARTH\\HACKATHONS\\microOneHackerEarth\\data\\models\\verifier_gp.joblib",
-  "calibrator_path": "D:\\PROJECTS\\CLAUDE_CLI_AGENTS\\HACKER_EARTH\\HACKATHONS\\microOneHackerEarth\\data\\models\\calibrator.joblib",
-  "conformal_path": "D:\\PROJECTS\\CLAUDE_CLI_AGENTS\\HACKER_EARTH\\HACKATHONS\\microOneHackerEarth\\data\\models\\conformal_quantile.json",
+  "model_path": "/Users/mahedjaved/Desktop/APPS/Applications/Walmart/microOneHackerEarth/data/models/verifier_gp.joblib",
+  "calibrator_path": "/Users/mahedjaved/Desktop/APPS/Applications/Walmart/microOneHackerEarth/data/models/calibrator.joblib",
+  "conformal_path": "/Users/mahedjaved/Desktop/APPS/Applications/Walmart/microOneHackerEarth/data/models/conformal_quantile.json",
   "train_size": 1200,
   "calib_size": 300,
   "val_size": 300,

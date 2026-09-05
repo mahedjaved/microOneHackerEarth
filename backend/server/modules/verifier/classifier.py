@@ -23,6 +23,7 @@ EMBEDDING_DIM = 384
 
 def _compute_embedding_features(claim_text: str, evidence_text: str, embedding_model) -> np.ndarray:
     """Compute 3-dim features for claim-evidence pair."""
+    # Live server uses SentenceTransformer which has .encode()
     claim_emb = embedding_model.encode(claim_text, show_progress_bar=False)
     evidence_emb = embedding_model.encode(evidence_text, show_progress_bar=False)
 

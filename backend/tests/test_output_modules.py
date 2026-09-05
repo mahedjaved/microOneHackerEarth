@@ -165,3 +165,49 @@ class TestAnswerComposer:
         )
         answer = self.composer.compose([], evidence_packet)
         assert answer == ""
+
+
+class TestAbstentionSuppression:
+    """T025: Verify UQ_SUPPRESS_DOUBT_CERTIFICATE behavior."""
+
+    def test_config_flag_defaults_to_false(self):
+        from server.config import settings
+        assert hasattr(settings, "uq_suppress_doubt_certificate")
+        assert settings.uq_suppress_doubt_certificate is False
+
+    def test_run_artifact_has_suppressed_field(self):
+        from server.schemas import RunArtifact, FinalDecision, SafetyScope, RedactedQuestion
+        artifact = RunArtifact(
+            run_id=uuid.uuid4(),
+            question=RedactedQuestion(
+                run_id=uuid.uuid4(),
+                redacted_text="test",
+                scope=SafetyScope.ALLOWED,
+            ),
+            scope=SafetyScope.ALLOWED,
+            corpus_id="test",
+            corpus_hash="test",
+            model_version="test",
+            verifier_version="test",
+            calibration_id="cal-1",
+            evidence_packet=EvidencePacket(
+                corpus_id="test",
+                corpus_hash="test",
+                retrieval_query="test",
+                passages=[],
+                retrieval_metadata=RetrievalMetadata(
+                    retriever_version="test",
+                    top_k=0,
+                    latency_ms=0,
+                ),
+            ),
+            claims=[],
+            evidence_features=[],
+            verifier_outputs=[],
+            conformal_sets=[],
+            eav_actions=[],
+            final_decision=FinalDecision.DOUBT_CERTIFICATE,
+            latency_ms=0,
+            doubt_certificate_suppressed=True,
+        )
+        assert artifact.doubt_certificate_suppressed is True
