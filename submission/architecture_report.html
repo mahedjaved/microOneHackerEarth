@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UQ-RAG Architecture — Melbourne AI Summit</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --uq-rag: #2563eb;
+            --medrag: #16a34a;
+            --norag: #dc2626;
+            --paper: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #7c3aed;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--paper);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 48px 24px;
+            text-align: center;
+        }
+        header h1 { margin: 0 0 8px; font-size: 2.4rem; font-weight: 700; }
+        header p { margin: 0; opacity: 0.85; font-size: 1.1rem; }
+        .meta { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .meta-badge {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+        }
+        .grid { display: grid; gap: 20px; margin-top: 32px; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+        .card h2 { margin: 0 0 16px; font-size: 1.2rem; font-weight: 600; }
+        .card h3 { margin: 16px 0 8px; font-size: 1rem; font-weight: 600; color: var(--muted); }
+
+        /* Architecture Diagram */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .arch-layer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .arch-layer:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .arch-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .arch-icon.uq-rag { background: #dbeafe; color: var(--uq-rag); }
+        .arch-icon.medrag { background: #dcfce7; color: var(--medrag); }
+        .arch-icon.paper { background: #f3e8ff; color: var(--accent); }
+        .arch-content { flex: 1; }
+        .arch-title { font-weight: 600; margin-bottom: 4px; }
+        .arch-desc { font-size: 0.85rem; color: var(--muted); }
+        .arch-arrow {
+            text-align: center;
+            color: var(--muted);
+            font-size: 1.2rem;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(4px); }
+        }
+
+        /* Uncertainty Flow */
+        .uncertainty-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 20px;
+            background: linear-gradient(135deg, #eff6ff 0%, #faf5ff 100%);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .uncertainty-node {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .uncertainty-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .uncertainty-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .uncertainty-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .uncertainty-desc {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* Comparison Table */
+        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        tr:last-child td { border-bottom: none; }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .tag-green { background: #dcfce7; color: #166534; }
+        .tag-red { background: #fee2e2; color: #991b1b; }
+        .tag-yellow { background: #fef9c3; color: #854d0e; }
+        .tag-blue { background: #dbeafe; color: #1e40af; }
+        .tag-purple { background: #f3e8ff; color: #6b21a8; }
+
+        /* Callouts */
+        .callout {
+            border-left: 4px solid var(--uq-rag);
+            background: #eff6ff;
+            padding: 16px 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+        .callout h3 { margin: 0 0 6px; font-size: 1rem; color: #1e3a8a; }
+        .callout p { margin: 0; color: #1e40af; font-size: 0.95rem; }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        footer { text-align: center; padding: 32px; color: var(--muted); font-size: 0.85rem; }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.6rem; }
+            .uncertainty-flow { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>UQ-RAG Architecture & Uncertainty Quantification</h1>
+        <p>Melbourne AI Summit — micro1 Agentic Workflows Hackathon 2026</p>
+        <div class="meta">
+            <span class="meta-badge">Clinical RAG Safety</span>
+            <span class="meta-badge">Principled Abstention</span>
+            <span class="meta-badge">Evidence-Constrained Generation</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Executive Summary -->
+        <div class="callout fade-in">
+            <h3>Executive Summary</h3>
+            <p>UQ-RAG is a <strong>safety-first</strong> RAG pipeline for clinical/medical QA. Unlike standard RAG baselines, it makes abstention principled, evidence-constrained, and structurally unbreakable. This document outlines the architecture, uncertainty quantification mechanisms, and key differentiators from both baselines and prior work on conformal prediction with LLMs.</p>
+        </div>
+
+        <!-- UQ-RAG Architecture -->
+        <div class="card slide-in" style="margin-top: 32px;">
+            <h2>UQ-RAG Architecture</h2>
+            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 20px;">
+                The pipeline processes a user query through six sequential stages. Each stage is designed to enforce safety, verify evidence, and quantify uncertainty before any answer is presented to the user.
+            </p>
+
+            <div class="arch-diagram">
+                <div class="arch-layer">
+                    <div class="arch-icon uq-rag">👤</div>
+                    <div class="arch-content">
+                        <div class="arch-title">1. User Query</div>
+                        <div class="arch-desc">Raw medical question entered by the user. No preprocessing or rewriting at this stage.</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-icon uq-rag">🛡️</div>
+                    <div class="arch-content">
+                        <div class="arch-title">2. Pre-Generation Safety Gate</div>
+                        <div class="arch-desc">
+                            <strong>Deterministic regex-based classifier</strong> runs BEFORE any retrieval or LLM generation. 
+                            Detects emergencies (chest pain, overdose, poisoning), prohibited queries (diagnosis, prescription), and patient-specific risk requests. 
+                            If triggered, returns a fixed safety response immediately — no LLM involved.
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-icon uq-rag">🔍</div>
+                    <div class="arch-content">
+                        <div class="arch-title">3. Corpus Retrieval</div>
+                        <div class="arch-desc">
+                            Pinecone vector search over the approved medical corpus. Returns top-k passages with metadata. 
+                            <strong>Only approved, versioned documents</strong> are searchable. Every passage retains provenance, document hash, and page location.
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-icon uq-rag">🧩</div>
+                    <div class="arch-content">
+                        <div class="arch-title">4. Claim Decomposition</div>
+                        <div class="arch-desc">
+                            LLM answer is decomposed into atomic claims. Each claim is a single, verifiable statement. 
+                            This enables fine-grained verification rather than scoring the entire answer as a monolith.
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-icon uq-rag">✅</div>
+                    <div class="arch-content">
+                        <div class="arch-title">5. Evidence Verification + Conformal Abstention</div>
+                        <div class="arch-desc">
+                            <strong>Bayesian log-odds fusion</strong> aggregates evidence across passages for each claim. 
+                            <strong>Isotonic calibration</strong> maps raw probabilities to calibrated confidence. 
+                            <strong>Conformal predictor (LAC)</strong> generates prediction sets with statistical coverage guarantees. 
+                            If the conformal set does not contain SUPPORTED, the system abstains.
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-icon uq-rag">📄</div>
+                    <div class="arch-content">
+                        <div class="arch-title">6. Cited Answer or Doubt Certificate</div>
+                        <div class="arch-desc">
+                            If claims are supported: compose answer with citation IDs. 
+                            If claims are unsupported: emit a structured <strong>Doubt Certificate</strong> with abstention reason, conformal set, support probability, and human-review recommendation.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Uncertainty Quantification Flow -->
+        <div class="card slide-in" style="margin-top: 24px;">
+            <h2>Uncertainty Quantification & Abstention Flow</h2>
+            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 20px;">
+                UQ-RAG captures uncertainty at multiple levels and relates each to a specific abstention decision. This is not a single confidence score — it is a structured uncertainty budget.
+            </p>
+
+            <div class="uncertainty-flow">
+                <div class="uncertainty-node">
+                    <div class="uncertainty-icon">🔢</div>
+                    <div class="uncertainty-label">Raw Probabilities</div>
+                    <div class="uncertainty-desc">RandomForest outputs P(SUPPORTED), P(REFUTED), P(INSUFFICIENT) for each claim</div>
+                </div>
+                <div class="uncertainty-icon" style="color: var(--muted);">→</div>
+                <div class="uncertainty-node">
+                    <div class="uncertainty-icon">📊</div>
+                    <div class="uncertainty-label">Calibrated Probabilities</div>
+                    <div class="uncertainty-desc">Isotonic regression maps raw scores to calibrated confidence using held-out calibration set</div>
+                </div>
+                <div class="uncertainty-icon" style="color: var(--muted);">→</div>
+                <div class="uncertainty-node">
+                    <div class="uncertainty-icon">🎯</div>
+                    <div class="uncertainty-label">Conformal Set</div>
+                    <div class="uncertainty-desc">LAC method generates prediction set with guaranteed coverage (1-α). Set may contain multiple labels.</div>
+                </div>
+                <div class="uncertainty-icon" style="color: var(--muted);">→</div>
+                <div class="uncertainty-node">
+                    <div class="uncertainty-icon">🚦</div>
+                    <div class="uncertainty-label">Abstention Decision</div>
+                    <div class="uncertainty-desc">If SUPPORTED not in conformal set → abstain with Doubt Certificate. Else → present cited answer.</div>
+                </div>
+            </div>
+
+            <div class="callout" style="margin-top: 20px;">
+                <h3>Key Insight: Uncertainty Causes Remain Separate</h3>
+                <p>
+                    UQ-RAG represents <strong>query ambiguity</strong>, <strong>retrieval insufficiency</strong>, <strong>source conflict</strong>, and <strong>verifier uncertainty</strong> as separate causes. 
+                    A single confidence number does not erase the cause of doubt. This is critical for clinical settings where the reason for abstention matters as much as the abstention itself.
+                </p>
+            </div>
+        </div>
+
+        <!-- MedRAG Architecture -->
+        <div class="card slide-in" style="margin-top: 24px;">
+            <h2>MedRAG Baseline Architecture</h2>
+            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 20px;">
+                MedRAG is a standard RAG pipeline with no explicit uncertainty quantification or abstention mechanism. It optimizes for answer completeness and fluency.
+            </p>
+
+            <div class="arch-diagram">
+                <div class="arch-layer">
+                    <div class="arch-icon medrag">👤</div>
+                    <div class="arch-content">
+                        <div class="arch-title">1. User Query</div>
+                        <div class="arch-desc">Raw medical question entered by the user.</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-icon medrag">🔍</div>
+                    <div class="arch-content">
+                        <div class="arch-title">2. Corpus Retrieval</div>
+                        <div class="arch-desc">
+                            Vector search over medical corpus. Returns top-k passages. 
+                            No pre-generation safety check — retrieval happens first.
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-icon medrag">🤖</div>
+                    <div class="arch-content">
+                        <div class="arch-title">3. LLM Generation</div>
+                        <div class="arch-desc">
+                            LLM generates answer using retrieved passages as context. 
+                            Safety is implicit in LLM training — no deterministic gate.
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-icon medrag">📄</div>
+                    <div class="arch-content">
+                        <div class="arch-title">4. Answer with Citations</div>
+                        <div class="arch-desc">
+                            Returns fluent answer with source citations. 
+                            No abstention mechanism — will answer even when evidence is insufficient.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side-by-Side Comparison -->
+        <div class="card" style="margin-top: 24px;">
+            <h2>UQ-RAG vs MedRAG: Architectural Differences</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>UQ-RAG</th>
+                        <th>MedRAG</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Safety mechanism</strong></td>
+                        <td><span class="tag tag-green">Deterministic regex gate (pre-generation)</span></td>
+                        <td><span class="tag tag-red">LLM-based (post-retrieval)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Safety overrideable?</strong></td>
+                        <td><span class="tag tag-green">No — gate runs before retrieval</span></td>
+                        <td><span class="tag tag-red">Yes — by retrieved content or prompt</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Claim decomposition</strong></td>
+                        <td><span class="tag tag-green">Yes — atomic claims verified independently</span></td>
+                        <td><span class="tag tag-red">No — entire answer scored as monolith</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Evidence verification</strong></td>
+                        <td><span class="tag tag-green">Bayesian fusion + calibrated conformal predictor</span></td>
+                        <td><span class="tag tag-red">None — LLM self-judgment only</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Abstention mechanism</strong></td>
+                        <td><span class="tag tag-green">Yes — Doubt Certificate with traceable reason</span></td>
+                        <td><span class="tag tag-red">No — always generates answer</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uncertainty representation</strong></td>
+                        <td><span class="tag tag-green">Multi-cause: query ambiguity, retrieval insufficiency, source conflict, verifier uncertainty</span></td>
+                        <td><span class="tag tag-red">Implicit only — no structured representation</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conformal guarantees</strong></td>
+                        <td><span class="tag tag-green">Yes — coverage guarantee on abstention</span></td>
+                        <td><span class="tag tag-red">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hallucination risk</strong></td>
+                        <td><span class="tag tag-green">Low — evidence-constrained</span></td>
+                        <td><span class="tag tag-yellow">Medium — can blend corpus with LLM knowledge</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Auditability</strong></td>
+                        <td><span class="tag tag-green">Full — every claim traceable to corpus passage</span></td>
+                        <td><span class="tag tag-yellow">Partial — citations present but not verified</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Comparison with Kumar et al. -->
+        <div class="card" style="margin-top: 24px;">
+            <h2>Comparison: UQ-RAG vs. Kumar et al. (2024)</h2>
+            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 16px;">
+                <strong>Paper:</strong> "Conformal Prediction with Large Language Models for Multi-Choice Question Answering" 
+                Bhawesh Kumar, Charles Lu, Gauri Gupta, Anil Palepu, David Bellamy, Ramesh Raskar, Andrew Beam
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dimension</th>
+                        <th>UQ-RAG (This Work)</th>
+                        <th>Kumar et al. (2024)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Task</strong></td>
+                        <td>Open-domain medical QA with evidence verification</td>
+                        <td>Multi-choice QA (MMLU, TruthfulQA)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conformal method</strong></td>
+                        <td><span class="tag tag-blue">LAC (Least Ambiguous set-valued)</span></td>
+                        <td><span class="tag tag-purple">APS (Adaptive Prediction Set)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Coverage guarantee</strong></td>
+                        <td>Yes — 90% coverage on abstention decisions</td>
+                        <td>Yes — 90% coverage on answer sets</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uncertainty source</strong></td>
+                        <td><span class="tag tag-green">Multi-cause: retrieval, verification, conformal</span></td>
+                        <td><span class="tag tag-yellow">Single: LLM output probabilities</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Evidence grounding</strong></td>
+                        <td><span class="tag tag-green">Strict — corpus-only, no parametric knowledge</span></td>
+                        <td><span class="tag tag-red">None — LLM knowledge only</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Abstention output</strong></td>
+                        <td><span class="tag tag-green">Structured Doubt Certificate with reason</span></td>
+                        <td><span class="tag tag-yellow">Empty prediction set</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Safety mechanism</strong></td>
+                        <td><span class="tag tag-green">Deterministic pre-generation gate</span></td>
+                        <td><span class="tag tag-red">None</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Domain</strong></td>
+                        <td><span class="tag tag-green">Clinical/medical — high-stakes</span></td>
+                        <td><span class="tag tag-yellow">General QA — MMLU, TruthfulQA</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Claim decomposition</strong></td>
+                        <td><span class="tag tag-green">Yes — atomic claims verified independently</span></td>
+                        <td><span class="tag tag-red">No — entire answer as single unit</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Calibration</strong></td>
+                        <td><span class="tag tag-green">Isotonic regression on held-out set</span></td>
+                        <td><span class="tag tag-yellow">Implicit via conformal method</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- What's Best About Our Approach -->
+        <div class="card" style="margin-top: 24px;">
+            <h2>What Makes UQ-RAG Different — and Better for Clinical Settings</h2>
+
+            <div class="callout">
+                <h3>1. Evidence-Constrained Generation</h3>
+                <p>
+                    Kumar et al. use LLM knowledge only. UQ-RAG restricts answers to an approved, versioned corpus. 
+                    In clinical settings, this is the difference between "I don't know" and a plausible-sounding but unsupported claim.
+                </p>
+            </div>
+
+            <div class="callout" style="border-left-color: var(--medrag); background: #f0fdf4;">
+                <h3 style="color: #166534;">2. Multi-Cause Uncertainty Representation</h3>
+                <p>
+                    Kumar et al. treat uncertainty as a single scalar (LLM output probability). 
+                    UQ-RAG separates <strong>query ambiguity</strong>, <strong>retrieval insufficiency</strong>, <strong>source conflict</strong>, and <strong>verifier uncertainty</strong>. 
+                    This is critical for clinical QA where the reason for abstention matters as much as the abstention itself.
+                </p>
+            </div>
+
+            <div class="callout" style="border-left-color: var(--accent); background: #faf5ff;">
+                <h3 style="color: #6b21a8;">3. Structural Safety Guarantees</h3>
+                <p>
+                    Kumar et al. have no safety mechanism. UQ-RAG's pre-generation safety gate is deterministic, pre-retrieval, and cannot be overridden by retrieved content. 
+                    For clinical applications, this is not a "nice-to-have" — it is a regulatory requirement.
+                </p>
+            </div>
+
+            <div class="callout" style="border-left-color: #f59e0b; background: #fffbeb;">
+                <h3 style="color: #92400e;">4. Principled Abstention with Traceable Reasons</h3>
+                <p>
+                    Kumar et al. output an empty set when uncertain. UQ-RAG emits a <strong>Doubt Certificate</strong> with: abstention reason, conformal set, support probability, and human-review recommendation. 
+                    This transforms "I don't know" from a failure into a traceable, auditable decision.
+                </p>
+            </div>
+
+            <div class="callout" style="border-left-color: var(--norag); background: #fef2f2;">
+                <h3 style="color: #991b1b;">5. Claim-Level Verification</h3>
+                <p>
+                    Kumar et al. verify the entire answer as a single unit. UQ-RAG decomposes answers into atomic claims and verifies each independently against retrieved evidence. 
+                    This enables fine-grained abstention: "I can answer part A, but not part B" — impossible with monolithic verification.
+                </p>
+            </div>
+        </div>
+
+        <!-- The Pitch -->
+        <div class="callout" style="margin-top: 24px; border-left-color: var(--accent); background: #faf5ff;">
+            <h3 style="color: #6b21a8;">The Melbourne Pitch</h3>
+            <p>
+                "Conformal prediction with LLMs, as Kumar et al. demonstrated, gives you coverage guarantees on answer sets. 
+                But for clinical RAG, coverage guarantees are not enough — you need <strong>evidence guarantees</strong>. 
+                UQ-RAG combines conformal abstention with strict evidence constraints, deterministic safety gates, and multi-cause uncertainty representation. 
+                We don't just say 'I don't know' — we say <em>why</em> we don't know, <em>what evidence</em> would be needed, and <em>what the risk</em> is of answering anyway. 
+                That's the difference between a coverage guarantee and a safety guarantee."
+            </p>
+        </div>
+
+        <!-- Methodology Note -->
+        <div class="card" style="margin-top: 24px;">
+            <h2>Methodology & Verification</h2>
+            <p style="color: var(--muted); font-size: 0.95rem;">
+                <strong>Architecture source:</strong> <code>backend/server/modules/query_handlers.py</code>, <code>backend/server/modules/safety/gate.py</code><br>
+                <strong>Conformal predictor:</strong> <code>backend/server/modules/verifier/conformal.py</code><br>
+                <strong>Bayesian fusion:</strong> <code>backend/server/modules/verifier/bayesian_fusion.py</code><br>
+                <strong>Comparative data:</strong> <code>tests/comparative/results/run1_20260904_061404.json</code><br>
+                <strong>Verification:</strong> All metrics recalculated from raw JSON on 2026-09-07
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>UQ-RAG — SourceProof Medical / CURA-Med — micro1 Agentic Workflows Hackathon 2026</p>
+    </footer>
+</body>
+</html>

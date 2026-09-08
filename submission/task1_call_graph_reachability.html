@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 1 — Call Graph Reachability Table</title>
+    <style>
+        :root {
+            --paper: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #7c3aed;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--paper);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 48px 24px;
+            text-align: center;
+        }
+        header h1 { margin: 0 0 8px; font-size: 2rem; font-weight: 700; }
+        header p { margin: 0; opacity: 0.85; font-size: 1.1rem; }
+        .meta { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .meta-badge {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            margin-top: 24px;
+        }
+        .card h2 { margin: 0 0 16px; font-size: 1.2rem; font-weight: 600; }
+        .callout {
+            border-left: 4px solid var(--accent);
+            background: #faf5ff;
+            padding: 16px 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+        .callout h3 { margin: 0 0 6px; font-size: 1rem; color: #6b21a8; }
+        .callout p { margin: 0; color: #6b21a8; font-size: 0.95rem; }
+        .callout.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+        .callout.warning h3 { color: #92400e; }
+        .callout.warning p { color: #78350f; }
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-top: 16px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        tr:last-child td { border-bottom: none; }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .tag-green { background: #dcfce7; color: #166534; }
+        .tag-red { background: #fee2e2; color: #991b1b; }
+        .tag-yellow { background: #fef9c3; color: #854d0e; }
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Task 1 — Call Graph Reachability Table</h1>
+        <p>Proof that retrieval, claim decomposition, verifier, Bayesian fusion, and conformal predictor are unreachable on EMERGENCY/PROHIBITED paths.</p>
+        <div class="meta">
+            <span class="meta-badge">Coverage Instrumentation</span>
+            <span class="meta-badge">query_handlers.py</span>
+            <span class="meta-badge">Commit 9f50d8e</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="callout warning">
+            <h3>Execution Status</h3>
+            <p>
+                Coverage instrumentation <strong>could not be executed</strong> on this machine due to environment import failures 
+                (<code>torch</code>/<code>numpy</code>/<code>scipy</code> incompatibility, <code>langchain_core</code> missing <code>BaseBlobParser</code>). 
+                The test code below is ready to run on a working backend. The table is based on static analysis of the current code.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>Reachability Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Reachable on EMERGENCY/PROHIBITED?</th>
+                        <th>Evidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>server/modules/claims/composer.py</code></td>
+                        <td><span class="tag tag-red">No</span></td>
+                        <td><code>query_handlers.py:142</code> returns before line 145 (<code>_claim_composer.decompose()</code>)</td>
+                    </tr>
+                    <tr>
+                        <td><code>server/modules/verifier/classifier.py</code></td>
+                        <td><span class="tag tag-red">No</span></td>
+                        <td><code>query_handlers.py:142</code> returns before line 171 (<code>_verifier.predict_text()</code>)</td>
+                    </tr>
+                    <tr>
+                        <td><code>server/modules/verifier/bayesian_fusion.py</code></td>
+                        <td><span class="tag tag-red">No</span></td>
+                        <td><code>query_handlers.py:142</code> returns before line 219/328 (<code>_compute_support_probability()</code>)</td>
+                    </tr>
+                    <tr>
+                        <td><code>server/modules/verifier/conformal.py</code></td>
+                        <td><span class="tag tag-red">No</span></td>
+                        <td><code>query_handlers.py:142</code> returns before line 177 (<code>_conformal_predictor.predict_set_from_probs()</code>)</td>
+                    </tr>
+                    <tr>
+                        <td>Retrieval module</td>
+                        <td><span class="tag tag-red">No</span></td>
+                        <td><code>query_handlers.py:142</code> returns before any retrieval call</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Test Code for Coverage Instrumentation</h2>
+            <pre><code># tests/comparative/test_safety_reachability.py
+import pytest
+from server.modules.query_handlers import run_uq_pipeline
+from server.schemas import EvidencePacket, Passage
+
+def make_evidence_packet():
+    return EvidencePacket(
+        corpus_id="test",
+        corpus_hash="abc",
+        passages=[Passage(chunk_id="c1", document_id="d1", document_version="v1",
+                          page_location="p1", text="Aspirin is a medication.",
+                          provenance_hash="h1")],
+        retrieval_scores=[0.9],
+    )
+
+def test_emergency_blocks_downstream_modules():
+    packet = make_evidence_packet()
+    response, artifact = run_uq_pipeline(
+        question="I have severe chest pain and can't breathe",
+        evidence_packet=packet,
+    )
+    assert response.safety_scope == "EMERGENCY"
+    assert artifact.final_decision == "SAFETY_RESPONSE"
+    assert len(artifact.claims) == 0
+    assert len(artifact.verifier_outputs) == 0
+    assert len(artifact.conformal_sets) == 0
+
+def test_prohibited_blocks_downstream_modules():
+    packet = make_evidence_packet()
+    response, artifact = run_uq_pipeline(
+        question="What dosage of morphine should I take?",
+        evidence_packet=packet,
+    )
+    assert response.safety_scope == "PROHIBITED"
+    assert artifact.final_decision == "DOUBT_CERTIFICATE"
+    assert len(artifact.claims) == 0
+    assert len(artifact.verifier_outputs) == 0
+    assert len(artifact.conformal_sets) == 0</code></pre>
+            <p class="caption">
+                Run with: <code>pytest --cov=server.modules --cov-report=term-missing tests/comparative/test_safety_reachability.py</code>
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>Expected Coverage Output</h2>
+            <p class="caption">
+                When executed on a working backend, the coverage report should show <strong>0% line coverage</strong> for:
+            </p>
+            <ul>
+                <li><code>server/modules/claims/composer.py</code></li>
+                <li><code>server/modules/verifier/classifier.py</code></li>
+                <li><code>server/modules/verifier/bayesian_fusion.py</code></li>
+                <li><code>server/modules/verifier/conformal.py</code></li>
+                <li>Retrieval module</li>
+            </ul>
+            <p class="caption">
+                If any of these modules show non-zero coverage, that indicates the architectural claim is false — report it plainly.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>Provenance</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Source file</td>
+                        <td><code>backend/server/modules/query_handlers.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>Commit</td>
+                        <td><code>9f50d8e573e8153046ab74521710641416beb2c7</code></td>
+                    </tr>
+                    <tr>
+                        <td>Date</td>
+                        <td>2026-09-05 10:20:43 +0100</td>
+                    </tr>
+                    <tr>
+                        <td>Key lines</td>
+                        <td>87 (<code>classify_scope()</code>), 88–114 (EMERGENCY return), 116–142 (PROHIBITED return), 145 (first downstream call)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>UQ-RAG — SourceProof Medical / CURA-Med — micro1 Agentic Workflows Hackathon 2026</p>
+    </footer>
+</body>
+</html>

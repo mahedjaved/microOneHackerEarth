@@ -6,7 +6,7 @@ import json
 import requests
 from datetime import datetime
 
-from tests.comparative.test_dataset_enhanced import TEST_QUESTIONS, ACCURACY_SUITE_IDS, SAFETY_SUITE_IDS
+from tests.comparative.test_dataset_enhanced import ALL_QUESTIONS, ACCURACY_SUITE_IDS, SAFETY_SUITE_IDS
 from tests.comparative.scoring import score_response
 
 BACKEND_URL = "http://127.0.0.1:8000"
@@ -26,7 +26,7 @@ def ask_system(endpoint, question, timeout=60):
 def run_comparison():
     os.makedirs("tests/comparative/results", exist_ok=True)
 
-    for test_case in TEST_QUESTIONS:
+    for test_case in ALL_QUESTIONS:
         q_id = test_case["id"]
         question = test_case["question"]
         print(f"Testing {q_id}: {question[:50]}...")

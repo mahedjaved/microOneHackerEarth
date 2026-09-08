@@ -132,3 +132,42 @@ Do not declare a significant change complete based solely on passing tests.
 - No private data or credentials in submission.
 - Every result claim must link to evidence in `submission/`.
 - Judges must be able to reproduce from clone.
+
+## Verification Protocol — mandatory before reporting ANY metric, claim, or finding
+
+This project has repeatedly produced confident, well-written conclusions that turned out to be false on inspection: a circular correctness label, a stale composite score, a fabricated "MedRAG missed a case" claim, a wrong ground-truth value copied from a test fixture instead of the source document, and a latency claim drawn from noisy, unpaired, single-trial data. Every one of these was caught only because someone manually re-checked the underlying data after the fact. This protocol exists to make that check happen BEFORE the claim is written, not after.
+
+These rules are not optional and not satisfied by "I'm fairly confident" — each one requires an artifact (a command run, a file opened, a number computed) shown in the output, not just asserted.
+
+### Rule 1 — No claim about a source document without an extracted quote
+
+Any statement of the form "the document says X," "the data shows Y," or "system Z answered incorrectly" MUST be accompanied, in the same output, by the actual extracted text from the primary source (PDF, JSON, raw log) — not a paraphrase, not a value copied from a test fixture or expected-answer field. If the primary source hasn't been opened and read directly in this session, the claim does not get made yet.
+
+### Rule 2 — No metric without a freshness check
+
+Before reporting any accuracy, composite, or comparative number, run: `git log -1 --format="%ai %s" -- <the code path the metric is about>` and compare that timestamp against the run file's own timestamp. If the run predates the most recent relevant code change, the run is STALE. State this explicitly and do not present the number as current. When in doubt, re-run rather than reuse.
+
+### Rule 3 — No correctness label derived from the score it's meant to validate
+
+A label used to measure whether a confidence/support score is well-calibrated must never be computed FROM that same score (e.g. `is_correct = score > 0.5`). If gold labels aren't available, say so explicitly and do not compute or report a calibration curve, AUROC, or correlation statistic against a placeholder label.
+
+### Rule 4 — No timing/latency claim from small, unpaired, single-trial data
+
+A latency or performance comparison requires either (a) repeated trials per case with a reported mean and variance, or (b) an explicit acknowledgment that a single-trial, unpaired comparison at this sample size cannot support a directional claim. Check whether outliers cluster in one system disproportionate to its architecture (a sign of external noise, e.g. API rate limiting) before drawing any conclusion.
+
+### Rule 5 — Large jumps get explained, not just reported
+
+If a new number differs from the last reported value for the same metric by more than ~0.15 (or is otherwise surprising), do not write it down as a fact until you've identified WHY it changed — a real fix, a data change, or a bug in either the old or new measurement. "The number changed" is not sufficient; state the cause.
+
+### Rule 6 — Output format for any reported finding
+
+Every finding must be reported in this shape, so the check is visible, not just implied:
+
+```
+CLAIM: <the finding>
+SOURCE CHECKED: <file/command used to verify it, with the relevant excerpt>
+FRESHNESS: <timestamp of data vs. timestamp of relevant code, confirmed compatible>
+CONFIDENCE CAVEAT: <sample size / what would change this conclusion>
+```
+
+A finding without all four lines is incomplete and should not be presented as settled.

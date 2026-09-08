@@ -14,7 +14,7 @@ ORIGINAL_QUESTIONS = [
         "id": "D1",
         "question": "According to the aspirin document, what is the maximum single adult dose?",
         "category": "medical_factual",
-        "expected_keywords": ["500", "mg", "dose", "single"],
+        "expected_keywords": ["650", "mg", "dose", "single"],
         "general_knowledge_unanswerable": True
     },
     {
