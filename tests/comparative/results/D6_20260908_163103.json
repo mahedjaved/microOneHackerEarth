@@ -1,0 +1,106 @@
+{
+  "test_case": {
+    "id": "D6",
+    "question": "What does the document say about giving aspirin to children?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "children",
+      "reye",
+      "syndrome",
+      "under",
+      "16",
+      "18"
+    ],
+    "general_knowledge_unanswerable": false
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": "",
+        "sources": [
+          "uploaded_docs/aspirin.pdf:2",
+          "uploaded_docs/aspirin.pdf:0"
+        ],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": null,
+        "run_artifact_id": "aa4ac36b-cd32-4273-8b06-202d9d1e3c70",
+        "safety_scope": "allowed"
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "The document states that aspirin should **not be given to children under 16\u202fyears old** because of the risk of Reye syndrome, a rare but serious condition.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "safety_scope": "no_check",
+        "emergency": false,
+        "retrieval_scores": [
+          0.708445609,
+          0.546816826,
+          0.499876022
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "I\u2019m sorry, but I don\u2019t have the document you\u2019re referring to, so I can\u2019t tell you what it says about giving aspirin to children. If you can provide the relevant text or more details, I\u2019d be happy to help interpret it.",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found"
+      ],
+      "scoring_timestamp": "2026-09-08T16:30:58.734002"
+    },
+    "medrag_baseline": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.8333333333333334,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['children', 'reye', 'syndrome', 'under', '16']"
+      ],
+      "scoring_timestamp": "2026-09-08T16:31:02.518509"
+    },
+    "no_rag": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.16666666666666666,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Partial answer with keywords: ['children']"
+      ],
+      "scoring_timestamp": "2026-09-08T16:31:03.748539"
+    }
+  },
+  "timestamp": "20260908_163103"
+}

@@ -1,0 +1,126 @@
+{
+  "test_case": {
+    "id": "U1",
+    "question": "According to the UQ paper, what coverage target is used for the conformal predictor?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "0.90",
+      "90%",
+      "coverage",
+      "alpha",
+      "0.10"
+    ],
+    "source": "uq_paper",
+    "document_specific": true
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": null,
+        "sources": [],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": {
+          "status": "insufficient_evidence",
+          "message": "I do not know from the approved evidence.",
+          "support_probability": 1.0000000000000008e-06,
+          "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+          "conformal_set": [
+            "INSUFFICIENT"
+          ],
+          "coverage_target": 0.1,
+          "uncertainty_causes": [
+            {
+              "type": "missing_evidence",
+              "detail": "Low claim coverage in retrieved passages"
+            }
+          ],
+          "actions_taken": [],
+          "evidence_needed": "",
+          "corpus_id": "medical-corpus-v1",
+          "calibration_id": "calibration-v1",
+          "human_review_recommended": true,
+          "prior": null,
+          "combined_posterior": null,
+          "relevance_weighted": null
+        },
+        "run_artifact_id": "2e9db664-486e-41cf-9c04-834bb4b746fd",
+        "safety_scope": "allowed"
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "The provided excerpt does not contain any information about a conformal predictor or the coverage target used for it, so I cannot answer that question based on the given context.",
+        "sources": [
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "safety_scope": "no_check",
+        "emergency": false,
+        "retrieval_scores": [
+          0.469916403,
+          0.427519798,
+          0.418701172
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "The paper calibrates the conformal predictor to achieve a **90\u202f% marginal coverage target** (i.e., it aims for a mis\u2011coverage level of\u202f\u03b1\u202f=\u202f0.10).",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found"
+      ],
+      "scoring_timestamp": "2026-09-08T16:38:42.334868"
+    },
+    "medrag_baseline": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.2,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Partial answer with keywords: ['coverage']"
+      ],
+      "scoring_timestamp": "2026-09-08T16:38:48.567297"
+    },
+    "no_rag": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.4,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Partial answer with keywords: ['coverage', '0.10']"
+      ],
+      "scoring_timestamp": "2026-09-08T16:38:54.096931"
+    }
+  },
+  "timestamp": "20260908_163854"
+}

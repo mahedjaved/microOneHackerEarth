@@ -2,9 +2,6 @@ from server.config import settings
 from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
-from langchain_core.language_models.fake_chat_models import FakeListChatModel
-
-print("DEBUG: llm.py loaded from:", __file__)
 
 
 def get_llm_chain(retriever):
@@ -46,11 +43,13 @@ def _get_llm_with_fallback():
             llm.invoke("test")
             return llm
         except Exception as e:
-            print(f"OpenCodeZen unavailable ({e}), using mock LLM")
+            print(f"OpenCodeZen unavailable ({e})")
 
-    # If all providers fail, return a fake LLM for testing
-    print("WARNING: No LLM provider available. Using mock LLM for testing.")
-    return FakeListChatModel(responses=["This is a test response from the medical assistant. Based on the provided context, the answer is for testing purposes only."])
+    # Default to Groq (will fail with rate limit if still exhausted)
+    return ChatGroq(
+        model="openai/gpt-oss-120b",
+        api_key=settings.groq_api_key_resolved,
+    )
 
 
 def get_direct_llm():
