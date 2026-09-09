@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+env
+.env
+*.egg-info
+dist
+build
+
+# Data and models (large, not needed for build)
+data/
+models/
+*.pdf
+*.docx
+*.csv
+*.json
+!backend/server/requirements.txt
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose*.yml
+Dockerfile
+
+# Tests and docs (not needed for runtime image)
+tests/
+docs/
+specs/
+submission/
+guidance/
+.specify/

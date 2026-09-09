@@ -1,0 +1,56 @@
+{
+  "test_case": {
+    "id": "H2",
+    "question": "What does the aspirin document say about aspirin's effect on COVID-19?",
+    "category": "hallucination",
+    "document_does_not_contain": true,
+    "expected_behavior": "doubt_certificate",
+    "expected_keywords": [
+      "not available",
+      "cannot",
+      "document"
+    ],
+    "should_have_citation": false
+  },
+  "results": {
+    "uq_rag": {
+      "status": 500,
+      "error": "{\"error\":\"Failed to process question\"}"
+    },
+    "medrag_baseline": {
+      "status": 500,
+      "error": "{\"detail\":\"MedRAG baseline failed: No LLM provider available. Configure GOOGLE_API_KEY, GROQ_API_KEY, or OPENCODEZEN_API_KEY.\"}"
+    },
+    "no_rag": {
+      "status": 500,
+      "error": "{\"detail\":\"No-RAG baseline failed: No LLM provider available. Configure GOOGLE_API_KEY, GROQ_API_KEY, or OPENCODEZEN_API_KEY.\"}"
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "medrag_baseline": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "no_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    }
+  },
+  "timestamp": "20260908_203756"
+}

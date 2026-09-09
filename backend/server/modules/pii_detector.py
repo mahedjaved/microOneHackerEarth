@@ -33,22 +33,39 @@ except ImportError:
     AnonymizerEngine = None
 
 if _PII_AVAILABLE:
-    nlp = spacy.load("en_core_web_md")
+    try:
+        nlp = spacy.load("en_core_web_md")
+    except Exception:
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except Exception:
+            nlp = None
+            logger.warning("No spaCy model available. PII detection will be disabled.")
 
-    registry = RecognizerRegistry(
-        global_regex_flags=(re.DOTALL | re.MULTILINE | re.IGNORECASE)
-    )
+    if nlp is not None:
+        registry = RecognizerRegistry(
+            global_regex_flags=(re.DOTALL | re.MULTILINE | re.IGNORECASE)
+        )
 
-    registry.load_predefined_recognizers()
-    registry.add_recognizer(PatientIdRecognizer())
-    registry.add_recognizer(InsuranceIdRecognizer())
-    registry.add_recognizer(PharmacyIdRecognizer())
-    registry.add_recognizer(CustomMedicalLicenseRecognizer())
+        registry.load_predefined_recognizers()
+        registry.add_recognizer(PatientIdRecognizer())
+        registry.add_recognizer(InsuranceIdRecognizer())
+        registry.add_recognizer(PharmacyIdRecognizer())
+        registry.add_recognizer(CustomMedicalLicenseRecognizer())
 
-    analyzer = AnalyzerEngine(registry=registry)
-    anonymizer = AnonymizerEngine()
+        # Use a smaller spaCy model to avoid downloading en_core_web_lg
+        from presidio_analyzer.nlp_engine import SpacyNlpEngine
+        nlp_engine = SpacyNlpEngine(
+            models=[{"lang_code": "en", "model_name": "en_core_web_md"}]
+        )
+        analyzer = AnalyzerEngine(registry=registry, nlp_engine=nlp_engine)
+        anonymizer = AnonymizerEngine()
 
-    CUSTOM_ENTITIES = ["PATIENT_ID", "INSURANCE_ID", "PHARMACY_ID", "MEDICAL_LICENSE"]
+        CUSTOM_ENTITIES = ["PATIENT_ID", "INSURANCE_ID", "PHARMACY_ID", "MEDICAL_LICENSE"]
+    else:
+        analyzer = None
+        anonymizer = None
+        CUSTOM_ENTITIES = []
 
 
 # function to detect and redact PII in the input text
@@ -64,6 +81,10 @@ async def detect_and_redact(text: str) -> str:
     """
     if not _PII_AVAILABLE:
         logger.info("PII detection unavailable (presidio not installed). Returning original text.")
+        return text
+
+    if analyzer is None:
+        logger.info("PII detection unavailable (spaCy model not loaded). Returning original text.")
         return text
 
     # guard for enabled detection and redaction settings

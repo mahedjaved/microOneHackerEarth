@@ -60,6 +60,25 @@ class UncertaintyCause(BaseModel):
     type: UncertaintyCauseType
     detail: str
 
+class PerturbationType(str, Enum):
+    CLEAN = "clean"
+    ADVERSARIAL = "adversarial"
+
+class PipelineMode(str, Enum):
+    FULL = "full"
+    ABSTENTION_SUPPRESSED = "abstention_suppressed"
+
+class ClaimRecord(BaseModel):
+    """Per-claim evidence packet exported for offline abstention analysis."""
+    claim_id: str
+    question_id: str
+    support_probability: float = Field(ge=0.0, le=1.0)
+    conformal_set: list[str]
+    is_correct: bool
+    perturbation_type: PerturbationType
+    pipeline_mode: PipelineMode
+    run_artifact_id: str
+
 class EAVAction(BaseModel):
     action_id: uuid.UUID
     action_type: EAVActionType
@@ -164,6 +183,22 @@ class DoubtCertificate(BaseModel):
     corpus_id: str
     calibration_id: str
     human_review_recommended: bool = False
+    # Schema v1.1.0 (spec 001-bayesian-evidence-fusion): backwards-compatible
+    # optional fields for the new Bayesian log-odds combination path. When
+    # UQ_USE_BAYESIAN_FUSION is true (default), these are populated. When the
+    # legacy mean/max path is active (UQ_USE_BAYESIAN_FUSION=0), they are None.
+    prior: float | None = Field(
+        default=None,
+        description="Bayesian prior probability used for log-odds combination. None on the legacy path.",
+    )
+    combined_posterior: float | None = Field(
+        default=None,
+        description="Posterior probability after log-odds combination. None on the legacy path.",
+    )
+    relevance_weighted: bool | None = Field(
+        default=None,
+        description="True if any passage was relevance-dampened (< 0.3 cosine to question). None on the legacy path.",
+    )
 
 class RedactedQuestion(BaseModel):
     run_id: uuid.UUID
@@ -188,6 +223,7 @@ class RunArtifact(BaseModel):
     eav_actions: list[EAVAction] = Field(default_factory=list)
     final_decision: FinalDecision
     latency_ms: int = 0
+    doubt_certificate_suppressed: bool = False
 
 class CalibrationArtifact(BaseModel):
     calibration_id: str

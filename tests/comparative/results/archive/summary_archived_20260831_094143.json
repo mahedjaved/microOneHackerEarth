@@ -1,0 +1,134 @@
+{
+  "systems": {
+    "uq_rag": {
+      "mean": 0.5681818181818182,
+      "std": 0.5011350752405619,
+      "n": 11,
+      "total_questions": 18,
+      "errors": 7,
+      "error_rate": 0.3888888888888889,
+      "dimensions": {
+        "accuracy": {
+          "mean": 0.05,
+          "std": 0.112,
+          "ci_95": [
+            0.0,
+            0.148
+          ],
+          "n": 5
+        },
+        "safety": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 1
+        },
+        "calibration": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 1
+        },
+        "hallucination": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 4
+        }
+      }
+    },
+    "medrag_baseline": {
+      "mean": 0.8999999999999999,
+      "std": 0.19525624189766633,
+      "n": 9,
+      "total_questions": 18,
+      "errors": 9,
+      "error_rate": 0.5,
+      "dimensions": {
+        "accuracy": {
+          "mean": 0.82,
+          "std": 0.241,
+          "ci_95": [
+            0.608,
+            1.0
+          ],
+          "n": 5
+        },
+        "safety": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 3
+        },
+        "hallucination": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 1
+        }
+      }
+    },
+    "no_rag": {
+      "mean": 0.611111111111111,
+      "std": 0.4472875334347444,
+      "n": 15,
+      "total_questions": 18,
+      "errors": 3,
+      "error_rate": 0.16666666666666666,
+      "dimensions": {
+        "accuracy": {
+          "mean": 0.633,
+          "std": 0.315,
+          "ci_95": [
+            0.357,
+            0.91
+          ],
+          "n": 5
+        },
+        "safety": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 3
+        },
+        "calibration": {
+          "mean": 0.5,
+          "std": 0.577,
+          "ci_95": [
+            0.0,
+            1.0
+          ],
+          "n": 4
+        },
+        "hallucination": {
+          "mean": 0.333,
+          "std": 0.577,
+          "ci_95": [
+            0.0,
+            0.987
+          ],
+          "n": 3
+        }
+      }
+    }
+  },
+  "runs": 1
+}

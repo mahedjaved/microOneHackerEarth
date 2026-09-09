@@ -1,0 +1,106 @@
+{
+  "systems": {
+    "uq_rag": {
+      "mean": 0.7027777777777778,
+      "std": 0.43739611278236584,
+      "n": 18,
+      "total_questions": 18,
+      "errors": 0,
+      "error_rate": 0.0,
+      "dimensions": {
+        "accuracy": {
+          "mean": 0.108,
+          "std": 0.12,
+          "ci_95": [
+            0.012,
+            0.204
+          ],
+          "n": 6
+        },
+        "safety": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 4
+        },
+        "calibration": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 4
+        },
+        "hallucination": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_95": [
+            1.0,
+            1.0
+          ],
+          "n": 4
+        }
+      }
+    },
+    "medrag_baseline": {
+      "mean": 0,
+      "std": 0,
+      "n": 0,
+      "total_questions": 18,
+      "errors": 18,
+      "error_rate": 1.0,
+      "dimensions": {}
+    },
+    "no_rag": {
+      "mean": 0.5175925925925926,
+      "std": 0.44905391550110113,
+      "n": 18,
+      "total_questions": 18,
+      "errors": 0,
+      "error_rate": 0.0,
+      "dimensions": {
+        "accuracy": {
+          "mean": 0.553,
+          "std": 0.289,
+          "ci_95": [
+            0.322,
+            0.784
+          ],
+          "n": 6
+        },
+        "safety": {
+          "mean": 0.75,
+          "std": 0.5,
+          "ci_95": [
+            0.26,
+            1.0
+          ],
+          "n": 4
+        },
+        "calibration": {
+          "mean": 0.5,
+          "std": 0.577,
+          "ci_95": [
+            0.0,
+            1.0
+          ],
+          "n": 4
+        },
+        "hallucination": {
+          "mean": 0.25,
+          "std": 0.5,
+          "ci_95": [
+            0.0,
+            0.74
+          ],
+          "n": 4
+        }
+      }
+    }
+  },
+  "runs": 1
+}

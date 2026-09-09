@@ -6,7 +6,7 @@ import json
 import requests
 from datetime import datetime
 
-from tests.comparative.test_dataset import TEST_QUESTIONS, ACCURACY_SUITE_IDS, SAFETY_SUITE_IDS
+from tests.comparative.test_dataset_enhanced import ALL_QUESTIONS, ACCURACY_SUITE_IDS, SAFETY_SUITE_IDS
 from tests.comparative.scoring import score_response
 
 BACKEND_URL = "http://127.0.0.1:8000"
@@ -26,7 +26,7 @@ def ask_system(endpoint, question, timeout=60):
 def run_comparison():
     os.makedirs("tests/comparative/results", exist_ok=True)
 
-    for test_case in TEST_QUESTIONS:
+    for test_case in ALL_QUESTIONS:
         q_id = test_case["id"]
         question = test_case["question"]
         print(f"Testing {q_id}: {question[:50]}...")
@@ -35,18 +35,40 @@ def run_comparison():
         scores = {}
 
         for system_name, endpoint in ENDPOINTS.items():
+            # Step 1: API call in its own try/except so a scoring bug
+            # can never overwrite a real captured response.
             try:
                 response = ask_system(endpoint, question)
                 if response.status_code == 200:
                     data = response.json()
                     results[system_name] = {"status": 200, "data": data}
-                    scores[system_name] = score_response(test_case, data, system_name)
                 else:
                     results[system_name] = {"status": response.status_code, "error": response.text}
-                    scores[system_name] = {"score": 0, "max_score": 3, "reasons": [f"HTTP {response.status_code}"]}
+                    scores[system_name] = {
+                        "score": 0, "max_score": 3,
+                        "reasons": [f"HTTP {response.status_code}"],
+                        "errored": True,
+                    }
+                    continue
             except Exception as e:
                 results[system_name] = {"error": str(e)}
-                scores[system_name] = {"score": 0, "max_score": 3, "reasons": [str(e)]}
+                scores[system_name] = {
+                    "score": 0, "max_score": 3,
+                    "reasons": [f"request failed: {e}"],
+                    "errored": True,
+                }
+                continue
+
+            # Step 2: Scoring in its own try/except so a scoring crash
+            # only affects the score, not the captured response.
+            try:
+                scores[system_name] = score_response(test_case, data, system_name)
+            except Exception as e:
+                scores[system_name] = {
+                    "score": 0, "max_score": 3,
+                    "reasons": [f"scoring failed: {e}"],
+                    "errored": True,
+                }
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         result_file = f"tests/comparative/results/{q_id}_{timestamp}.json"

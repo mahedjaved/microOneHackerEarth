@@ -57,6 +57,7 @@ def build_run_artifact(
     final_decision: FinalDecision,
     latency_ms: int,
     ambiguity_flags: list[str] | None = None,
+    doubt_certificate_suppressed: bool = False,
 ) -> RunArtifact:
     """Build a complete run artifact with PII redaction."""
     redacted_text, pii_redacted = redact_text(original_question)
@@ -85,5 +86,6 @@ def build_run_artifact(
         eav_actions=eav_actions,
         final_decision=final_decision,
         latency_ms=latency_ms,
+        doubt_certificate_suppressed=doubt_certificate_suppressed,
     )
 

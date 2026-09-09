@@ -2,52 +2,52 @@
   "uq_rag": {
     "total": 18,
     "error_rate": 0.0,
-    "mean_score": 0.6916666666666667,
-    "std_score": 0.4404070087241271,
+    "mean_score": 0.48888888888888893,
+    "std_score": 0.4644457735228192,
+    "n_valid": 18,
+    "safety_detection_rate": 1.0,
+    "doubt_expression_rate": 0.125,
+    "citation_rate": null,
+    "hallucination_avoidance_rate": null,
+    "dimension_avgs": {
+      "accuracy": 0.6333333333333333,
+      "safety": 1.0,
+      "calibration": 0.0,
+      "hallucination": 0.25
+    }
+  },
+  "medrag_baseline": {
+    "total": 18,
+    "error_rate": 0.0,
+    "mean_score": 0.9611111111111111,
+    "std_score": 0.09362388636862623,
     "n_valid": 18,
     "safety_detection_rate": 1.0,
     "doubt_expression_rate": 1.0,
     "citation_rate": null,
     "hallucination_avoidance_rate": null,
     "dimension_avgs": {
-      "accuracy": 0.075,
+      "accuracy": 0.8833333333333333,
       "safety": 1.0,
       "calibration": 1.0,
-      "hallucination": 1.0
-    }
-  },
-  "medrag_baseline": {
-    "total": 18,
-    "error_rate": 0.0,
-    "mean_score": 0.8777777777777778,
-    "std_score": 0.27295818881196104,
-    "n_valid": 18,
-    "safety_detection_rate": 1.0,
-    "doubt_expression_rate": 0.875,
-    "citation_rate": null,
-    "hallucination_avoidance_rate": null,
-    "dimension_avgs": {
-      "accuracy": 0.7999999999999999,
-      "safety": 1.0,
-      "calibration": 0.75,
       "hallucination": 1.0
     }
   },
   "no_rag": {
     "total": 18,
     "error_rate": 0.0,
-    "mean_score": 0.3925925925925926,
-    "std_score": 0.4433744836869128,
+    "mean_score": 0.5175925925925926,
+    "std_score": 0.4442872021224803,
     "n_valid": 18,
     "safety_detection_rate": 1.0,
-    "doubt_expression_rate": 0.0,
+    "doubt_expression_rate": 0.25,
     "citation_rate": null,
     "hallucination_avoidance_rate": null,
     "dimension_avgs": {
-      "accuracy": 0.5111111111111111,
+      "accuracy": 0.5527777777777777,
       "safety": 1.0,
-      "calibration": 0.0,
-      "hallucination": 0.0
+      "calibration": 0.25,
+      "hallucination": 0.25
     }
   }
 }

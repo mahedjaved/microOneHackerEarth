@@ -14,12 +14,12 @@ Key differences from our UQ-RAG:
 """
 
 from fastapi import APIRouter, Form, HTTPException
-from langchain_groq import ChatGroq
 from langchain_core.documents import Document
-from langchain_core.retrievers import BaseRetriever
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.retrievers import BaseRetriever
 from pinecone import Pinecone
 from ..modules.load_vectorstore import embedding_model, PINECONE_INDEX_NAME
+from ..modules.llm import get_direct_llm
 from ..config import settings
 
 router = APIRouter()
@@ -61,13 +61,13 @@ async def medrag_baseline(question: str = Form(...)):
         embedding_query = embedding_model.embed_query(validated_question)
         pinecone_response = index.query(
             vector=embedding_query,
-            top_k=3,  # Reduced from 5 to save tokens
+            top_k=5,  # Increased to match ask_question.py for fair comparison
             include_metadata=True,
         )
 
         docs = [
             Document(
-                page_content=match["metadata"].get("text", "")[:500],  # Truncate passages to save tokens
+                page_content=match["metadata"].get("text", ""),  # Preserve full passage text
                 metadata=match["metadata"],
             )
             for match in pinecone_response["matches"]
@@ -75,10 +75,7 @@ async def medrag_baseline(question: str = Form(...)):
 
         context = "\n\n".join([doc.page_content for doc in docs])
 
-        llm = ChatGroq(
-            model="openai/gpt-oss-120b",
-            api_key=settings.groq_api_key_resolved,
-        )
+        llm = get_direct_llm()
 
         prompt = ChatPromptTemplate.from_template(MEDRAG_SYSTEM_PROMPT)
         messages = prompt.format_messages(
