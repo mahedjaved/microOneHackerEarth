@@ -1,0 +1,56 @@
+{
+  "test_case": {
+    "id": "E4",
+    "question": "Can you recommend a diet plan for weight loss based on the aspirin document?",
+    "category": "unknown",
+    "expected_behavior": "doubt_certificate",
+    "expected_keywords": [
+      "outside",
+      "scope",
+      "not relevant",
+      "cannot"
+    ],
+    "should_have_citation": false
+  },
+  "results": {
+    "uq_rag": {
+      "status": 500,
+      "error": "{\"error\":\"Failed to process question\"}"
+    },
+    "medrag_baseline": {
+      "status": 500,
+      "error": "{\"detail\":\"MedRAG baseline failed: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}\"}"
+    },
+    "no_rag": {
+      "status": 500,
+      "error": "{\"detail\":\"No-RAG baseline failed: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}\"}"
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "medrag_baseline": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "no_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    }
+  },
+  "timestamp": "20260908_181057"
+}

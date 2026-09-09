@@ -77,12 +77,12 @@ async def ask_question(request: Request, question: str = Form(...)):
         embedding_query = embedding_model.embed_query(validated.question)
         response = index.query(
             vector=embedding_query,
-            top_k=2,  # Reduced from 3 to save tokens
+            top_k=5,  # Increased from 2 to capture more relevant evidence
             include_metadata=True,
         )
         docs = [
             Document(
-                page_content=match["metadata"].get("text", "")[:500],  # Truncate passages to save tokens
+                page_content=match["metadata"].get("text", ""),  # Preserve full passage text
                 metadata=match["metadata"],
             )
             for match in response["matches"]
@@ -116,7 +116,7 @@ async def ask_question(request: Request, question: str = Form(...)):
                 document_id=match["metadata"].get("source", "unknown"),
                 document_version=match["metadata"].get("version", "v1"),
                 page_location=str(match["metadata"].get("page", "")),
-                text=match["metadata"].get("text", "")[:500],  # Truncate to save tokens
+                text=match["metadata"].get("text", ""),  # Preserve full passage text
                 provenance_hash="",
             )
             for match in response["matches"]

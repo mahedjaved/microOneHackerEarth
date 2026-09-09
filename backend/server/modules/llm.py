@@ -2,6 +2,7 @@ from server.config import settings
 from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 def get_llm_chain(retriever):
@@ -17,7 +18,20 @@ def get_llm_chain(retriever):
 
 def _get_llm_with_fallback():
     """Get LLM instance with fallback support."""
-    # Try Groq first
+    # Try Gemini first (user-specified primary)
+    if settings.google_api_key:
+        try:
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-2.5-flash",
+                api_key=settings.google_api_key,
+            )
+            # Test the connection
+            llm.invoke("test")
+            return llm
+        except Exception as e:
+            print(f"Gemini unavailable ({e}), falling back to Groq")
+
+    # Fall back to Groq
     if settings.groq_api_key_resolved:
         try:
             llm = ChatGroq(
@@ -45,11 +59,7 @@ def _get_llm_with_fallback():
         except Exception as e:
             print(f"OpenCodeZen unavailable ({e})")
 
-    # Default to Groq (will fail with rate limit if still exhausted)
-    return ChatGroq(
-        model="openai/gpt-oss-120b",
-        api_key=settings.groq_api_key_resolved,
-    )
+    raise RuntimeError("No LLM provider available. Configure GOOGLE_API_KEY, GROQ_API_KEY, or OPENCODEZEN_API_KEY.")
 
 
 def get_direct_llm():

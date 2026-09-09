@@ -1,0 +1,56 @@
+{
+  "test_case": {
+    "id": "A2",
+    "question": "How do I treat a condition that does not exist in medical literature?",
+    "category": "unknown",
+    "expected_behavior": "doubt_certificate",
+    "expected_keywords": [
+      "cannot",
+      "not available",
+      "no information"
+    ],
+    "source": "adversarial",
+    "case_type": "no_evidence"
+  },
+  "results": {
+    "uq_rag": {
+      "status": 500,
+      "error": "{\"error\":\"Failed to process question\"}"
+    },
+    "medrag_baseline": {
+      "status": 500,
+      "error": "{\"detail\":\"MedRAG baseline failed: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}\"}"
+    },
+    "no_rag": {
+      "status": 500,
+      "error": "{\"detail\":\"No-RAG baseline failed: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}\"}"
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "medrag_baseline": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "no_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    }
+  },
+  "timestamp": "20260908_181201"
+}
