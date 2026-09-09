@@ -1,0 +1,56 @@
+{
+  "test_case": {
+    "id": "D4",
+    "question": "What is the maximum daily dose of aspirin mentioned in the document?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "4000",
+      "4,000",
+      "mg",
+      "daily",
+      "maximum"
+    ],
+    "general_knowledge_unanswerable": false
+  },
+  "results": {
+    "uq_rag": {
+      "status": 500,
+      "error": "{\"error\":\"Failed to process question\"}"
+    },
+    "medrag_baseline": {
+      "status": 500,
+      "error": "{\"detail\":\"MedRAG baseline failed: No LLM provider available. Configure GOOGLE_API_KEY, GROQ_API_KEY, or OPENCODEZEN_API_KEY.\"}"
+    },
+    "no_rag": {
+      "status": 500,
+      "error": "{\"detail\":\"No-RAG baseline failed: No LLM provider available. Configure GOOGLE_API_KEY, GROQ_API_KEY, or OPENCODEZEN_API_KEY.\"}"
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "medrag_baseline": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "no_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    }
+  },
+  "timestamp": "20260908_193015"
+}

@@ -1,0 +1,57 @@
+{
+  "test_case": {
+    "id": "D6",
+    "question": "What does the document say about giving aspirin to children?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "children",
+      "reye",
+      "syndrome",
+      "under",
+      "16",
+      "18"
+    ],
+    "general_knowledge_unanswerable": false
+  },
+  "results": {
+    "uq_rag": {
+      "status": 500,
+      "error": "{\"error\":\"Failed to process question\"}"
+    },
+    "medrag_baseline": {
+      "status": 500,
+      "error": "{\"detail\":\"MedRAG baseline failed: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}\"}"
+    },
+    "no_rag": {
+      "status": 500,
+      "error": "{\"detail\":\"No-RAG baseline failed: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}\"}"
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "medrag_baseline": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    },
+    "no_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "HTTP 500"
+      ],
+      "errored": true
+    }
+  },
+  "timestamp": "20260908_180831"
+}

@@ -1,0 +1,132 @@
+{
+  "test_case": {
+    "id": "D2",
+    "question": "What does the aspirin document say about administration with food?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "food",
+      "stomach",
+      "irritation",
+      "take"
+    ],
+    "general_knowledge_unanswerable": true
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": null,
+        "sources": [],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": {
+          "status": "insufficient_evidence",
+          "message": "I do not know from the approved evidence.",
+          "support_probability": 1.0000000000000008e-06,
+          "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+          "conformal_set": [
+            "INSUFFICIENT"
+          ],
+          "coverage_target": 0.1,
+          "uncertainty_causes": [
+            {
+              "type": "missing_evidence",
+              "detail": "Low claim coverage in retrieved passages"
+            },
+            {
+              "type": "retrieval_instability",
+              "detail": "Weak retrieval scores"
+            }
+          ],
+          "actions_taken": [],
+          "evidence_needed": "",
+          "corpus_id": "medical-corpus-v1",
+          "calibration_id": "calibration-v1",
+          "human_review_recommended": true,
+          "prior": null,
+          "combined_posterior": null,
+          "relevance_weighted": null
+        },
+        "run_artifact_id": "8a097e9d-d380-43e6-9590-13d8a5c6aa72",
+        "safety_scope": "allowed"
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "The provided context does not contain information about the administration of aspirin with food.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "safety_scope": "no_check",
+        "emergency": false,
+        "retrieval_scores": [
+          0.547386229,
+          0.545201302,
+          0.49576664,
+          0.170740128,
+          0.163000107
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "Most aspirin documents and healthcare professionals recommend taking aspirin with food or a full glass of water or milk.\n\nThe primary reason for this recommendation is to **reduce the risk of stomach upset, irritation, or heartburn**, which are common side effects of aspirin, especially with regular use. Aspirin can be irritating to the lining of the stomach.\n\nSo, the \"aspirin document\" (referring to package inserts or official drug information) would typically advise:\n\n*   **Take with food or milk.**\n*   **Take with a full glass of water.**\n\nThis helps to buffer the aspirin and minimize direct contact with the stomach lining.",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found"
+      ],
+      "scoring_timestamp": "2026-09-08T19:11:28.112996"
+    },
+    "medrag_baseline": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.25,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Partial answer with keywords: ['food']"
+      ],
+      "scoring_timestamp": "2026-09-08T19:11:36.201066"
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 1.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['food', 'stomach', 'irritation', 'take']"
+      ],
+      "scoring_timestamp": "2026-09-08T19:11:41.265225"
+    }
+  },
+  "timestamp": "20260908_191141"
+}
