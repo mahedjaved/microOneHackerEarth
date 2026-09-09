@@ -99,15 +99,21 @@ def run_single_iteration(iteration: int, questions: list):
     """Run one complete test iteration."""
     results = []
     error_count = 0
+    rate_limit_events = []
 
     for test_case in questions:
         q_id = test_case["id"]
         question = test_case["question"]
+        case_start = time.time()
         print(f"  [{iteration}] Testing {q_id}: {question[:60]}...")
 
         question_result = {
             "test_case": test_case,
             "scores": {},
+            "timing": {
+                "case_start_iso": datetime.now().isoformat(),
+                "case_start_timestamp": case_start,
+            },
             "timestamp": datetime.now().isoformat()
         }
 
@@ -153,6 +159,15 @@ def run_single_iteration(iteration: int, questions: list):
                         "timestamp": datetime.now().isoformat(),
                         "latency_seconds": latency_seconds,
                     }
+                    if response.status_code == 429:
+                        rate_limit_events.append({
+                            "test_case_id": q_id,
+                            "endpoint": endpoint,
+                            "system": system_name,
+                            "http_status": 429,
+                            "latency_seconds": latency_seconds,
+                            "timestamp": datetime.now().isoformat(),
+                        })
                     error_count += 1
             except Exception as e:
                 question_result["scores"][system_name] = {
@@ -163,10 +178,19 @@ def run_single_iteration(iteration: int, questions: list):
                 }
                 error_count += 1
 
+        case_elapsed = round(time.time() - case_start, 3)
+        question_result["timing"]["case_elapsed_seconds"] = case_elapsed
+        question_result["timing"]["case_end_iso"] = datetime.now().isoformat()
         results.append(question_result)
+        print(f"    -> {q_id} completed in {case_elapsed}s")
 
     if error_count > 0:
         print(f"  [{iteration}] {error_count} errors (excluded from behavioral averages)")
+
+    if rate_limit_events:
+        print(f"  [{iteration}] {len(rate_limit_events)} rate-limit events detected")
+        for event in rate_limit_events:
+            print(f"    - {event['test_case_id']} ({event['system']}): {event['latency_seconds']}s")
 
     return results
 

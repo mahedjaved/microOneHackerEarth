@@ -75,11 +75,14 @@ async def ask_question(request: Request, question: str = Form(...)):
         )
         index = pc.Index(PINECONE_INDEX_NAME)
         embedding_query = embedding_model.embed_query(validated.question)
+        t_pinecone_start = time.time()
         response = index.query(
             vector=embedding_query,
-            top_k=5,  # Increased from 2 to capture more relevant evidence
+            top_k=settings.retrieval_top_k,
             include_metadata=True,
         )
+        pinecone_elapsed_ms = int((time.time() - t_pinecone_start) * 1000)
+        logger.info(f"[timing] pinecone_query_ms={pinecone_elapsed_ms}, top_k=5, matches={len(response.get('matches', []))}")
         docs = [
             Document(
                 page_content=match["metadata"].get("text", ""),  # Preserve full passage text
@@ -134,16 +137,31 @@ async def ask_question(request: Request, question: str = Form(...)):
         # UQ PIPELINE: inserted after retrieval, before RAG chain (Q6)
         # First call RAG chain to generate answer, then pass to UQ pipeline for verification
         llm_chain = get_llm_chain(retriever)
-        rag_result = llm_chain.invoke({"query": validated.question})
+        t_llm_start = time.time()
+        try:
+            rag_result = llm_chain.invoke({"query": validated.question})
+        except Exception as llm_error:
+            llm_elapsed_ms = int((time.time() - t_llm_start) * 1000)
+            error_str = str(llm_error).lower()
+            if "rate limit" in error_str or "429" in error_str or "quota" in error_str or "too many requests" in error_str:
+                logger.error(f"[timing] llm_rate_limited after {llm_elapsed_ms}ms: {llm_error}")
+            else:
+                logger.error(f"[timing] llm_error after {llm_elapsed_ms}ms: {llm_error}")
+            raise
+        llm_elapsed_ms = int((time.time() - t_llm_start) * 1000)
         llm_answer = rag_result.get("result", "")
+        logger.info(f"[timing] llm_generation_ms={llm_elapsed_ms}")
 
         try:
             from ..modules.query_handlers import run_uq_pipeline
+            t_uq_start = time.time()
             uq_response, run_artifact = run_uq_pipeline(
                 question=validated.question,
                 evidence_packet=evidence_packet,
                 llm_answer=llm_answer,
             )
+            uq_elapsed_ms = int((time.time() - t_uq_start) * 1000)
+            logger.info(f"[timing] uq_pipeline_ms={uq_elapsed_ms}, total_ms={pinecone_elapsed_ms + llm_elapsed_ms + uq_elapsed_ms}")
 
             # Record run artifact to database
             await log_query(
@@ -168,6 +186,7 @@ async def ask_question(request: Request, question: str = Form(...)):
 
         except Exception as uq_error:
             logger.warning(f"UQ pipeline failed, falling back to baseline RAG: {uq_error}")
+            logger.info(f"[timing] uq_pipeline_fallback, llm_ms={llm_elapsed_ms}, total_ms={pinecone_elapsed_ms + llm_elapsed_ms}")
             # Fallback: return the RAG result directly since we already called the chain
             sources = [
                 doc.metadata.get("source", "Unknown") for doc in docs

@@ -58,6 +58,9 @@ class Settings(BaseSettings):
     uploaded_docs_dir: str = "./uploaded_docs"
     medical_disclaimer: str = "This is not medical advice. Consult a healthcare professional."
 
+    # ── Retrieval tuning (instrumentation only) ───────────────────
+    retrieval_top_k: int = 5  # Default to 5; set 2 for baseline comparison runs
+
 
      # ── Cache ─────────────────────────────────────────────────────
     cache_ttl_seconds: int = 3600
