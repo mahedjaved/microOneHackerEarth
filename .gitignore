@@ -5,6 +5,7 @@
 .claude
 .opencode
 .venv
+.venv_macos
 __pycache__/
 *.pyc
 *.pyo
