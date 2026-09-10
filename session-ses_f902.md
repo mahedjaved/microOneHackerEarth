@@ -5147,7 +5147,7 @@ no no need to mock, run with real API calls
 
 ## User
 
-can you try with gsk_[REDACTED]
+can you try with a valid Groq API key
 
 ---
 
