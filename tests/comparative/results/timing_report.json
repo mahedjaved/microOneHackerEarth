@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T18:52:16.225788",
+  "generated_at": "2026-09-10T21:34:04.835902",
   "backend_url": "http://127.0.0.1:8000",
   "subset_questions": [
     "D1",
@@ -13,12 +13,12 @@
       "test_case_id": "D1",
       "top_k": 5,
       "question": "According to the aspirin document, what is the maximum single adult dose?",
-      "timestamp": "2026-09-10T18:25:46.213964",
+      "timestamp": "2026-09-10T21:27:08.218729",
       "systems": {
         "uq_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 60.221,
+          "latency_seconds": 15.387,
           "response": {
             "response": null,
             "sources": [],
@@ -53,16 +53,16 @@
               "combined_posterior": null,
               "relevance_weighted": null
             },
-            "run_artifact_id": "e8471625-a620-4ee4-858d-0178f4ca3913",
+            "run_artifact_id": "fbd24d16-28c4-4da4-81c2-73f4838c927e",
             "safety_scope": "allowed"
           }
         },
         "medrag_baseline": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 60.581,
+          "latency_seconds": 34.454,
           "response": {
-            "response": "The provided context does not contain enough information to state the maximum single adult dose of aspirin. It only specifies that the usual adult dose is 325\u2013650 mg every 4 hours as needed, with a maximum total dose of 4,000 mg in a 24-hour period, but does not define the maximum allowable single dose.",
+            "response": "The provided context does not specify the maximum single adult dose of aspirin. It only states that the usual adult dose is 325\u2013650 mg every 4 hours as needed, with a maximum total dose of 4,000 mg in a 24-hour period.",
             "sources": [
               "uploaded_docs/aspirin.pdf",
               "uploaded_docs/aspirin.pdf",
@@ -88,469 +88,26 @@
         "no_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 54.71,
+          "latency_seconds": 14.315,
           "response": {
-            "response": "I do not have access to the specific \"aspirin document\" you are referencing, so I cannot cite information from that specific source.\n\nThat said, general clinical and regulatory guidelines for aspirin (acetylsalicylic acid) note that maximum single adult doses vary by intended use:\n- For over-the-counter short-term relief of mild to moderate pain, fever, or inflammation: The standard maximum single adult dose is 1000 mg, with a maximum total daily dose of 4000 mg for OTC use, per U.S. FDA labeling and common clinical practice.\n- For long-term cardiovascular prophylaxis (e.g., reducing risk of heart attack or stroke in high-risk patients, under medical supervision): Doses are far lower, typically 75\u2013100 mg once daily, and high single doses are not used for this indication.\n\nAspirin carries risks of serious side effects including gastrointestinal bleeding, ulcers, and Reye's syndrome (in children/teens with viral infections), so dosing should always follow the instructions on the specific product label or a licensed healthcare provider's recommendation.",
+            "response": "I do not have access to the specific \"aspirin document\" you are referencing, so the information below is based on widely accepted global clinical and regulatory guidelines for adult aspirin dosing:\nThe maximum single adult dose of aspirin varies by intended use:\n1. For over-the-counter (OTC) short-term use to relieve mild to moderate pain, fever, or inflammation: the standard maximum single dose is 1000 mg (1 gram) per administration, with at least 4 hours between doses. The maximum total daily OTC dose for adults is typically 4000 mg per guidelines from bodies like the U.S. FDA and the UK NHS.\n2. For supervised medical use (e.g., acute management of a suspected heart attack, or treatment of certain inflammatory/rheumatologic conditions), a single dose may be higher under direct clinical guidance, but these doses are not intended for self-administration.\n\n### Critical safety note:\nAspirin carries serious risks of adverse effects including gastrointestinal bleeding, stomach ulcers, and Reye's syndrome (in people under 18 years old). You should always follow product labeling or a licensed healthcare provider's dosing instructions, and never exceed recommended doses without medical supervision. If you are referencing a specific document, check its dedicated dosing section, or consult a pharmacist for clarification.",
             "system": "no_rag",
             "safety_scope": "no_check"
           }
         }
       },
-      "case_elapsed_seconds": 175.512
+      "case_elapsed_seconds": 64.156
     },
     {
       "test_case_id": "D2",
       "top_k": 5,
       "question": "What does the aspirin document say about administration with food?",
-      "timestamp": "2026-09-10T18:28:41.726444",
+      "timestamp": "2026-09-10T21:28:12.375235",
       "systems": {
         "uq_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 47.3,
-          "response": {
-            "response": null,
-            "sources": [],
-            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
-            "injection_detected": false,
-            "pii_redacted": false,
-            "doubt_certificate": {
-              "status": "insufficient_evidence",
-              "message": "I do not know from the approved evidence.",
-              "support_probability": 1.0000000000000008e-06,
-              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
-              "conformal_set": [
-                "INSUFFICIENT"
-              ],
-              "coverage_target": 0.1,
-              "uncertainty_causes": [
-                {
-                  "type": "missing_evidence",
-                  "detail": "Low claim coverage in retrieved passages"
-                },
-                {
-                  "type": "retrieval_instability",
-                  "detail": "Weak retrieval scores"
-                }
-              ],
-              "actions_taken": [],
-              "evidence_needed": "",
-              "corpus_id": "medical-corpus-v1",
-              "calibration_id": "calibration-v1",
-              "human_review_recommended": true,
-              "prior": null,
-              "combined_posterior": null,
-              "relevance_weighted": null
-            },
-            "run_artifact_id": "539c96fe-e81e-4140-b733-802ee5fb0fac",
-            "safety_scope": "allowed"
-          }
-        },
-        "medrag_baseline": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 47.367,
-          "response": {
-            "response": "The provided context does not contain any information about aspirin administration with food.",
-            "sources": [
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
-            ],
-            "system": "medrag_baseline",
-            "confidence": null,
-            "doubt_certificate": null,
-            "safety_check": "none",
-            "safety_scope": "no_check",
-            "emergency": false,
-            "retrieval_scores": [
-              0.547386289,
-              0.545201361,
-              0.495765746,
-              0.170740142,
-              0.162999168
-            ]
-          }
-        },
-        "no_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 63.907,
-          "response": {
-            "response": "Since you did not specify the exact aspirin document you are referring to (e.g., FDA product labeling, clinical practice guidelines, a specific brand\u2019s patient information leaflet), below is standard guidance consistent across most authoritative official aspirin documents, with nuance based on dose and intended use:\n### For low-dose aspirin (typically 81mg, used for long-term cardiovascular disease prevention)\nMost regulatory and clinical guidance (including FDA labeling and American Heart Association recommendations) states low-dose aspirin can be taken with or without food, as food does not meaningfully reduce its absorption or cardioprotective effect. Taking it with food is only recommended for people who experience mild gastrointestinal side effects (stomach upset, heartburn) to reduce discomfort.\n### For regular/higher-dose aspirin (325mg or higher, used for short-term pain, fever, or inflammation relief)\nStandard labeling and clinical guidance recommends taking it with food or a full glass of milk to minimize gastrointestinal irritation, a very common side effect of higher-dose aspirin. This reduces risk of mild side effects like stomach pain, and long-term use lowers risk of stomach ulcers or gastrointestinal bleeding. Food may slightly delay the onset of pain relief, but does not reduce the medication\u2019s overall effectiveness.\n### Key exception\nFor acute suspected heart attack or stroke, official guidance states uncoated aspirin should be chewed and swallowed immediately, with no waiting to take it with food, as rapid absorption is critical to reduce tissue damage. Enteric-coated aspirin should not be used in this scenario, as it is absorbed too slowly.\n\nIf you are referring to a specific, named aspirin document, you can share more details for a more targeted answer.",
-            "system": "no_rag",
-            "safety_scope": "no_check"
-          }
-        }
-      },
-      "case_elapsed_seconds": 158.574
-    },
-    {
-      "test_case_id": "D3",
-      "top_k": 5,
-      "question": "According to the document, what is the maximum daily duration for aspirin use without medical advice?",
-      "timestamp": "2026-09-10T18:31:20.300846",
-      "systems": {
-        "uq_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 50.794,
-          "response": {
-            "response": null,
-            "sources": [],
-            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
-            "injection_detected": false,
-            "pii_redacted": false,
-            "doubt_certificate": {
-              "status": "insufficient_evidence",
-              "message": "I do not know from the approved evidence.",
-              "support_probability": 4.335664224219427e-06,
-              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
-              "conformal_set": [
-                "INSUFFICIENT"
-              ],
-              "coverage_target": 0.1,
-              "uncertainty_causes": [
-                {
-                  "type": "missing_evidence",
-                  "detail": "Low claim coverage in retrieved passages"
-                },
-                {
-                  "type": "retrieval_instability",
-                  "detail": "Weak retrieval scores"
-                }
-              ],
-              "actions_taken": [],
-              "evidence_needed": "",
-              "corpus_id": "medical-corpus-v1",
-              "calibration_id": "calibration-v1",
-              "human_review_recommended": true,
-              "prior": null,
-              "combined_posterior": null,
-              "relevance_weighted": null
-            },
-            "run_artifact_id": "d8585aed-f67d-49e1-a622-abf16c690001",
-            "safety_scope": "allowed"
-          }
-        },
-        "medrag_baseline": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 65.301,
-          "response": {
-            "response": "The provided context does not contain information about the maximum daily duration for aspirin use without medical advice. The context only specifies dosing amounts (325-650 mg per dose, no more than 4000 mg in 24 hours), dosing frequency (every 4 hours as needed), age restrictions, and common uses of aspirin, but does not address how long aspirin can be taken daily without medical guidance.",
-            "sources": [
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
-            ],
-            "system": "medrag_baseline",
-            "confidence": null,
-            "doubt_certificate": null,
-            "safety_check": "none",
-            "safety_scope": "no_check",
-            "emergency": false,
-            "retrieval_scores": [
-              0.689106,
-              0.503370345,
-              0.490913391,
-              0.22341156,
-              0.195558548
-            ]
-          }
-        },
-        "no_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 55.55,
-          "response": {
-            "response": "No specific document was included with your question, so I cannot reference the content of an unspecified document to answer this query.\n\nThat said, general, widely accepted medical guidance for over-the-counter aspirin use without medical supervision is as follows:\nFor self-treatment of mild pain, fever, or inflammation in adults, most global health authorities (including the U.S. FDA and the UK's NHS) recommend not using aspirin for more than 10 days for pain, or more than 3 days for fever, without consulting a healthcare provider. It is critical to note that aspirin should never be given to children or teenagers with viral infections (e.g. flu, chickenpox) due to the risk of Reye's syndrome, a rare but life-threatening condition.\n\nLong-term daily aspirin use (including low-dose aspirin sometimes used for heart health) should never be started or continued without explicit medical guidance, as it carries significant risks of gastrointestinal bleeding, stroke, and other adverse effects that must be weighed against potential benefits for each individual.\n\nIf you intended to reference a specific document, please share its content so I can provide an answer aligned with that source.",
-            "system": "no_rag",
-            "safety_scope": "no_check"
-          }
-        }
-      },
-      "case_elapsed_seconds": 171.645
-    },
-    {
-      "test_case_id": "D4",
-      "top_k": 5,
-      "question": "What is the maximum daily dose of aspirin mentioned in the document?",
-      "timestamp": "2026-09-10T18:34:11.945837",
-      "systems": {
-        "uq_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 52.298,
-          "response": {
-            "response": null,
-            "sources": [],
-            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
-            "injection_detected": false,
-            "pii_redacted": false,
-            "doubt_certificate": {
-              "status": "insufficient_evidence",
-              "message": "I do not know from the approved evidence.",
-              "support_probability": 0.8107509157509157,
-              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
-              "conformal_set": [
-                "INSUFFICIENT"
-              ],
-              "coverage_target": 0.1,
-              "uncertainty_causes": [
-                {
-                  "type": "retrieval_instability",
-                  "detail": "Weak retrieval scores"
-                }
-              ],
-              "actions_taken": [],
-              "evidence_needed": "",
-              "corpus_id": "medical-corpus-v1",
-              "calibration_id": "calibration-v1",
-              "human_review_recommended": true,
-              "prior": null,
-              "combined_posterior": null,
-              "relevance_weighted": null
-            },
-            "run_artifact_id": "0d626293-76f5-4103-8e26-0585be5419bc",
-            "safety_scope": "allowed"
-          }
-        },
-        "medrag_baseline": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 48.509,
-          "response": {
-            "response": "Based on the context provided, the maximum daily dose of aspirin mentioned is **4,000 mg** (specifically, \"Do not exceed 4,000 mg in 24 hours\").",
-            "sources": [
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
-            ],
-            "system": "medrag_baseline",
-            "confidence": null,
-            "doubt_certificate": null,
-            "safety_check": "none",
-            "safety_scope": "no_check",
-            "emergency": false,
-            "retrieval_scores": [
-              0.733951569,
-              0.496752739,
-              0.471861869,
-              0.266438484,
-              0.263671875
-            ]
-          }
-        },
-        "no_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 48.936,
-          "response": {
-            "response": "No document was provided in your query, so I cannot reference the maximum daily dose of aspirin mentioned in a specific document.\n\nFor general medical reference only:\n- For adult use of aspirin for pain, fever, or anti-inflammatory purposes (under medical guidance), the typical maximum recommended daily dose is usually 4000 mg (4 grams) per day, split into multiple doses.\n- For low-dose aspirin used for cardioprotection or other long-term indications, the daily dose is far lower, usually 75\u2013325 mg per day, as directed by a healthcare provider.\n\nDosage varies based on individual health status, indication, and other factors, so always follow the instructions of a licensed medical professional.",
-            "system": "no_rag",
-            "safety_scope": "no_check"
-          }
-        }
-      },
-      "case_elapsed_seconds": 149.743
-    },
-    {
-      "test_case_id": "D5",
-      "top_k": 5,
-      "question": "According to the document, should aspirin be taken with food or on an empty stomach?",
-      "timestamp": "2026-09-10T18:36:41.688371",
-      "systems": {
-        "uq_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 49.012,
-          "response": {
-            "response": null,
-            "sources": [],
-            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
-            "injection_detected": false,
-            "pii_redacted": false,
-            "doubt_certificate": {
-              "status": "insufficient_evidence",
-              "message": "I do not know from the approved evidence.",
-              "support_probability": 1.0000020000020012e-12,
-              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
-              "conformal_set": [
-                "INSUFFICIENT"
-              ],
-              "coverage_target": 0.1,
-              "uncertainty_causes": [
-                {
-                  "type": "missing_evidence",
-                  "detail": "Low claim coverage in retrieved passages"
-                },
-                {
-                  "type": "retrieval_instability",
-                  "detail": "Weak retrieval scores"
-                }
-              ],
-              "actions_taken": [],
-              "evidence_needed": "",
-              "corpus_id": "medical-corpus-v1",
-              "calibration_id": "calibration-v1",
-              "human_review_recommended": true,
-              "prior": null,
-              "combined_posterior": null,
-              "relevance_weighted": null
-            },
-            "run_artifact_id": "c4082a24-eca9-4190-be25-08700f08bd9e",
-            "safety_scope": "allowed"
-          }
-        },
-        "medrag_baseline": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 46.73,
-          "response": {
-            "response": "The provided context does not contain information about whether aspirin should be taken with food or on an empty stomach, so this question cannot be answered based on the given content.",
-            "sources": [
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
-            ],
-            "system": "medrag_baseline",
-            "confidence": null,
-            "doubt_certificate": null,
-            "safety_check": "none",
-            "safety_scope": "no_check",
-            "emergency": false,
-            "retrieval_scores": [
-              0.513428688,
-              0.493340492,
-              0.467907935,
-              0.173021317,
-              0.169939041
-            ]
-          }
-        },
-        "no_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 48.96,
-          "response": {
-            "response": "No specific document was provided in your query, so I cannot reference guidance from a particular document. That said, general standard medical recommendations for aspirin use are as follows:\n- For higher-dose aspirin (used for pain, fever, or inflammation), it is typically recommended to take it with food or a full glass of milk/water to reduce the risk of gastrointestinal side effects like stomach upset, irritation, ulcers, or bleeding.\n- For low-dose daily aspirin (often used for cardioprotection, such as preventing heart attack or stroke), it can be taken with or without food. If you experience stomach discomfort when taking it on an empty stomach, taking it with a small amount of food is acceptable.\n\nAlways follow the specific instructions provided by your prescribing healthcare provider, as individual recommendations may vary based on your health status and the reason you are taking aspirin.",
-            "system": "no_rag",
-            "safety_scope": "no_check"
-          }
-        }
-      },
-      "case_elapsed_seconds": 144.702
-    }
-  ],
-  "results_top_k_2": [
-    {
-      "test_case_id": "D1",
-      "top_k": 2,
-      "question": "According to the aspirin document, what is the maximum single adult dose?",
-      "timestamp": "2026-09-10T18:39:06.390736",
-      "systems": {
-        "uq_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 68.866,
-          "response": {
-            "response": null,
-            "sources": [],
-            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
-            "injection_detected": false,
-            "pii_redacted": false,
-            "doubt_certificate": {
-              "status": "insufficient_evidence",
-              "message": "I do not know from the approved evidence.",
-              "support_probability": 1.0000020000020012e-12,
-              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
-              "conformal_set": [
-                "INSUFFICIENT"
-              ],
-              "coverage_target": 0.1,
-              "uncertainty_causes": [
-                {
-                  "type": "missing_evidence",
-                  "detail": "Low claim coverage in retrieved passages"
-                },
-                {
-                  "type": "retrieval_instability",
-                  "detail": "Weak retrieval scores"
-                }
-              ],
-              "actions_taken": [],
-              "evidence_needed": "",
-              "corpus_id": "medical-corpus-v1",
-              "calibration_id": "calibration-v1",
-              "human_review_recommended": true,
-              "prior": null,
-              "combined_posterior": null,
-              "relevance_weighted": null
-            },
-            "run_artifact_id": "06d6e976-7ce4-4537-8175-8ae8f9da8bbb",
-            "safety_scope": "allowed"
-          }
-        },
-        "medrag_baseline": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 53.594,
-          "response": {
-            "response": "Based on the context provided, the usual dose of aspirin for adults is 325-650 mg every 4 hours. Therefore, the maximum single adult dose listed is **650 mg**.\n\n(Note: The document also states a limit of 4,000 mg in 24 hours).",
-            "sources": [
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/aspirin.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
-              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
-            ],
-            "system": "medrag_baseline",
-            "confidence": null,
-            "doubt_certificate": null,
-            "safety_check": "none",
-            "safety_scope": "no_check",
-            "emergency": false,
-            "retrieval_scores": [
-              0.821087718,
-              0.521352768,
-              0.502013147,
-              0.243786782,
-              0.214177132
-            ]
-          }
-        },
-        "no_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 55.825,
-          "response": {
-            "response": "I don\u2019t have access to the specific \"aspirin document\" you are referencing, so I cannot confirm the exact maximum single adult dose stated in that particular resource.\n\nFor general context, standard clinical guidelines for over-the-counter aspirin use for short-term relief of pain, fever, or mild inflammation in healthy adults typically list a maximum single dose of 1000 mg (1 gram), with a maximum total daily dose not exceeding 4000 mg unless explicitly directed by a licensed healthcare provider.\n\nIt is important to note that aspirin dosing varies widely based on intended use: for example, low-dose aspirin (usually 75\u2013100 mg) used for long-term cardiovascular risk reduction is taken as a small daily dose, not a large single acute dose, while for emergency management of a suspected heart attack, a chewed single dose of 160\u2013325 mg is often recommended under medical guidance.\n\nAspirin carries significant risks for some people (including children and teens with viral infections, due to risk of Reye\u2019s syndrome, people with aspirin allergy, active bleeding, or certain gastrointestinal conditions), so dosing should always follow the instructions on the product label or the directions of a healthcare provider.",
-            "system": "no_rag",
-            "safety_scope": "no_check"
-          }
-        }
-      },
-      "case_elapsed_seconds": 178.285
-    },
-    {
-      "test_case_id": "D2",
-      "top_k": 2,
-      "question": "What does the aspirin document say about administration with food?",
-      "timestamp": "2026-09-10T18:42:04.676252",
-      "systems": {
-        "uq_rag": {
-          "status": "success",
-          "http_status": 200,
-          "latency_seconds": 51.729,
+          "latency_seconds": 9.793,
           "response": {
             "response": null,
             "sources": [],
@@ -585,14 +142,14 @@
               "combined_posterior": null,
               "relevance_weighted": null
             },
-            "run_artifact_id": "768bb515-337f-4f58-b878-0e02a7fbc695",
+            "run_artifact_id": "14862978-8af2-42f8-a0cc-aa0395f31112",
             "safety_scope": "allowed"
           }
         },
         "medrag_baseline": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 47.974,
+          "latency_seconds": 10.744,
           "response": {
             "response": "The provided context does not contain any information about aspirin administration with food.",
             "sources": [
@@ -620,26 +177,26 @@
         "no_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 55.706,
+          "latency_seconds": 18.86,
           "response": {
-            "response": "There is no single universal \"aspirin document\"\u2014guidance on taking aspirin with food comes from regulatory bodies (like the FDA, EMA), clinical practice guidelines, and individual product labeling, which align on the following standard points:\n### For routine, non-emergency use:\n1. **Low-dose aspirin (typically 81mg, used for long-term cardiovascular disease prevention)**\n   Most guidance states it can be taken with or without food. Taking it with food, a full glass of water, or milk is recommended for people who experience stomach upset, heartburn, or gastrointestinal (GI) irritation, as this reduces the risk of mild side effects. Note that even low-dose aspirin carries a small baseline risk of GI bleeding, and food does not eliminate this risk entirely.\n2. **Regular/higher-dose aspirin (325mg or higher, used for short-term pain, fever, or inflammation)**\n   Standard guidance recommends taking it with food or milk to minimize the risk of stomach upset, nausea, heartburn, and more serious GI side effects like gastric irritation or ulcers.\n### Emergency use exception:\nFor a suspected acute heart attack or stroke, standard guidance recommends chewing a low-dose (usually 325mg) aspirin immediately, even without food, as rapid absorption is critical to reduce dangerous blood clot formation. This is a one-time emergency protocol, not routine administration.\n### Additional notes:\nEnteric-coated aspirin formulations are designed to resist stomach acid to reduce GI irritation, but many guidelines still recommend taking them with food if you have a sensitive stomach or a history of GI issues. Always follow the instructions on your specific aspirin product label, and consult your healthcare provider for personalized guidance, especially if you have a history of ulcers, GI bleeding, or take other medications that increase bleeding risk.\nThis is general information and not a substitute for medical advice. If you are referencing a specific aspirin-related document (e.g., a clinical study, product insert), share more context for a more targeted answer.",
+            "response": "There is no single universal \"aspirin document\"\u2014guidance on taking aspirin with food comes from official drug monographs (e.g., U.S. FDA labeling, UK British National Formulary, NHS clinical guidelines) and varies slightly based on aspirin dose and intended use. Standard guidance across major health authority sources includes:\n### For low-dose aspirin (typically 81mg, used for long-term cardioprotection to reduce heart attack/stroke risk)\nMost official documents state low-dose aspirin can be taken with or without food. If a person experiences stomach upset, taking it with food or a full glass of water is recommended to reduce mild gastrointestinal (GI) irritation. Food does not meaningfully reduce aspirin\u2019s antiplatelet (blood clot prevention) effect at this low dose.\n### For higher-dose aspirin (325mg and above, used for short-term pain, fever, or inflammation relief)\nOfficial drug labeling almost universally recommends taking higher-dose aspirin with food or a full glass of water. This is to minimize common GI side effects including heartburn, stomach pain, and nausea, and reduce the risk of more serious complications like gastric ulcers or GI bleeding. These risks occur because aspirin inhibits the COX-1 enzyme, which normally helps protect the stomach lining.\n### Additional standard notes\n- Enteric-coated aspirin (formulated to dissolve in the intestine rather than the stomach to reduce direct stomach irritation) may be taken with or without food for most people, but those with sensitive stomachs are still advised to take it with food if they experience discomfort.\n- For acute use (e.g., treating sudden pain or fever), taking aspirin with food may slightly delay the onset of effect, but this is usually not clinically significant for most users, and the reduction in GI side effects is often preferred.\n- People taking aspirin as part of a prescribed treatment plan for a specific medical condition should follow the specific instructions provided by their healthcare provider, as individual recommendations may vary.",
             "system": "no_rag",
             "safety_scope": "no_check"
           }
         }
       },
-      "case_elapsed_seconds": 155.409
+      "case_elapsed_seconds": 39.397
     },
     {
       "test_case_id": "D3",
-      "top_k": 2,
+      "top_k": 5,
       "question": "According to the document, what is the maximum daily duration for aspirin use without medical advice?",
-      "timestamp": "2026-09-10T18:44:40.085528",
+      "timestamp": "2026-09-10T21:28:51.772429",
       "systems": {
         "uq_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 49.62,
+          "latency_seconds": 20.961,
           "response": {
             "response": null,
             "sources": [],
@@ -649,7 +206,7 @@
             "doubt_certificate": {
               "status": "insufficient_evidence",
               "message": "I do not know from the approved evidence.",
-              "support_probability": 4.335664224219427e-06,
+              "support_probability": 2.4570073710147403e-15,
               "probability_semantics": "P(claim fully supported by active retrieved evidence)",
               "conformal_set": [
                 "INSUFFICIENT"
@@ -674,16 +231,16 @@
               "combined_posterior": null,
               "relevance_weighted": null
             },
-            "run_artifact_id": "d12a4844-a6fa-4d4c-aec0-5ef1dae70df7",
+            "run_artifact_id": "3da49747-f2c6-4f6e-bc66-f1ef803c7a0d",
             "safety_scope": "allowed"
           }
         },
         "medrag_baseline": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 51.339,
+          "latency_seconds": 11.111,
           "response": {
-            "response": "The provided context does not contain enough information to answer this question. The context only specifies the usual per-dose amount, dosing frequency (every 4 hours as needed), and maximum total 24-hour dose of aspirin for adults, but does not mention any recommended maximum duration of daily aspirin use without medical advice.",
+            "response": "The provided context does not contain information about the maximum daily duration for aspirin use without medical advice. The context only specifies dosing amounts, frequency, 24-hour maximum dose, age restrictions, and common uses of aspirin, with no details related to duration of use.",
             "sources": [
               "uploaded_docs/aspirin.pdf",
               "uploaded_docs/aspirin.pdf",
@@ -709,26 +266,26 @@
         "no_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 52.294,
+          "latency_seconds": 9.829,
           "response": {
-            "response": "No specific document was provided in your query, so I cannot reference the content of a particular document to answer this question.\n\nThat said, general, widely accepted medical guidance (from public health bodies like the U.S. FDA and major medical associations) for over-the-counter aspirin use for temporary, self-limiting symptoms (such as mild pain, headache, or fever) states that you should not use aspirin for more than 3 days when treating fever, or more than 10 days when treating pain, without first consulting a healthcare provider. Any long-term use of aspirin (including low-dose daily aspirin for cardiovascular risk reduction) requires explicit medical supervision, as it carries risks of gastrointestinal bleeding, hemorrhagic stroke, and other adverse effects.\n\nThis is general informational guidance, not a substitute for personalized medical advice from a licensed healthcare provider.",
+            "response": "No document was included in your query, so I cannot reference the content of a specific document to answer this question.\n\nThat said, general widely accepted medical and regulatory guidance (e.g., from the U.S. FDA) for over-the-counter short-term aspirin use for temporary pain, fever, or inflammation states that you should not use it for more than 3 days for pain relief, or 5 days for fever reduction, without first consulting a healthcare provider.\n\nNote that low-dose aspirin used for long-term prevention of heart attack or stroke is only safe to use under ongoing medical supervision, as unsupervised long-term aspirin use carries significant risks including gastrointestinal bleeding, hemorrhagic stroke, and other adverse effects. This is general information, not a substitute for professional medical advice, so always follow the instructions on your aspirin product label or consult a doctor/pharmacist before use.",
             "system": "no_rag",
             "safety_scope": "no_check"
           }
         }
       },
-      "case_elapsed_seconds": 153.253
+      "case_elapsed_seconds": 41.901
     },
     {
       "test_case_id": "D4",
-      "top_k": 2,
+      "top_k": 5,
       "question": "What is the maximum daily dose of aspirin mentioned in the document?",
-      "timestamp": "2026-09-10T18:47:13.338555",
+      "timestamp": "2026-09-10T21:29:33.673278",
       "systems": {
         "uq_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 47.709,
+          "latency_seconds": 9.543,
           "response": {
             "response": null,
             "sources": [],
@@ -759,14 +316,457 @@
               "combined_posterior": null,
               "relevance_weighted": null
             },
-            "run_artifact_id": "0a5f452b-9f85-4a79-91d3-07b54c69621d",
+            "run_artifact_id": "58ed01af-d0b3-46b3-acd8-9e7526e51772",
             "safety_scope": "allowed"
           }
         },
         "medrag_baseline": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 54.338,
+          "latency_seconds": 11.858,
+          "response": {
+            "response": "Based on the context provided, the maximum daily dose of aspirin mentioned is **4,000 mg** (specifically, \"Do not exceed 4,000 mg in 24 hours\").",
+            "sources": [
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+            ],
+            "system": "medrag_baseline",
+            "confidence": null,
+            "doubt_certificate": null,
+            "safety_check": "none",
+            "safety_scope": "no_check",
+            "emergency": false,
+            "retrieval_scores": [
+              0.733951569,
+              0.496752739,
+              0.471861869,
+              0.266438484,
+              0.263671875
+            ]
+          }
+        },
+        "no_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 9.935,
+          "response": {
+            "response": "No document was provided in your query, so I cannot reference the maximum daily dose of aspirin mentioned in the specific document you are referring to.\n\nAs general medical context: For over-the-counter adult use of aspirin for pain, fever, or inflammation, the typical maximum daily dose is 4000 mg (4 grams) per day, taken in divided doses. For low-dose aspirin used for cardiovascular protection under medical supervision, the daily dose is far lower (usually 75\u2013325 mg per day). Always follow the instructions on the product label or guidance from a licensed healthcare provider, as appropriate dosing varies based on the specific use case and individual health factors.",
+            "system": "no_rag",
+            "safety_scope": "no_check"
+          }
+        }
+      },
+      "case_elapsed_seconds": 31.335
+    },
+    {
+      "test_case_id": "D5",
+      "top_k": 5,
+      "question": "According to the document, should aspirin be taken with food or on an empty stomach?",
+      "timestamp": "2026-09-10T21:30:05.008567",
+      "systems": {
+        "uq_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 27.398,
+          "response": {
+            "response": null,
+            "sources": [],
+            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+            "injection_detected": false,
+            "pii_redacted": false,
+            "doubt_certificate": {
+              "status": "insufficient_evidence",
+              "message": "I do not know from the approved evidence.",
+              "support_probability": 7.407414759952425e-09,
+              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+              "conformal_set": [
+                "INSUFFICIENT"
+              ],
+              "coverage_target": 0.1,
+              "uncertainty_causes": [
+                {
+                  "type": "missing_evidence",
+                  "detail": "Low claim coverage in retrieved passages"
+                },
+                {
+                  "type": "retrieval_instability",
+                  "detail": "Weak retrieval scores"
+                }
+              ],
+              "actions_taken": [],
+              "evidence_needed": "",
+              "corpus_id": "medical-corpus-v1",
+              "calibration_id": "calibration-v1",
+              "human_review_recommended": true,
+              "prior": null,
+              "combined_posterior": null,
+              "relevance_weighted": null
+            },
+            "run_artifact_id": "4726fe02-26ff-4c4b-b66f-a2c6a49b34e7",
+            "safety_scope": "allowed"
+          }
+        },
+        "medrag_baseline": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 8.645,
+          "response": {
+            "response": "The provided context does not contain information about whether aspirin should be taken with food or on an empty stomach.",
+            "sources": [
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+            ],
+            "system": "medrag_baseline",
+            "confidence": null,
+            "doubt_certificate": null,
+            "safety_check": "none",
+            "safety_scope": "no_check",
+            "emergency": false,
+            "retrieval_scores": [
+              0.513428688,
+              0.493340492,
+              0.467907935,
+              0.173021317,
+              0.169939041
+            ]
+          }
+        },
+        "no_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 9.117,
+          "response": {
+            "response": "No document was provided in your query, so I cannot reference guidance from a specific document. That said, general, widely accepted medical recommendations for aspirin use are as follows:\n- For low-dose aspirin (typically 81mg, used for heart attack or stroke prevention), it can usually be taken with or without food. If you experience stomach upset, taking it with food or a full glass of water can help reduce gastrointestinal irritation.\n- For higher doses of aspirin (used for pain, fever, or inflammation), it is generally recommended to take it with food to minimize the risk of stomach upset, ulcers, or gastrointestinal bleeding.\n\nAlways follow the instructions provided by your prescribing healthcare provider or the medication label, as individual recommendations may vary based on your health status and the reason you are taking aspirin.",
+            "system": "no_rag",
+            "safety_scope": "no_check"
+          }
+        }
+      },
+      "case_elapsed_seconds": 45.16
+    }
+  ],
+  "results_top_k_2": [
+    {
+      "test_case_id": "D1",
+      "top_k": 2,
+      "question": "According to the aspirin document, what is the maximum single adult dose?",
+      "timestamp": "2026-09-10T21:30:50.168204",
+      "systems": {
+        "uq_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 17.061,
+          "response": {
+            "response": null,
+            "sources": [],
+            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+            "injection_detected": false,
+            "pii_redacted": false,
+            "doubt_certificate": {
+              "status": "insufficient_evidence",
+              "message": "I do not know from the approved evidence.",
+              "support_probability": 1.0000020000020012e-12,
+              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+              "conformal_set": [
+                "INSUFFICIENT"
+              ],
+              "coverage_target": 0.1,
+              "uncertainty_causes": [
+                {
+                  "type": "missing_evidence",
+                  "detail": "Low claim coverage in retrieved passages"
+                },
+                {
+                  "type": "retrieval_instability",
+                  "detail": "Weak retrieval scores"
+                }
+              ],
+              "actions_taken": [],
+              "evidence_needed": "",
+              "corpus_id": "medical-corpus-v1",
+              "calibration_id": "calibration-v1",
+              "human_review_recommended": true,
+              "prior": null,
+              "combined_posterior": null,
+              "relevance_weighted": null
+            },
+            "run_artifact_id": "d8acf36a-1743-41b8-9d20-db7fe639c2bd",
+            "safety_scope": "allowed"
+          }
+        },
+        "medrag_baseline": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 27.402,
+          "response": {
+            "response": "The provided context does not specify the maximum single adult dose of aspirin. It only states that the usual adult dose is 325\u2013650 mg every 4 hours as needed, with a maximum total dose of 4,000 mg in a 24-hour period.",
+            "sources": [
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+            ],
+            "system": "medrag_baseline",
+            "confidence": null,
+            "doubt_certificate": null,
+            "safety_check": "none",
+            "safety_scope": "no_check",
+            "emergency": false,
+            "retrieval_scores": [
+              0.821087718,
+              0.521352768,
+              0.502013147,
+              0.243786782,
+              0.214177132
+            ]
+          }
+        },
+        "no_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 18.702,
+          "response": {
+            "response": "I don\u2019t have access to the specific \"aspirin document\" you are referencing, so I cannot share the exact maximum single adult dose stated in that specific resource. That said, general, evidence-based clinical and regulatory guidance for aspirin dosing in adults is as follows, with important context that dosing varies by intended use:\n1. **For over-the-counter (OTC) short-term use to relieve minor pain, fever, or inflammation**: The maximum single adult dose recommended by major regulatory bodies (including the U.S. FDA and UK NHS) is 1000 mg (1 gram) per dose. Doses should be spaced at least 4\u20136 hours apart, and the maximum total daily dose for OTC use should not exceed 4000 mg unless directed by a healthcare provider.\n2. **For acute cardiovascular indications (e.g., suspected heart attack, as directed by emergency medical personnel or a healthcare provider)**: The initial single chewed dose is typically 160\u2013325 mg, a lower dose tailored to this specific high-risk use case.\n\n### Critical safety notes:\nAspirin dosing is highly individualized. You should always follow the instructions on the specific product label you are using, or the guidance of a licensed healthcare provider. Exceeding recommended doses increases the risk of serious adverse effects, including gastrointestinal bleeding, kidney injury, and (rarely) Reye\u2019s syndrome (primarily in children and teenagers with viral infections). Long-term daily use of aspirin for cardioprotection (e.g., to reduce heart attack or stroke risk) uses much lower doses (usually 75\u2013100 mg per day) and should only be done under ongoing medical supervision.\n\nIf you can share more details about the specific aspirin document you are referring to (e.g., if it is a regulatory label, clinical guideline, or product information sheet), I may be able to provide more targeted information.",
+            "system": "no_rag",
+            "safety_scope": "no_check"
+          }
+        }
+      },
+      "case_elapsed_seconds": 63.165
+    },
+    {
+      "test_case_id": "D2",
+      "top_k": 2,
+      "question": "What does the aspirin document say about administration with food?",
+      "timestamp": "2026-09-10T21:31:53.333110",
+      "systems": {
+        "uq_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 11.009,
+          "response": {
+            "response": null,
+            "sources": [],
+            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+            "injection_detected": false,
+            "pii_redacted": false,
+            "doubt_certificate": {
+              "status": "insufficient_evidence",
+              "message": "I do not know from the approved evidence.",
+              "support_probability": 1.0000070000279958e-42,
+              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+              "conformal_set": [
+                "INSUFFICIENT"
+              ],
+              "coverage_target": 0.1,
+              "uncertainty_causes": [
+                {
+                  "type": "missing_evidence",
+                  "detail": "Low claim coverage in retrieved passages"
+                },
+                {
+                  "type": "retrieval_instability",
+                  "detail": "Weak retrieval scores"
+                }
+              ],
+              "actions_taken": [],
+              "evidence_needed": "",
+              "corpus_id": "medical-corpus-v1",
+              "calibration_id": "calibration-v1",
+              "human_review_recommended": true,
+              "prior": null,
+              "combined_posterior": null,
+              "relevance_weighted": null
+            },
+            "run_artifact_id": "09330719-fa11-4a83-b169-ae8d4c7b8ced",
+            "safety_scope": "allowed"
+          }
+        },
+        "medrag_baseline": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 9.398,
+          "response": {
+            "response": "The provided context does not contain any information about aspirin administration with food.",
+            "sources": [
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+            ],
+            "system": "medrag_baseline",
+            "confidence": null,
+            "doubt_certificate": null,
+            "safety_check": "none",
+            "safety_scope": "no_check",
+            "emergency": false,
+            "retrieval_scores": [
+              0.547386289,
+              0.545201361,
+              0.495765746,
+              0.170740142,
+              0.162999168
+            ]
+          }
+        },
+        "no_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 16.775,
+          "response": {
+            "response": "There is no single universal \"aspirin document\"\u2014guidance on taking aspirin with food varies by aspirin type (dose, formulation, intended use) and comes from regulatory agency labels (e.g., FDA, EMA), national health services, and clinical guidelines. Common official guidance across sources is as follows:\n1. **Low-dose aspirin (75\u2013100mg daily, for cardioprotection and blood clot prevention)**\n   Most guidance states it can be taken with or without food, as food has no meaningful impact on its antiplatelet (clot-preventing) effect. If a person experiences stomach discomfort, heartburn, or mild GI irritation, taking it with food, a full glass of water, or milk is recommended to reduce these side effects.\n2. **Higher-dose aspirin (325mg or more, for pain, fever, or inflammation relief)**\n   Official guidance (including FDA product labeling and NHS recommendations) consistently advises taking it with food or milk to buffer the stomach lining, reduce risk of nausea, heartburn, gastritis, and gastrointestinal bleeding, as higher doses carry a far higher risk of stomach irritation.\n3. **Critical exception for emergency use**\n   For suspected heart attack or ischemic stroke, standard guidance (e.g., from the American Heart Association) is to chew a 325mg aspirin immediately, even if you have not eaten. The priority is rapid antiplatelet action to limit clot damage, so you should not delay taking aspirin to eat first.\nFor enteric-coated aspirin (formulated to dissolve in the small intestine rather than the stomach to reduce irritation), it may be taken without food for people with sensitive stomachs, but food can still be taken with it if GI symptoms occur, and it does not fully eliminate the risk of gastrointestinal side effects.",
+            "system": "no_rag",
+            "safety_scope": "no_check"
+          }
+        }
+      },
+      "case_elapsed_seconds": 37.181
+    },
+    {
+      "test_case_id": "D3",
+      "top_k": 2,
+      "question": "According to the document, what is the maximum daily duration for aspirin use without medical advice?",
+      "timestamp": "2026-09-10T21:32:30.514535",
+      "systems": {
+        "uq_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 11.629,
+          "response": {
+            "response": null,
+            "sources": [],
+            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+            "injection_detected": false,
+            "pii_redacted": false,
+            "doubt_certificate": {
+              "status": "insufficient_evidence",
+              "message": "I do not know from the approved evidence.",
+              "support_probability": 3.888828495916085e-06,
+              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+              "conformal_set": [
+                "INSUFFICIENT"
+              ],
+              "coverage_target": 0.1,
+              "uncertainty_causes": [
+                {
+                  "type": "missing_evidence",
+                  "detail": "Low claim coverage in retrieved passages"
+                },
+                {
+                  "type": "retrieval_instability",
+                  "detail": "Weak retrieval scores"
+                }
+              ],
+              "actions_taken": [],
+              "evidence_needed": "",
+              "corpus_id": "medical-corpus-v1",
+              "calibration_id": "calibration-v1",
+              "human_review_recommended": true,
+              "prior": null,
+              "combined_posterior": null,
+              "relevance_weighted": null
+            },
+            "run_artifact_id": "0dd37b92-f051-4fbb-93a6-3135a6318351",
+            "safety_scope": "allowed"
+          }
+        },
+        "medrag_baseline": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 10.495,
+          "response": {
+            "response": "The provided context does not contain information about the maximum daily duration for aspirin use without medical advice. The context only specifies the maximum 24-hour dose of aspirin for adults (4,000 mg) and dosing frequency, but does not address how long aspirin can be taken daily without medical guidance.",
+            "sources": [
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/aspirin.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+              "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+            ],
+            "system": "medrag_baseline",
+            "confidence": null,
+            "doubt_certificate": null,
+            "safety_check": "none",
+            "safety_scope": "no_check",
+            "emergency": false,
+            "retrieval_scores": [
+              0.689106,
+              0.503370345,
+              0.490913391,
+              0.22341156,
+              0.195558548
+            ]
+          }
+        },
+        "no_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 11.493,
+          "response": {
+            "response": "No document was provided with your question, so I cannot reference content from a specific document as requested.\n\nFor general, widely accepted medical guidance regarding over-the-counter aspirin use for temporary symptom relief (pain, fever):\nMost public health and medical guidelines advise that aspirin should not be used for more than 10 days to treat pain, or more than 3 days to treat fever, without consulting a healthcare provider. This is due to risks of side effects like gastrointestinal bleeding, kidney damage, or other adverse effects with prolonged unsupervised use.\n\nImportant note: Low-dose aspirin taken for long-term preventive purposes (e.g., to reduce risk of heart attack or stroke) should only be used under the direct guidance of a doctor, as unsupervised long-term use carries significant health risks. Always follow the instructions on the aspirin product label and consult a healthcare provider before use if you have underlying health conditions, are taking other medications, or plan to use aspirin for longer than the recommended short-term window.",
+            "system": "no_rag",
+            "safety_scope": "no_check"
+          }
+        }
+      },
+      "case_elapsed_seconds": 33.618
+    },
+    {
+      "test_case_id": "D4",
+      "top_k": 2,
+      "question": "What is the maximum daily dose of aspirin mentioned in the document?",
+      "timestamp": "2026-09-10T21:33:04.132168",
+      "systems": {
+        "uq_rag": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 8.507,
+          "response": {
+            "response": null,
+            "sources": [],
+            "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+            "injection_detected": false,
+            "pii_redacted": false,
+            "doubt_certificate": {
+              "status": "insufficient_evidence",
+              "message": "I do not know from the approved evidence.",
+              "support_probability": 0.8107509157509157,
+              "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+              "conformal_set": [
+                "INSUFFICIENT"
+              ],
+              "coverage_target": 0.1,
+              "uncertainty_causes": [
+                {
+                  "type": "retrieval_instability",
+                  "detail": "Weak retrieval scores"
+                }
+              ],
+              "actions_taken": [],
+              "evidence_needed": "",
+              "corpus_id": "medical-corpus-v1",
+              "calibration_id": "calibration-v1",
+              "human_review_recommended": true,
+              "prior": null,
+              "combined_posterior": null,
+              "relevance_weighted": null
+            },
+            "run_artifact_id": "e599d018-67d8-4b0d-ad71-c2891025e53f",
+            "safety_scope": "allowed"
+          }
+        },
+        "medrag_baseline": {
+          "status": "success",
+          "http_status": 200,
+          "latency_seconds": 8.91,
           "response": {
             "response": "The maximum daily dose of aspirin mentioned in the document is 4,000 mg (do not exceed this amount in 24 hours).",
             "sources": [
@@ -794,26 +794,26 @@
         "no_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 51.901,
+          "latency_seconds": 10.257,
           "response": {
-            "response": "No document was provided in your query, so I cannot reference a specific document's stated maximum daily dose of aspirin.\n\nAs general medical context, the typical maximum daily dose of over-the-counter aspirin for adults when used for pain, fever, or inflammation is usually 4,000 mg (4 grams) per day, split into multiple doses, but this can vary based on individual health factors. You should always follow the instructions on the product label or guidance from a healthcare provider. For low-dose aspirin used for cardiovascular prevention, the daily dose is far lower, usually between 81 mg and 325 mg per day, as directed by a doctor.",
+            "response": "No document was provided in your query, so I cannot reference the maximum daily dose of aspirin mentioned in an unspecified document.\n\nAs general medical context (not from a specific document): For over-the-counter adult use of aspirin for pain, fever, or inflammation, the typical maximum daily dose is 4000 mg (4 grams) per day, divided into scheduled doses. For low-dose aspirin used for cardioprotection under medical supervision, the daily dose is far lower (usually 75\u2013325 mg per day). Always follow the instructions on the product label or guidance from a licensed healthcare provider, as appropriate dosing varies based on the specific use case and individual health factors.",
             "system": "no_rag",
             "safety_scope": "no_check"
           }
         }
       },
-      "case_elapsed_seconds": 153.948
+      "case_elapsed_seconds": 27.674
     },
     {
       "test_case_id": "D5",
       "top_k": 2,
       "question": "According to the document, should aspirin be taken with food or on an empty stomach?",
-      "timestamp": "2026-09-10T18:49:47.286817",
+      "timestamp": "2026-09-10T21:33:31.806592",
       "systems": {
         "uq_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 49.397,
+          "latency_seconds": 10.17,
           "response": {
             "response": null,
             "sources": [],
@@ -823,7 +823,7 @@
             "doubt_certificate": {
               "status": "insufficient_evidence",
               "message": "I do not know from the approved evidence.",
-              "support_probability": 1.0000000000000008e-06,
+              "support_probability": 7.407414759952425e-09,
               "probability_semantics": "P(claim fully supported by active retrieved evidence)",
               "conformal_set": [
                 "INSUFFICIENT"
@@ -848,14 +848,14 @@
               "combined_posterior": null,
               "relevance_weighted": null
             },
-            "run_artifact_id": "76b1ab10-e82a-433b-82ef-a557eb529911",
+            "run_artifact_id": "ce3599b1-c7c0-458e-a45a-5bf3d1a78e5a",
             "safety_scope": "allowed"
           }
         },
         "medrag_baseline": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 46.162,
+          "latency_seconds": 8.618,
           "response": {
             "response": "The provided context does not contain information about whether aspirin should be taken with food or on an empty stomach, so this question cannot be answered based on the given content.",
             "sources": [
@@ -883,104 +883,104 @@
         "no_rag": {
           "status": "success",
           "http_status": 200,
-          "latency_seconds": 53.379,
+          "latency_seconds": 14.241,
           "response": {
-            "response": "No specific document was included in your query, so I cannot reference a particular document's guidance. That said, widely accepted medical recommendations for aspirin use are as follows:\nFor most people, aspirin should be taken with food (or a full glass of milk) rather than on an empty stomach. Aspirin can irritate the stomach lining, and taking it with food reduces the risk of common gastrointestinal side effects like stomach upset, heartburn, and gastric ulcers. This guidance applies to both regular-dose aspirin used for pain, fever, or inflammation, and low-dose aspirin used for long-term cardioprotection (to reduce risk of heart attack or stroke) for most patients.\nIndividual recommendations may vary based on a person's specific health conditions, other medications they take, and the type of aspirin (e.g., enteric-coated formulations are designed to reduce stomach irritation, but may still be advised with food for some people). Always follow the instructions provided by your healthcare provider or the product label, and consult a doctor if you experience persistent stomach pain, bleeding, or other adverse effects.",
+            "response": "No document was provided in your query, so I cannot reference the specific guidance from an unspecified document. That said, general, widely accepted medical recommendations for aspirin intake are as follows:\n- For low-dose aspirin (typically 81mg, used for long-term heart attack/stroke prevention), it can usually be taken with or without food. If you have a history of stomach sensitivity, taking it with food may reduce risk of gastrointestinal irritation.\n- For higher-dose aspirin (used for short-term pain, fever, or inflammation relief), it is generally recommended to take it with food to minimize the risk of stomach upset, ulcers, or gastrointestinal bleeding, which are common side effects of aspirin when consumed on an empty stomach.\n\nAlways follow the instructions provided by your healthcare provider or the specific medication's label, as individual health circumstances may alter this guidance.",
             "system": "no_rag",
             "safety_scope": "no_check"
           }
         }
       },
-      "case_elapsed_seconds": 148.939
+      "case_elapsed_seconds": 33.029
     }
   ],
   "summary": {
     "top_k_5": {
       "total_cases": 5,
-      "total_time_seconds": 800.1759999999999,
-      "avg_case_time_seconds": 160.03519999999997
+      "total_time_seconds": 221.949,
+      "avg_case_time_seconds": 44.3898
     },
     "top_k_2": {
       "total_cases": 5,
-      "total_time_seconds": 789.834,
-      "avg_case_time_seconds": 157.96679999999998
+      "total_time_seconds": 194.667,
+      "avg_case_time_seconds": 38.9334
     }
   },
   "per_case_deltas": [
     {
       "test_case_id": "D1",
-      "delta_seconds": -2.773,
-      "top_k_5_seconds": 175.512,
-      "top_k_2_seconds": 178.285,
-      "uq_rag_delta_seconds": -8.645,
-      "uq_rag_top_k_5_seconds": 60.221,
-      "uq_rag_top_k_2_seconds": 68.866,
-      "medrag_baseline_delta_seconds": 6.987,
-      "medrag_baseline_top_k_5_seconds": 60.581,
-      "medrag_baseline_top_k_2_seconds": 53.594,
-      "no_rag_delta_seconds": -1.115,
-      "no_rag_top_k_5_seconds": 54.71,
-      "no_rag_top_k_2_seconds": 55.825
+      "delta_seconds": 0.991,
+      "top_k_5_seconds": 64.156,
+      "top_k_2_seconds": 63.165,
+      "uq_rag_delta_seconds": -1.674,
+      "uq_rag_top_k_5_seconds": 15.387,
+      "uq_rag_top_k_2_seconds": 17.061,
+      "medrag_baseline_delta_seconds": 7.052,
+      "medrag_baseline_top_k_5_seconds": 34.454,
+      "medrag_baseline_top_k_2_seconds": 27.402,
+      "no_rag_delta_seconds": -4.387,
+      "no_rag_top_k_5_seconds": 14.315,
+      "no_rag_top_k_2_seconds": 18.702
     },
     {
       "test_case_id": "D2",
-      "delta_seconds": 3.165,
-      "top_k_5_seconds": 158.574,
-      "top_k_2_seconds": 155.409,
-      "uq_rag_delta_seconds": -4.429,
-      "uq_rag_top_k_5_seconds": 47.3,
-      "uq_rag_top_k_2_seconds": 51.729,
-      "medrag_baseline_delta_seconds": -0.607,
-      "medrag_baseline_top_k_5_seconds": 47.367,
-      "medrag_baseline_top_k_2_seconds": 47.974,
-      "no_rag_delta_seconds": 8.201,
-      "no_rag_top_k_5_seconds": 63.907,
-      "no_rag_top_k_2_seconds": 55.706
+      "delta_seconds": 2.216,
+      "top_k_5_seconds": 39.397,
+      "top_k_2_seconds": 37.181,
+      "uq_rag_delta_seconds": -1.216,
+      "uq_rag_top_k_5_seconds": 9.793,
+      "uq_rag_top_k_2_seconds": 11.009,
+      "medrag_baseline_delta_seconds": 1.346,
+      "medrag_baseline_top_k_5_seconds": 10.744,
+      "medrag_baseline_top_k_2_seconds": 9.398,
+      "no_rag_delta_seconds": 2.085,
+      "no_rag_top_k_5_seconds": 18.86,
+      "no_rag_top_k_2_seconds": 16.775
     },
     {
       "test_case_id": "D3",
-      "delta_seconds": 18.392,
-      "top_k_5_seconds": 171.645,
-      "top_k_2_seconds": 153.253,
-      "uq_rag_delta_seconds": 1.174,
-      "uq_rag_top_k_5_seconds": 50.794,
-      "uq_rag_top_k_2_seconds": 49.62,
-      "medrag_baseline_delta_seconds": 13.962,
-      "medrag_baseline_top_k_5_seconds": 65.301,
-      "medrag_baseline_top_k_2_seconds": 51.339,
-      "no_rag_delta_seconds": 3.256,
-      "no_rag_top_k_5_seconds": 55.55,
-      "no_rag_top_k_2_seconds": 52.294
+      "delta_seconds": 8.283,
+      "top_k_5_seconds": 41.901,
+      "top_k_2_seconds": 33.618,
+      "uq_rag_delta_seconds": 9.332,
+      "uq_rag_top_k_5_seconds": 20.961,
+      "uq_rag_top_k_2_seconds": 11.629,
+      "medrag_baseline_delta_seconds": 0.616,
+      "medrag_baseline_top_k_5_seconds": 11.111,
+      "medrag_baseline_top_k_2_seconds": 10.495,
+      "no_rag_delta_seconds": -1.664,
+      "no_rag_top_k_5_seconds": 9.829,
+      "no_rag_top_k_2_seconds": 11.493
     },
     {
       "test_case_id": "D4",
-      "delta_seconds": -4.205,
-      "top_k_5_seconds": 149.743,
-      "top_k_2_seconds": 153.948,
-      "uq_rag_delta_seconds": 4.589,
-      "uq_rag_top_k_5_seconds": 52.298,
-      "uq_rag_top_k_2_seconds": 47.709,
-      "medrag_baseline_delta_seconds": -5.829,
-      "medrag_baseline_top_k_5_seconds": 48.509,
-      "medrag_baseline_top_k_2_seconds": 54.338,
-      "no_rag_delta_seconds": -2.965,
-      "no_rag_top_k_5_seconds": 48.936,
-      "no_rag_top_k_2_seconds": 51.901
+      "delta_seconds": 3.661,
+      "top_k_5_seconds": 31.335,
+      "top_k_2_seconds": 27.674,
+      "uq_rag_delta_seconds": 1.036,
+      "uq_rag_top_k_5_seconds": 9.543,
+      "uq_rag_top_k_2_seconds": 8.507,
+      "medrag_baseline_delta_seconds": 2.948,
+      "medrag_baseline_top_k_5_seconds": 11.858,
+      "medrag_baseline_top_k_2_seconds": 8.91,
+      "no_rag_delta_seconds": -0.322,
+      "no_rag_top_k_5_seconds": 9.935,
+      "no_rag_top_k_2_seconds": 10.257
     },
     {
       "test_case_id": "D5",
-      "delta_seconds": -4.237,
-      "top_k_5_seconds": 144.702,
-      "top_k_2_seconds": 148.939,
-      "uq_rag_delta_seconds": -0.385,
-      "uq_rag_top_k_5_seconds": 49.012,
-      "uq_rag_top_k_2_seconds": 49.397,
-      "medrag_baseline_delta_seconds": 0.568,
-      "medrag_baseline_top_k_5_seconds": 46.73,
-      "medrag_baseline_top_k_2_seconds": 46.162,
-      "no_rag_delta_seconds": -4.419,
-      "no_rag_top_k_5_seconds": 48.96,
-      "no_rag_top_k_2_seconds": 53.379
+      "delta_seconds": 12.131,
+      "top_k_5_seconds": 45.16,
+      "top_k_2_seconds": 33.029,
+      "uq_rag_delta_seconds": 17.228,
+      "uq_rag_top_k_5_seconds": 27.398,
+      "uq_rag_top_k_2_seconds": 10.17,
+      "medrag_baseline_delta_seconds": 0.027,
+      "medrag_baseline_top_k_5_seconds": 8.645,
+      "medrag_baseline_top_k_2_seconds": 8.618,
+      "no_rag_delta_seconds": -5.124,
+      "no_rag_top_k_5_seconds": 9.117,
+      "no_rag_top_k_2_seconds": 14.241
     }
   ]
 }

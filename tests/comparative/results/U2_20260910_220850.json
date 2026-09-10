@@ -1,0 +1,63 @@
+{
+  "test_case": {
+    "id": "U2",
+    "question": "What uncertainty cause type is used when retrieved passages contain conflicting information?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "cross",
+      "source",
+      "conflict",
+      "conflicting"
+    ],
+    "source": "uq_paper",
+    "document_specific": true
+  },
+  "results": {
+    "uq_rag": {
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Read timed out. (read timeout=60)"
+    },
+    "medrag_baseline": {
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Read timed out. (read timeout=60)"
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "This question is most commonly addressed in the context of Retrieval-Augmented Generation (RAG) systems, where uncertainty causes are often categorized by their root origin. The specific uncertainty cause type for cases where retrieved passages contain conflicting information is typically classified as **retrieval conflict uncertainty** (also called evidence conflict uncertainty or knowledge conflict uncertainty), a sub-type of broader retrieval uncertainty.\n### Key context:\n1. This uncertainty arises directly from the retrieval step returning contradictory, mutually exclusive information from the source corpus, creating ambiguity for the generation model when synthesizing a response.\n2. It is distinct from other common RAG uncertainty causes:\n   - Model uncertainty: stems from limitations or randomness in the large language model (LLM) itself, unrelated to retrieved content\n   - Missing information uncertainty: occurs when relevant passages are not retrieved at all, rather than conflicting ones being present\n3. In the broader epistemic vs. aleatoric uncertainty taxonomy, retrieval conflict uncertainty falls under **epistemic uncertainty**, as it stems from incomplete or contradictory knowledge in the retrieved evidence (as opposed to aleatoric uncertainty, which is inherent, irreducible randomness in data or generation processes).",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "request failed: HTTPConnectionPool(host='127.0.0.1', port=8000): Read timed out. (read timeout=60)"
+      ],
+      "errored": true
+    },
+    "medrag_baseline": {
+      "score": 0,
+      "max_score": 3,
+      "reasons": [
+        "request failed: HTTPConnectionPool(host='127.0.0.1', port=8000): Read timed out. (read timeout=60)"
+      ],
+      "errored": true
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.75,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['source', 'conflict', 'conflicting']"
+      ],
+      "scoring_timestamp": "2026-09-10T22:08:50.569085"
+    }
+  },
+  "timestamp": "20260910_220850"
+}

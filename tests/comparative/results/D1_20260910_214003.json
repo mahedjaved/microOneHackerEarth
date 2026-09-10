@@ -1,0 +1,132 @@
+{
+  "test_case": {
+    "id": "D1",
+    "question": "According to the aspirin document, what is the maximum single adult dose?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "650",
+      "mg",
+      "dose",
+      "single"
+    ],
+    "general_knowledge_unanswerable": true
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": null,
+        "sources": [],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": {
+          "status": "insufficient_evidence",
+          "message": "I do not know from the approved evidence.",
+          "support_probability": 1.0000020000020012e-12,
+          "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+          "conformal_set": [
+            "INSUFFICIENT"
+          ],
+          "coverage_target": 0.1,
+          "uncertainty_causes": [
+            {
+              "type": "missing_evidence",
+              "detail": "Low claim coverage in retrieved passages"
+            },
+            {
+              "type": "retrieval_instability",
+              "detail": "Weak retrieval scores"
+            }
+          ],
+          "actions_taken": [],
+          "evidence_needed": "",
+          "corpus_id": "medical-corpus-v1",
+          "calibration_id": "calibration-v1",
+          "human_review_recommended": true,
+          "prior": null,
+          "combined_posterior": null,
+          "relevance_weighted": null
+        },
+        "run_artifact_id": "dae6f512-7b13-4222-92bb-860d7e16b37f",
+        "safety_scope": "allowed"
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "The provided context does not specify the maximum single adult dose of aspirin. It only notes that the usual adult dose is 325\u2013650 mg every 4 hours as needed, with a maximum total dose of 4,000 mg permitted in a 24-hour period.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "safety_scope": "no_check",
+        "emergency": false,
+        "retrieval_scores": [
+          0.821087718,
+          0.521352768,
+          0.502013147,
+          0.243786782,
+          0.214177132
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "I do not have access to the specific \"aspirin document\" you are referencing, so I cannot confirm the exact maximum single adult dose stated in that particular source.\n\nFor general context, widely accepted standard maximum single adult doses for aspirin vary by intended use, per guidance from public health bodies like the U.S. FDA and UK NHS:\n- For over-the-counter (OTC) short-term use for pain, fever, or inflammation: The maximum recommended single adult dose is typically 1000 mg (1 gram), with a maximum total daily dose of 4000 mg for OTC use. Doses above this for acute use should only be taken under direct medical supervision.\n- For acute management of a suspected heart attack (under clinical guidance): A chewed single dose of 160\u2013325 mg is often recommended to allow faster absorption.\n- For long-term low-dose cardiovascular prophylaxis: The standard daily dose is 75\u2013100 mg, so the single daily dose for this use case is far lower than the OTC acute use maximum.\n\nAlways follow the dosing instructions on your specific aspirin product label or a healthcare provider's recommendation, as inappropriate dosing can cause serious side effects including gastrointestinal bleeding, stomach ulcers, and Reye's syndrome (in people under 18 with viral infections).",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found"
+      ],
+      "scoring_timestamp": "2026-09-10T21:39:27.463624"
+    },
+    "medrag_baseline": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 1.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['650', 'mg', 'dose', 'single']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:39:45.711174"
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.75,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['mg', 'dose', 'single']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:40:03.222875"
+    }
+  },
+  "timestamp": "20260910_214003"
+}

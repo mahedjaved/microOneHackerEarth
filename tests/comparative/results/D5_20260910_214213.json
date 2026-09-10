@@ -1,0 +1,132 @@
+{
+  "test_case": {
+    "id": "D5",
+    "question": "According to the document, should aspirin be taken with food or on an empty stomach?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "food",
+      "empty",
+      "stomach",
+      "reduce"
+    ],
+    "general_knowledge_unanswerable": true
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": null,
+        "sources": [],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": {
+          "status": "insufficient_evidence",
+          "message": "I do not know from the approved evidence.",
+          "support_probability": 1.0000020000020012e-12,
+          "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+          "conformal_set": [
+            "INSUFFICIENT"
+          ],
+          "coverage_target": 0.1,
+          "uncertainty_causes": [
+            {
+              "type": "missing_evidence",
+              "detail": "Low claim coverage in retrieved passages"
+            },
+            {
+              "type": "retrieval_instability",
+              "detail": "Weak retrieval scores"
+            }
+          ],
+          "actions_taken": [],
+          "evidence_needed": "",
+          "corpus_id": "medical-corpus-v1",
+          "calibration_id": "calibration-v1",
+          "human_review_recommended": true,
+          "prior": null,
+          "combined_posterior": null,
+          "relevance_weighted": null
+        },
+        "run_artifact_id": "43860e53-5e50-4e2c-8764-b8d9b79bae8e",
+        "safety_scope": "allowed"
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "The provided context does not contain information about whether aspirin should be taken with food or on an empty stomach, so this question cannot be answered based on the given content.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "safety_scope": "no_check",
+        "emergency": false,
+        "retrieval_scores": [
+          0.513428688,
+          0.493340492,
+          0.467907935,
+          0.173021317,
+          0.169939041
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "There is no document provided in your query, so I cannot reference guidance from a specific document.\n\nThat said, general, widely accepted medical recommendations for aspirin use are as follows:\nMost healthcare providers recommend taking aspirin with food, particularly for regular long-term use (such as low-dose aspirin prescribed to reduce the risk of heart attack or stroke). Taking it with food helps minimize common side effects like stomach irritation, upset, and the risk of gastrointestinal bleeding. For occasional use (e.g., to treat pain, fever, or inflammation), taking aspirin with food or a full glass of water is also advised to reduce GI discomfort.\n\nNote that specific instructions may vary based on the type of aspirin, the reason for use, and your individual health status, so always follow the directions on your medication label or the guidance of your doctor or pharmacist.",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found"
+      ],
+      "scoring_timestamp": "2026-09-10T21:41:53.363582"
+    },
+    "medrag_baseline": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.75,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['food', 'empty', 'stomach']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:42:01.904813"
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.75,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['food', 'stomach', 'reduce']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:42:13.889982"
+    }
+  },
+  "timestamp": "20260910_214213"
+}

@@ -1,0 +1,132 @@
+{
+  "test_case": {
+    "id": "D3",
+    "question": "According to the document, what is the maximum daily duration for aspirin use without medical advice?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "days",
+      "duration",
+      "consult",
+      "physician"
+    ],
+    "general_knowledge_unanswerable": true
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": null,
+        "sources": [],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": {
+          "status": "insufficient_evidence",
+          "message": "I do not know from the approved evidence.",
+          "support_probability": 4.233380349961399e-06,
+          "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+          "conformal_set": [
+            "INSUFFICIENT"
+          ],
+          "coverage_target": 0.1,
+          "uncertainty_causes": [
+            {
+              "type": "missing_evidence",
+              "detail": "Low claim coverage in retrieved passages"
+            },
+            {
+              "type": "retrieval_instability",
+              "detail": "Weak retrieval scores"
+            }
+          ],
+          "actions_taken": [],
+          "evidence_needed": "",
+          "corpus_id": "medical-corpus-v1",
+          "calibration_id": "calibration-v1",
+          "human_review_recommended": true,
+          "prior": null,
+          "combined_posterior": null,
+          "relevance_weighted": null
+        },
+        "run_artifact_id": "00be7cad-e14f-4eed-8fb5-1959b3873f7c",
+        "safety_scope": "allowed"
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "The provided context does not contain enough information to answer this question. The context only specifies the usual adult dose of aspirin, the maximum total daily dose, age restrictions for use, and common uses of aspirin, but it does not mention any maximum duration of daily aspirin use without medical advice.",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "safety_scope": "no_check",
+        "emergency": false,
+        "retrieval_scores": [
+          0.689106,
+          0.503370345,
+          0.490913391,
+          0.22341156,
+          0.195558548
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "No document was included in your query, so I cannot reference content from a specific document you are referring to.\n\nThat said, general, widely accepted public health guidance (from authorities like the U.S. FDA and UK NHS) for over-the-counter aspirin use to treat short-term, self-limiting symptoms (minor pain, headache, fever) states:\n- Aspirin should not be used for more than 3 days to manage fever, or more than 10 days to manage persistent pain, without first consulting a healthcare provider.\n- Any long-term aspirin use (including for cardiovascular disease prevention) requires direct medical supervision, as unsupervised extended use carries serious risks including gastrointestinal bleeding, hemorrhagic stroke, and Reye's syndrome (in children/teenagers with viral infections).",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.25,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Partial answer with keywords: ['consult']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:40:52.686169"
+    },
+    "medrag_baseline": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.25,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Partial answer with keywords: ['duration']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:41:02.774625"
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.5,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['days', 'consult']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:41:16.144405"
+    }
+  },
+  "timestamp": "20260910_214116"
+}

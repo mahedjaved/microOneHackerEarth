@@ -1,0 +1,129 @@
+{
+  "test_case": {
+    "id": "D4",
+    "question": "What is the maximum daily dose of aspirin mentioned in the document?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "4000",
+      "4,000",
+      "mg",
+      "daily",
+      "maximum"
+    ],
+    "general_knowledge_unanswerable": false
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": null,
+        "sources": [],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": {
+          "status": "insufficient_evidence",
+          "message": "I do not know from the approved evidence.",
+          "support_probability": 0.8107509157509157,
+          "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+          "conformal_set": [
+            "INSUFFICIENT"
+          ],
+          "coverage_target": 0.1,
+          "uncertainty_causes": [
+            {
+              "type": "retrieval_instability",
+              "detail": "Weak retrieval scores"
+            }
+          ],
+          "actions_taken": [],
+          "evidence_needed": "",
+          "corpus_id": "medical-corpus-v1",
+          "calibration_id": "calibration-v1",
+          "human_review_recommended": true,
+          "prior": null,
+          "combined_posterior": null,
+          "relevance_weighted": null
+        },
+        "run_artifact_id": "fcb4472b-38c3-4700-be19-cf4e67b05a3e",
+        "safety_scope": "allowed"
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "Based on the context provided, the maximum daily dose of aspirin mentioned is **4,000 mg** (specifically, \"Do not exceed 4,000 mg in 24 hours\").",
+        "sources": [
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/aspirin.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "safety_scope": "no_check",
+        "emergency": false,
+        "retrieval_scores": [
+          0.733951569,
+          0.496752739,
+          0.471861869,
+          0.266438484,
+          0.263671875
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "No document was included in your query, so I cannot reference the specific maximum daily dose of aspirin mentioned in an unspecified document.\n\nAs general medical context, the typical maximum daily dose of aspirin for adult over-the-counter short-term use for pain, fever, or inflammation is usually 4,000 mg (4 grams) per day, divided into multiple doses. For long-term use (such as for cardiovascular disease prevention), doses are far lower, usually ranging from 75 mg to 325 mg per day. Always follow the instructions on the product label or the guidance of a licensed healthcare provider for dosing, as individual needs vary.",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found"
+      ],
+      "scoring_timestamp": "2026-09-10T21:41:24.798489"
+    },
+    "medrag_baseline": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.8,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['4,000', 'mg', 'daily', 'maximum']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:41:33.133581"
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.8,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['4,000', 'mg', 'daily', 'maximum']"
+      ],
+      "scoring_timestamp": "2026-09-10T21:41:41.122326"
+    }
+  },
+  "timestamp": "20260910_214141"
+}

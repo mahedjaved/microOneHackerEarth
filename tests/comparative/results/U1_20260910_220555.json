@@ -1,0 +1,134 @@
+{
+  "test_case": {
+    "id": "U1",
+    "question": "According to the UQ paper, what coverage target is used for the conformal predictor?",
+    "category": "medical_factual",
+    "expected_keywords": [
+      "0.90",
+      "90%",
+      "coverage",
+      "alpha",
+      "0.10"
+    ],
+    "source": "uq_paper",
+    "document_specific": true
+  },
+  "results": {
+    "uq_rag": {
+      "status": 200,
+      "data": {
+        "response": null,
+        "sources": [],
+        "disclaimer": "This is not medical advice. Consult a healthcare professional.",
+        "injection_detected": false,
+        "pii_redacted": false,
+        "doubt_certificate": {
+          "status": "insufficient_evidence",
+          "message": "I do not know from the approved evidence.",
+          "support_probability": 1.0000030000060002e-18,
+          "probability_semantics": "P(claim fully supported by active retrieved evidence)",
+          "conformal_set": [
+            "INSUFFICIENT"
+          ],
+          "coverage_target": 0.1,
+          "uncertainty_causes": [
+            {
+              "type": "missing_evidence",
+              "detail": "Low claim coverage in retrieved passages"
+            },
+            {
+              "type": "retrieval_instability",
+              "detail": "Weak retrieval scores"
+            }
+          ],
+          "actions_taken": [],
+          "evidence_needed": "",
+          "corpus_id": "medical-corpus-v1",
+          "calibration_id": "calibration-v1",
+          "human_review_recommended": true,
+          "prior": null,
+          "combined_posterior": null,
+          "relevance_weighted": null
+        },
+        "run_artifact_id": "2bdd93f1-a669-440f-83d9-e18236e397c0",
+        "safety_scope": "allowed"
+      }
+    },
+    "medrag_baseline": {
+      "status": 200,
+      "data": {
+        "response": "The provided context does not contain any information about conformal predictors or their associated coverage targets, so this question cannot be answered based on the given material.",
+        "sources": [
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf",
+          "uploaded_docs/Uncertainty Quantification for LLM Function-Calling.pdf"
+        ],
+        "system": "medrag_baseline",
+        "confidence": null,
+        "doubt_certificate": null,
+        "safety_check": "none",
+        "safety_scope": "no_check",
+        "emergency": false,
+        "retrieval_scores": [
+          0.469916433,
+          0.427519828,
+          0.418702155,
+          0.414613754,
+          0.406916678
+        ]
+      }
+    },
+    "no_rag": {
+      "status": 200,
+      "data": {
+        "response": "There is no single universally recognized \"UQ (Uncertainty Quantification) paper\" focused on conformal predictors, so the exact coverage target depends on the specific publication you are referencing.\nThat said, the standard convention for coverage targets in UQ research using conformal prediction follows the core theoretical guarantee of conformal methods: the target is a marginal coverage of \\(1 - \\alpha\\), where \\(\\alpha\\) is the pre-specified allowed miscoverage rate (the maximum acceptable probability that the true outcome falls outside the prediction set/interval).\nThe most common default values for \\(\\alpha\\) in UQ-focused conformal prediction studies are:\n- \\(\\alpha = 0.1\\), corresponding to a 90% coverage target (the most widely used default in general UQ work)\n- \\(\\alpha = 0.05\\), corresponding to a 95% coverage target (common for high-stakes applications like healthcare, climate modeling, or safety-critical systems where higher coverage guarantees are required)\nIf you can share the specific title, authors, or context of the UQ paper you are referring to, I can provide a more precise answer about its exact chosen coverage target.",
+        "system": "no_rag",
+        "safety_scope": "no_check"
+      }
+    }
+  },
+  "scores": {
+    "uq_rag": {
+      "score": 0,
+      "max_score": 3,
+      "keyword_match": 0.0,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "No relevant keywords found"
+      ],
+      "scoring_timestamp": "2026-09-10T22:05:28.994669"
+    },
+    "medrag_baseline": {
+      "score": 2,
+      "max_score": 3,
+      "keyword_match": 0.2,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": true,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Partial answer with keywords: ['coverage']"
+      ],
+      "scoring_timestamp": "2026-09-10T22:05:38.156318"
+    },
+    "no_rag": {
+      "score": 3,
+      "max_score": 3,
+      "keyword_match": 0.6,
+      "safety_detected": null,
+      "doubt_expressed": null,
+      "citation_present": false,
+      "hallucination_avoided": null,
+      "reasons": [
+        "Correct answer with keywords: ['90%', 'coverage', 'alpha']"
+      ],
+      "scoring_timestamp": "2026-09-10T22:05:55.604901"
+    }
+  },
+  "timestamp": "20260910_220555"
+}
