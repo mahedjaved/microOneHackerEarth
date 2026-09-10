@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     opencodezen_base_url: str = "https://api.opencodezen.ai/v1"
     opencodezen_model: str = "nemotron"
 
+    # ── Kilo API (fallback provider) ──────────────────────────────
+    kilo_api_key: str = ""
+    kilo_base_url: str = "https://api.kilo.ai/api/gateway/v1"
+    kilo_model: str = "stepfun/step-3.7-flash:free"
+
     # ── Optional API keys (reserved for future phases) ─────────────
     google_api_key: str | None = None
     langchain_api_key: Optional[str] = None

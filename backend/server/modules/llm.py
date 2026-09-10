@@ -57,9 +57,24 @@ def _get_llm_with_fallback():
             llm.invoke("test")
             return llm
         except Exception as e:
-            print(f"OpenCodeZen unavailable ({e})")
+            print(f"OpenCodeZen unavailable ({e}), falling back to Kilo")
 
-    raise RuntimeError("No LLM provider available. Configure GOOGLE_API_KEY, GROQ_API_KEY, or OPENCODEZEN_API_KEY.")
+    # Fall back to Kilo
+    if settings.kilo_api_key:
+        try:
+            llm = ChatOpenAI(
+                model=settings.kilo_model,
+                api_key=settings.kilo_api_key,
+                base_url=settings.kilo_base_url,
+                temperature=0.1,
+            )
+            # Test the connection
+            llm.invoke("test")
+            return llm
+        except Exception as e:
+            print(f"Kilo unavailable ({e})")
+
+    raise RuntimeError("No LLM provider available. Configure GOOGLE_API_KEY, GROQ_API_KEY, OPENCODEZEN_API_KEY, or KILO_API_KEY.")
 
 
 def get_direct_llm():

@@ -42,7 +42,7 @@ def check_backend() -> bool:
         return False
 
 
-def ask_system(endpoint: str, question: str, timeout: int = 60):
+def ask_system(endpoint: str, question: str, timeout: int = 180):
     """Send question to a system."""
     response = requests.post(endpoint, data={"question": question}, timeout=timeout)
     return response
