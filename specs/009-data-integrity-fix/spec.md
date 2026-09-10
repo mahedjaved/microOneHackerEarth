@@ -77,8 +77,8 @@ As a developer managing investigation scope, I want to deprioritize the `top_k` 
 
 - **FR-001**: `backend/server/routes/medrag_baseline.py` MUST query Pinecone, build `Document` objects from matches, join `page_content` into context, and inject that context into the LLM prompt.
 - **FR-002**: `backend/server/routes/medrag_baseline.py` MUST NOT fall back to general LLM knowledge when retrieved passages are present — the prompt must contain the actual retrieved text.
-- **FR-003**: `backend/server/modules/llm.py` MUST use Groq as the sole primary LLM provider with a valid API key; no multi-provider fallback chain.
-- **FR-004**: The LLM fallback chain (Gemini → OpenCodeZen → Kilo) MUST be removed or disabled until a valid Groq key is confirmed working.
+- **FR-003**: `backend/server/modules/llm.py` MUST use Kilo as the primary LLM provider with a valid API key; other providers MUST be commented out, not deleted.
+- **FR-004**: The LLM fallback chain (Groq → OpenCodeZen → Gemini) MUST be commented out in code, preserving the logic for future re-enablement.
 - **FR-005**: A 5-case subset (D1-D5) MUST be run after fixes and each response MUST be manually inspected for document citation correctness.
 - **FR-006**: Latency per request MUST be <10s after fixes; any request exceeding this threshold MUST be investigated.
 - **FR-007**: The `top_k` experiment MUST be deprioritized until Stories 1-3 are complete and verified.
@@ -86,7 +86,7 @@ As a developer managing investigation scope, I want to deprioritize the `top_k` 
 ### Key Entities *(include if feature involves data)*
 
 - **MedRAGResponse**: Dict with fields: `response` (actual LLM text), `sources` (list of cited document paths), `retrieval_scores` (list of Pinecone scores), `context_used` (the actual prompt context injected).
-- **ProviderChain**: The ordered list of LLM providers; after this fix, it MUST contain only Groq.
+- **ProviderChain**: The ordered list of LLM providers; after this fix, Kilo MUST be primary and other providers MUST be commented out in code.
 - **LatencyMeasurement**: Dict with fields: `test_case_id`, `provider`, `elapsed_seconds`, `fallback_triggered` (bool).
 
 ## Success Criteria *(mandatory)*
@@ -95,14 +95,14 @@ As a developer managing investigation scope, I want to deprioritize the `top_k` 
 
 - **SC-001**: MedRAG responses for D1-D5 cite document-specific facts (e.g., "650 mg") rather than generic knowledge.
 - **SC-002**: The LLM prompt for MedRAG contains retrieved passage text from Pinecone, verified by inspecting the actual prompt or response.
-- **SC-003**: All 5 test cases complete in <10s with Groq as the sole provider; no fallback chain activation.
-- **SC-004**: No log entries show "Gemini unavailable", "OpenCodeZen unavailable", or "Kilo unavailable" during the 5-case run.
+- **SC-003**: All 5 test cases complete in <10s with Kilo as the primary provider; no fallback chain activation.
+- **SC-004**: No log entries show "Groq unavailable", "OpenCodeZen unavailable", or "Gemini unavailable" during the 5-case run; Kilo is the only active provider.
 - **SC-005**: UQ-RAG abstention behavior is unchanged or improved; abstention reasons are traceable to specific evidence issues.
 - **SC-006**: The `top_k` experiment is explicitly deferred until data integrity is confirmed.
 
 ## Assumptions
 
-- A valid Groq API key is available or can be obtained; if not, an alternative single-provider setup must be identified.
+- A valid Kilo API key is available and configured in `backend/.env`; Kilo MUST be the primary provider for this investigation.
 - The last known-good version of `medrag_baseline.py` is from branch `007-numeric-containment-feature`; if that branch is unavailable, the current version will be audited directly.
 - Manual inspection of 5 cases is sufficient to detect systematic retrieval-wiring failures; a full 36-case run is not required for this validation.
-- Removing the fallback chain is acceptable even if it reduces "resilience" — the current chain is not resilient, it is noisy.
+- Commenting out the fallback chain is acceptable even if it reduces "resilience" — the current chain is not resilient, it is noisy.
